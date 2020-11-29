@@ -18,6 +18,6 @@ jobs:
         run: echo "now=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
       - uses: EndBug/add-and-commit@v5
         with:
-          add: 'data.json data.csv'
+          add: 'data.json data.csv error.txt'
           message: ${{ env.now }}
           branch: data
