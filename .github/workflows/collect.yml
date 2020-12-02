@@ -16,8 +16,29 @@ jobs:
       - run: python collector.py
       - name: Set current date as env variable
         run: echo "now=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
-      - uses: EndBug/add-and-commit@v5
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          add: 'data.json data.csv error.txt'
-          message: ${{ env.now }}
-          branch: data
+          tag_name: ${{ github.ref }}
+      - name: Upload Release Asset - data.json
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./data.json
+          asset_name: data.json
+          asset_content_type: application/json
+      - name: Upload Release Asset - data.csv
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./data.csv
+          asset_name: data.csv
+          asset_content_type: text/csv
+

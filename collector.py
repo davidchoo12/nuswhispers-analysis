@@ -73,6 +73,7 @@ with ThreadPoolExecutor() as executor:
       data.extend(result)
     save(data)
     start += executor._max_workers
+    print(start)
     if data == []:
       break
 
