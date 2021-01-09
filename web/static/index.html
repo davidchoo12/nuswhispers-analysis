@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>NUSWhispers Analysis</title>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="uPlot.min.css">
+  <script src="uPlot.iife.min.js"></script>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: Consolas;
+    }
+
+    p {
+      margin: 0.3em 0;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-evenly;
+      width: 100%;
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 1em;
+    }
+
+    .val {
+      font-size: 1.5em;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>NUSWhispers Analysis</h1>
+  <div class="stats">
+    <div class="stat">
+      <p>Latest confession:</p>
+      <p class="val" id="latest"></p>
+    </div>
+    <div class="stat">
+      <p>Total approved confessions:</p>
+      <p class="val" id="total_approved"></p>
+    </div>
+    <div class="stat">
+      <p>Days since #1:</p>
+      <p class="val" id="days"></p>
+    </div>
+    <div class="stat">
+      <p>Most liked post:</p>
+      <p class="val" id="most_liked"></p>
+    </div>
+    <div class="stat">
+      <p>Most commented post:</p>
+      <p class="val" id="most_commented"></p>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat">
+      <p>Posts with >100 likes</p>
+      <p class="val" id="high_likes_count"></p>
+    </div>
+    <div class="stat">
+      <p>Posts with >100 comments</p>
+      <p class="val" id="high_comments_count"></p>
+    </div>
+  </div>
+  <h2>Show frequency of confessions containing this phrase:</h2>
+  <form id="searchform">
+    <input type="text" id="query">
+    <button type="submit" id="search">Search</button>
+  </form>
+  <div id="chart"></div>
+  <h2>Mutually occuring words</h2>
+  <img src="" id="wordcloud">
+  <script>
+    // let colorFill = ['#FFADAD', '#FFD6A5', '#FDFFB6', '#CAFFBF', '#9BF6FF', '#A0C4FF', '#BDB2FF', '#FFC6FF'];
+    // let colorStroke = ['#FF8383', '#FFC379', '#FBFF8C', '#A3FF90', '#70F3FF', '#75AAFF', '#9987FF', '#FF9AFF', '#FFFFC7'];
+    // let colorIndex = Math.floor(Math.random() * colorFill.length);
+    var $ = document.querySelector.bind(document);
+    fetch('http://localhost:8000/api/stats').then(res => res.json())
+      .then(data => {
+        $('#latest').innerHTML = `<a href="https://www.facebook.com/nuswhispers/posts/${data.latest_fbpid}" target="_blank">#${data.latest}</a>`;
+        $('#total_approved').innerHTML = data.total_approved;
+        $('#days').innerHTML = data.days;
+        $('#most_liked').innerHTML = `<a href="https://www.facebook.com/nuswhispers/posts/${data.most_liked_fbpid}" target="_blank">#${data.most_liked}</a>`;
+        $('#most_commented').innerHTML = `<a href="https://www.facebook.com/nuswhispers/posts/${data.most_commented_fbpid}" target="_blank">#${data.most_commented}</a>`;
+        $('#high_likes_count').innerHTML = data.high_likes_count;
+        $('#high_comments_count').innerHTML = data.high_comments_count;
+      });
+    let opts = {
+      title: "No of approved confessions per week",
+      id: "chart1",
+      class: "my-chart",
+      width: window.innerWidth - 30,
+      height: window.innerHeight / 2,
+      series: [
+        {},
+        {
+          // in-legend display
+          label: "Confessions count",
+          size: 500,
+
+          // series style
+          stroke: '#1c5878',
+          width: 1,
+          fill: '#2e8fc2',
+        }
+      ],
+    };
+    let graph;
+    const reloadGraph = async (query) => {
+      let data = await fetch('http://localhost:8000/api/frequency?q=' + query).then(res => res.json());
+      data = [data.x, data.y];
+      // console.log(data);
+      if (!graph) {
+        graph = new uPlot(opts, data, document.getElementById('chart'));
+      } else {
+        graph.setData(data);
+      }
+    }
+    // reloadGraph(data);
+    document.getElementById('searchform').onsubmit = (e) => {
+      e.preventDefault();
+      let query = document.getElementById('query').value;
+      try {
+        reloadGraph(query);
+        document.querySelector('#wordcloud').src = 'http://localhost:8000/api/wordcloud?q=' + query;
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    reloadGraph('');
+  </script>
+</body>
+
+</html>
