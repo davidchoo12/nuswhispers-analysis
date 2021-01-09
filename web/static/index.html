@@ -49,8 +49,8 @@
       <p class="val" id="total_approved"></p>
     </div>
     <div class="stat">
-      <p>Days since #1:</p>
-      <p class="val" id="days"></p>
+      <p>Years since #1:</p>
+      <p class="val" id="years"></p>
     </div>
     <div class="stat">
       <p>Most liked post:</p>
@@ -77,8 +77,17 @@
     <button type="submit" id="search">Search</button>
   </form>
   <div id="chart"></div>
-  <h2>Mutually occuring words</h2>
-  <img src="" id="wordcloud">
+  <h2>Filtered confessions also contains these words</h2>
+  <img src="" id="wordcloud" alt="Image not shown due to too many confessions, search narrower">
+  <h2>Average duration (hours) between submission and approved, grouped by the hour when it is submitted</h2>
+  <span>Higher means longer time to approve</span>
+  <div id="duration_to_approve_chart"></div>
+  <h2>Average likes on confessions, grouped by the hour when it is approved</h2>
+  <span>Higher means more likes</span>
+  <div id="avg_likes_per_hour_chart"></div>
+  <h2>Average comments on confessions, grouped by the hour when it is approved</h2>
+  <span>Higher means more comments</span>
+  <div id="avg_comments_per_hour_chart"></div>
   <script>
     // let colorFill = ['#FFADAD', '#FFD6A5', '#FDFFB6', '#CAFFBF', '#9BF6FF', '#A0C4FF', '#BDB2FF', '#FFC6FF'];
     // let colorStroke = ['#FF8383', '#FFC379', '#FBFF8C', '#A3FF90', '#70F3FF', '#75AAFF', '#9987FF', '#FF9AFF', '#FFFFC7'];
@@ -88,11 +97,68 @@
       .then(data => {
         $('#latest').innerHTML = `<a href="https://www.facebook.com/nuswhispers/posts/${data.latest_fbpid}" target="_blank">#${data.latest}</a>`;
         $('#total_approved').innerHTML = data.total_approved;
-        $('#days').innerHTML = data.days;
+        $('#years').innerHTML = data.years.toFixed(2);
         $('#most_liked').innerHTML = `<a href="https://www.facebook.com/nuswhispers/posts/${data.most_liked_fbpid}" target="_blank">#${data.most_liked}</a>`;
         $('#most_commented').innerHTML = `<a href="https://www.facebook.com/nuswhispers/posts/${data.most_commented_fbpid}" target="_blank">#${data.most_commented}</a>`;
         $('#high_likes_count').innerHTML = data.high_likes_count;
         $('#high_comments_count').innerHTML = data.high_comments_count;
+        new uPlot({
+          // title: "Avg duration between created_at and status_updated_at, grp by hour",
+          width: window.innerWidth - 30,
+          height: window.innerHeight / 2,
+          scales: {
+            x: {
+              time: false,
+            }
+          },
+          series: [
+            {},
+            {
+              // in-legend display
+              label: "Duration in hours",
+              // series style
+              stroke: '#1c5878',
+              width: 1,
+              fill: '#2e8fc2',
+            }
+          ],
+        }, [data.duration_to_approve_x, data.duration_to_approve_y], $('#duration_to_approve_chart'));
+        new uPlot({
+          width: window.innerWidth - 30,
+          height: window.innerHeight / 2,
+          scales: {
+            x: {
+              time: false,
+            }
+          },
+          series: [
+            {},
+            {
+              label: "Likes",
+              stroke: '#1c5878',
+              width: 1,
+              fill: '#2e8fc2',
+            }
+          ],
+        }, [data.avg_likes_per_hour_x, data.avg_likes_per_hour_y], $('#avg_likes_per_hour_chart'));
+        new uPlot({
+          width: window.innerWidth - 30,
+          height: window.innerHeight / 2,
+          scales: {
+            x: {
+              time: false,
+            }
+          },
+          series: [
+            {},
+            {
+              label: "Comments",
+              stroke: '#1c5878',
+              width: 1,
+              fill: '#2e8fc2',
+            }
+          ],
+        }, [data.avg_comments_per_hour_x, data.avg_comments_per_hour_y], $('#avg_comments_per_hour_chart'));
       });
     let opts = {
       title: "No of approved confessions per week",
