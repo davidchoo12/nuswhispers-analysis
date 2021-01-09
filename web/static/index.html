@@ -84,7 +84,7 @@
     // let colorStroke = ['#FF8383', '#FFC379', '#FBFF8C', '#A3FF90', '#70F3FF', '#75AAFF', '#9987FF', '#FF9AFF', '#FFFFC7'];
     // let colorIndex = Math.floor(Math.random() * colorFill.length);
     var $ = document.querySelector.bind(document);
-    fetch('http://localhost:8000/api/stats').then(res => res.json())
+    fetch('/api/stats').then(res => res.json())
       .then(data => {
         $('#latest').innerHTML = `<a href="https://www.facebook.com/nuswhispers/posts/${data.latest_fbpid}" target="_blank">#${data.latest}</a>`;
         $('#total_approved').innerHTML = data.total_approved;
@@ -116,7 +116,7 @@
     };
     let graph;
     const reloadGraph = async (query) => {
-      let data = await fetch('http://localhost:8000/api/frequency?q=' + query).then(res => res.json());
+      let data = await fetch('/api/frequency?q=' + query).then(res => res.json());
       data = [data.x, data.y];
       // console.log(data);
       if (!graph) {
@@ -131,7 +131,7 @@
       let query = document.getElementById('query').value;
       try {
         reloadGraph(query);
-        document.querySelector('#wordcloud').src = 'http://localhost:8000/api/wordcloud?q=' + query;
+        document.querySelector('#wordcloud').src = '/api/wordcloud?q=' + query;
       } catch (e) {
         console.error(e);
       }
