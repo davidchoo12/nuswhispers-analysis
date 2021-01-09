@@ -15,14 +15,15 @@ jobs:
           python-version: '3.x'
       - run: python collector.py
       - name: Set current date as env variable
-        run: echo "now=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+        id: date
+        run: echo "name=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
+          tag_name: ${{ github.ref }}-${{ steps.date.outputs.date }}
       - name: Upload Release Asset - data.json
         uses: actions/upload-release-asset@v1
         env:
@@ -41,4 +42,3 @@ jobs:
           asset_path: ./data.csv
           asset_name: data.csv
           asset_content_type: text/csv
-
