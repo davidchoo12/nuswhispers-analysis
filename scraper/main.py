@@ -47,7 +47,7 @@ print('latest_confession_id', latest_confession_id)
 
 enable_logging(logging.DEBUG)
 
-_scraper.login(email=os.environ['FB_EMAIL'], password=os.environ['FB_PASS'])
+# _scraper.login(email=os.environ['FB_EMAIL'], password=os.environ['FB_PASS'])
 q = queue.Queue()
 running = True
 latest_seqno = 0
