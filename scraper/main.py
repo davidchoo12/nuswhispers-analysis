@@ -54,7 +54,7 @@ latest_seqno = 0
 def producer(q):
   global running
   i = 0
-  for page in get_posts('nuswhispers', pages=2, timeout=20):
+  for page in get_posts('nuswhispers', pages=100000, timeout=20):
     if running:
       for elem in page:
         # print('  producing', i)
