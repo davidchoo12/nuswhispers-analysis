@@ -45,7 +45,7 @@ csv_writer.writerow(cols)
 latest_confession_id = 92879 # last is 92865
 print('latest_confession_id', latest_confession_id)
 
-# enable_logging(logging.DEBUG)
+enable_logging(logging.DEBUG)
 
 _scraper.login(email=os.environ['FB_EMAIL'], password=os.environ['FB_PASS'])
 q = queue.Queue()
@@ -54,7 +54,7 @@ latest_seqno = 0
 def producer(q):
   global running
   i = 0
-  for page in get_posts('nuswhispers', pages=100000, timeout=20):
+  for page in get_posts('nuswhispers', pages=5, timeout=20):
     if running:
       for elem in page:
         # print('  producing', i)
@@ -90,7 +90,7 @@ def consumer(q, threadno):
         match = re.match(r'^#(\d{5}\d?):', p['text'])
       if not match:
         print('no match, post_id=', 'https://www.facebook.com/nuswhispers/posts/'+p['post_id'])
-        print(p['text'])
+        print(p['source'].html)
         continue
       # print(threadno, 'consuming', i, match.group(1))
       # if int(match.group(1)) == latest_confession_id:
