@@ -63,7 +63,7 @@ latest_seqno = 0
 def producer(q):
   global running
   i = 0
-  for page, shares in get_posts('nuswhispers', pages=2, timeout=20):
+  for page, shares in get_posts('nuswhispers', pages=100000, timeout=20):
     if running:
       for elem, share in zip(page, shares):
         # print('  producing', i)
