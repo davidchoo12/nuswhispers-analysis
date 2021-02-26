@@ -38,7 +38,7 @@ if os.path.isfile('data.csv'):
 csv_writer = csv.writer(buf, delimiter=',')
 
 # cols = ['confession_id', 'content', 'images', 'status', 'views', 'created_at', 'updated_at', 'status_updated_at', 'fb_post_id', 'fb_like_count', 'fb_comment_count', 'fingerprint', 'status_updated_at_timestamp', 'categories', 'scraped_at']
-cols = ['text', 'image', 'post_id', 'likes', 'comments', 'shares', 'post_time', 'scraped_at']
+cols = ['no', 'text', 'image', 'post_id', 'likes', 'comments', 'shares', 'post_time', 'scraped_at']
 # if csv_file.tell() == 0:
 csv_writer.writerow(cols)
 
@@ -54,11 +54,11 @@ latest_seqno = 0
 def producer(q):
   global running
   i = 0
-  for page in get_posts('nuswhispers', pages=5, timeout=20):
+  for page, shares in get_posts('nuswhispers', pages=2, timeout=20):
     if running:
-      for elem in page:
+      for elem, share in zip(page, shares):
         # print('  producing', i)
-        q.put((i, elem))
+        q.put((i, elem, share))
         print('  produced', i)
         i += 1
     else:
@@ -75,7 +75,7 @@ def consumer(q, threadno):
   # print(threadno, 'consumer')
   try:
     while task := q.get(timeout=2):
-      i, elem = task
+      i, elem, share = task
       if not running:
         print('stopping', threadno, 'at', i)
         break
@@ -99,9 +99,10 @@ def consumer(q, threadno):
       #   latest_seqno = i
       #   break
       row = [i]
-      keys = ['text','image','post_id','likes','comments','shares']
+      keys = ['text','image','post_id','likes','comments']
       row.extend([p.get(k) for k in keys])
-      row.append(p['time'].isoformat())
+      row.append(share)
+      row.append(p['time'].astimezone().strftime('%Y-%m-%dT%H:%M:%S%z'))
       # keys = ['like','love','haha','wow','support','sorry','anger']
       # row.extend([p['reactions'].get(k, 0) for k in keys])
       row.append(datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'))
