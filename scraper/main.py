@@ -6,11 +6,20 @@ import csv
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from facebook_scraper import _scraper, get_posts, enable_logging, extractors
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 import shutil
 import queue
 import threading
 import os
+
+log_format = '%(relativeCreated)8d %(threadName)3s %(message)s'
+logging.basicConfig(level=logging.DEBUG, format=log_format)
+file_handler = logging.FileHandler('logs.txt', 'w')
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(logging.Formatter(log_format))
+logger = logging.getLogger()
+logger.addHandler(file_handler)
+threading.current_thread().name = 'M'
 
 # enable_logging(logging.DEBUG)
 # print(dir(_scraper))
@@ -43,7 +52,7 @@ cols = ['no', 'text', 'image', 'post_id', 'likes', 'comments', 'shares', 'post_t
 csv_writer.writerow(cols)
 
 latest_confession_id = 92879 # last is 92865
-print('latest_confession_id', latest_confession_id)
+logger.info('latest_confession_id %d', latest_confession_id)
 
 enable_logging(logging.DEBUG)
 
@@ -59,11 +68,11 @@ def producer(q):
       for elem, share in zip(page, shares):
         # print('  producing', i)
         q.put((i, elem, share))
-        print('  produced', i)
+        logger.info('  produced %d', i)
         i += 1
     else:
       break
-  print('producing False')
+  logger.info('producing False')
   q.put(False)
   # print(posts)
   # return posts
@@ -77,22 +86,21 @@ def consumer(q, threadno):
     while task := q.get(timeout=2):
       i, elem, share = task
       if not running:
-        print('stopping', threadno, 'at', i)
+        logger.info('stopping %d at %d', threadno, i)
         break
-      # print(threadno, 'extracting', i)
+      logger.info('%d extracting %d', threadno, i)
       p = extractors.extract_post(elem, options={'account': 'nuswhispers', 'reactions': False, 'youtube_dl': False}, request_fn=_scraper.get)
-      print(threadno, 'extracted', i)
-      extracted.append(i)
+      logger.info('%d extracted %d', threadno, i)
       # print('consuming', i)
       match = re.match(r'^#(\d{5}\d?):', p['text'][-52:])
       if not match:
         # print('first no match', p['text'])
         match = re.match(r'^#(\d{5}\d?):', p['text'])
       if not match:
-        print('no match, post_id=', 'https://www.facebook.com/nuswhispers/posts/'+p['post_id'])
-        print(p['source'].html)
+        logger.info('no match, post_id=https://www.facebook.com/nuswhispers/posts/%s', p['post_id'])
+        logger.info(p['source'].html)
         continue
-      # print(threadno, 'consuming', i, match.group(1))
+      logger.info('%d consuming %d %s', threadno, i, match.group(1))
       # if int(match.group(1)) == latest_confession_id:
       #   print('found latest', i, 'stopping...')
       #   running = False
@@ -102,28 +110,29 @@ def consumer(q, threadno):
       keys = ['text','image','post_id','likes','comments']
       row.extend([p.get(k) for k in keys])
       row.append(share)
-      row.append(p['time'].astimezone().strftime('%Y-%m-%dT%H:%M:%S%z'))
+      logger.info('time %s', p.get('time'))
+      # logger.info('time iso %s', p.get('time').astimezone().astimezone(timezone.utc).isoformat(timespec='seconds'))
+      row.append(p.get('time').astimezone().astimezone(timezone.utc).isoformat(timespec='seconds'))
       # keys = ['like','love','haha','wow','support','sorry','anger']
       # row.extend([p['reactions'].get(k, 0) for k in keys])
-      row.append(datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'))
+      row.append(datetime.utcnow().astimezone(timezone.utc).isoformat(timespec='seconds'))
       rowsq.put(row)
-      # print('rowsq size', rowsq.qsize())
+      extracted.append(i)
+      logger.info('rowsq size %d', rowsq.qsize())
       # csv_writer.writerow(row)
   except queue.Empty as e:
-    print(threadno, 'queue empty timed out')
+    logger.info('%d queue empty timed out', threadno)
   finally:
-    print(threadno, 'stopped, extracted', extracted)
+    logger.info('%d stopped, extracted %s', threadno, str(extracted))
 
-with ThreadPoolExecutor(max_workers=5) as executor:
+with ThreadPoolExecutor(max_workers=5, thread_name_prefix='T') as executor:
   executor.submit(producer, q)
-  executor.submit(consumer, q, 0)
-  executor.submit(consumer, q, 1)
-  executor.submit(consumer, q, 2)
-  executor.submit(consumer, q, 3)
+  for i in range(4):
+    executor.submit(consumer, q, i)
 
-print('outside rowsq size', rowsq.qsize())
+logger.info('outside rowsq size %d', rowsq.qsize())
 rows = list(rowsq.queue)
-print('rows len', len(rows))
+logger.info('rows len %d', len(rows))
 rows.sort(key=lambda e: e[0])
 for row in rows:
   # print(row[0])
@@ -181,6 +190,6 @@ with open('data.csv', 'w') as fd:
   buf.seek(0)
   shutil.copyfileobj(buf, fd)
 
-print('time elapsed', str(datetime.now() - start_time))
+logger.info('time elapsed %s', str(datetime.now() - start_time))
 
 #12345: https://www.nuswhispers.com/confession/12345

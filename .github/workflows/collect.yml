@@ -53,3 +53,12 @@ jobs:
           asset_path: ./scraper/data.csv
           asset_name: data.csv
           asset_content_type: text/csv
+      - name: Upload Release Asset - logs.txt
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./scraper/logs.txt
+          asset_name: logs.txt
+          asset_content_type: text/plain
