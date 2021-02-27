@@ -83,7 +83,7 @@ def consumer(q, threadno):
   extracted = []
   # print(threadno, 'consumer')
   try:
-    while task := q.get(timeout=2):
+    while task := q.get(timeout=10):
       i, elem, share = task
       if not running:
         logger.info('stopping %d at %d', threadno, i)
@@ -125,9 +125,9 @@ def consumer(q, threadno):
   finally:
     logger.info('%d stopped, extracted %s', threadno, str(extracted))
 
-with ThreadPoolExecutor(max_workers=5, thread_name_prefix='T') as executor:
+with ThreadPoolExecutor(thread_name_prefix='T') as executor:
   executor.submit(producer, q)
-  for i in range(4):
+  for i in range(executor._max_workers - 1):
     executor.submit(consumer, q, i)
 
 logger.info('outside rowsq size %d', rowsq.qsize())
