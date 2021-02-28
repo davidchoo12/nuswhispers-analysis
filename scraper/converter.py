@@ -2,7 +2,7 @@ import io
 import csv
 import logging
 from concurrent.futures import ThreadPoolExecutor
-from queue import Queue
+from queue import Queue, Empty
 from requests_html import HTMLSession, Element, PyQuery, HTML
 import threading
 from datetime import datetime, timezone
@@ -63,50 +63,55 @@ shares_re = re.compile(r',share_count:(\d+)')
 post_time_re = re.compile(r'time[^\d]+?(\d{10})[^\d]')
 logger.info('my ip %s', ses.get('https://httpbin.org/ip').json()['origin'])
 def scrape(q, ses):
-    while task := q.get(timeout=2):
-        i, pid = task
-        pid = pid.rstrip()
-        url = base_url % pid
-        # logger.info('requesting %s', url)
-        time.sleep(1) # to avoid rate limit
-        res = ses.get(url, allow_redirects=False)
-        logger.info('is redirect? %s', res.is_redirect)
-        if res.is_redirect:
-            logger.info('response redirect to %s', res.headers['location'])
-            break
-        logger.info('requested %s', url)
-        # logger.info(res.html.html)
-        # extract text
-        elem = res.html.find('.story_body_container > div', first=True)
-        # logger.info(elem)
-        text = ''
-        if elem:
-            text = elem.text
-        else:
-            code = res.html.find('.hidden_elem code')[0].html
-            inner_html = code[code.find('<!--')+4:code.rfind('-->')].replace('</span><wbr /><span class="word_break"></span>', '')
-            story_div = HTML(html=inner_html)
-            text = story_div.find('.story_body_container > div, .msg > div', first=True).text
+    try:
+        while task := q.get(timeout=2):
+            i, pid = task
+            pid = pid.rstrip()
+            url = base_url % pid
+            # logger.info('requesting %s', url)
+            time.sleep(1) # to avoid rate limit
+            res = ses.get(url, allow_redirects=False)
+            logger.info('is redirect? %s', res.is_redirect)
+            if res.is_redirect:
+                logger.info('response redirect to %s', res.headers['location'])
+                break
+            logger.info('requested %s', url)
+            # logger.info(res.html.html)
+            # extract text
+            elem = res.html.find('.story_body_container > div', first=True)
+            # logger.info(elem)
+            text = ''
+            if elem:
+                text = elem.text
+            else:
+                code = res.html.find('.hidden_elem code')[0].html
+                inner_html = code[code.find('<!--')+4:code.rfind('-->')].replace('</span><wbr /><span class="word_break"></span>', '')
+                story_div = HTML(html=inner_html)
+                text = story_div.find('.story_body_container > div, .msg > div', first=True).text
 
-        # if it's a post with image, the nuswhispers anchor tag contains line breaks
-        text = broken_url.sub(lambda match: f'https://www.nuswhispers.com/confession/{match.group(1)}', text)
-        # logger.info(text)
-        # extract image
-        image = res.html.find('[data-sigil="photo-image"]', first=True)
-        if image:
-            image = image.attrs['src']
-        # logger.info('image %s', str(image))
-        # extract likes
-        likes = int(likes_re.search(res.html.html).group(1))
-        comments = int(comments_re.search(res.html.html).group(1))
-        shares = int(shares_re.search(res.html.html).group(1))
-        post_time_int = int(post_time_re.search(res.html.html).group(1))
-        post_time = datetime.fromtimestamp(post_time_int).astimezone().astimezone(timezone.utc).isoformat(timespec='seconds')
-        # logger.info('post_time %s', post_time)
-        scraped_at = datetime.utcnow().astimezone(timezone.utc).isoformat(timespec='seconds')
-        row = [text, image, pid, likes, comments, shares, post_time, scraped_at]
-        rowsq.put((i, row))
-        logger.info('rowsq size %d', rowsq.qsize())
+            # if it's a post with image, the nuswhispers anchor tag contains line breaks
+            text = broken_url.sub(lambda match: f'https://www.nuswhispers.com/confession/{match.group(1)}', text)
+            # logger.info(text)
+            # extract image
+            image = res.html.find('[data-sigil="photo-image"]', first=True)
+            if image:
+                image = image.attrs['src']
+            # logger.info('image %s', str(image))
+            # extract likes
+            likes = int(likes_re.search(res.html.html).group(1))
+            comments = int(comments_re.search(res.html.html).group(1))
+            shares = int(shares_re.search(res.html.html).group(1))
+            post_time_int = int(post_time_re.search(res.html.html).group(1))
+            post_time = datetime.fromtimestamp(post_time_int).astimezone().astimezone(timezone.utc).isoformat(timespec='seconds')
+            # logger.info('post_time %s', post_time)
+            scraped_at = datetime.utcnow().astimezone(timezone.utc).isoformat(timespec='seconds')
+            row = [text, image, pid, likes, comments, shares, post_time, scraped_at]
+            rowsq.put((i, row))
+            logger.info('rowsq size %d', rowsq.qsize())
+    except Empty as e:
+        logger.info('%d queue empty timed out', threadno)
+    except:
+        logger.error('exception ', exc_info=1)
 
 
 with ThreadPoolExecutor(max_workers=1, thread_name_prefix='T') as executor:
