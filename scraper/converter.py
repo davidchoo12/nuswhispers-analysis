@@ -119,7 +119,7 @@ for row in rows:
     csv_writer.writerow(row)
 
 # write buffer over csv file
-with open('data-converted2.csv', 'w') as fd:
+with open('data-converted.csv', 'w') as fd:
     buf.seek(0)
     shutil.copyfileobj(buf, fd)
 
