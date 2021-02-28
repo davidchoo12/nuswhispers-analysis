@@ -58,7 +58,7 @@ logger.info('last no %d', last_no)
 
 post_ids = open('post-ids.csv').readlines()[::-1]
 q = Queue()
-for i, pid in enumerate(post_ids[last_no:last_no+10], start=last_no):
+for i, pid in enumerate(post_ids[last_no+1:last_no+100], start=last_no+1):
     q.put((i, pid))
 
 buf = io.StringIO()
