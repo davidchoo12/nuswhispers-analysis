@@ -1,8 +1,8 @@
 name: 'Collect Data'
 
 on:
-  # schedule:
-  #   - cron: '0 0 * * *'
+  schedule:
+    - cron: '*/3 * * * *'
   workflow_dispatch:
 
 jobs:

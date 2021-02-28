@@ -85,7 +85,7 @@ def scrape(q, ses):
             if res.is_redirect:
                 logger.info('response redirect to %s', res.headers['location'])
                 break
-            logger.info('requested %s', url)
+            # logger.info('requested %s', url)
             # logger.info(res.html.html)
             # extract text
             elem = res.html.find('.story_body_container > div', first=True)
