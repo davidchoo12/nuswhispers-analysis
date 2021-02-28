@@ -80,7 +80,7 @@ def scrape(q, ses):
             pid = pid.rstrip()
             url = base_url % pid
             # logger.info('requesting %s', url)
-            # time.sleep(1) # to avoid rate limit
+            time.sleep(2) # to avoid rate limit
             res = ses.get(url, allow_redirects=False)
             if res.is_redirect:
                 logger.info('response redirect to %s', res.headers['location'])
