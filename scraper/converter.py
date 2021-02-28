@@ -83,12 +83,14 @@ def scrape(q, ses):
             text = ''
             if elem:
                 text = elem.text
-            else:
-                code = res.html.find('.hidden_elem code')[0].html
+            elif elem := res.html.find('.hidden_elem code'):
+                code = elem[0].html
                 inner_html = code[code.find('<!--')+4:code.rfind('-->')].replace('</span><wbr /><span class="word_break"></span>', '')
                 story_div = HTML(html=inner_html)
                 text = story_div.find('.story_body_container > div, .msg > div', first=True).text
-
+            else:
+                logger.info('content not found for post id %s, skipping', pid)
+                continue
             # if it's a post with image, the nuswhispers anchor tag contains line breaks
             text = broken_url.sub(lambda match: f'https://www.nuswhispers.com/confession/{match.group(1)}', text)
             # logger.info(text)
@@ -105,8 +107,8 @@ def scrape(q, ses):
             post_time = datetime.fromtimestamp(post_time_int).astimezone().astimezone(timezone.utc).isoformat(timespec='seconds')
             # logger.info('post_time %s', post_time)
             scraped_at = datetime.utcnow().astimezone(timezone.utc).isoformat(timespec='seconds')
-            row = [text, image, pid, likes, comments, shares, post_time, scraped_at]
-            rowsq.put((i, row))
+            row = [i, text, image, pid, likes, comments, shares, post_time, scraped_at]
+            rowsq.put(row)
             logger.info('rowsq size %d', rowsq.qsize())
     except Empty as e:
         logger.info('%d queue empty timed out', threadno)
