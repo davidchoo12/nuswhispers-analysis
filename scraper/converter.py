@@ -71,7 +71,6 @@ def scrape(q, ses):
             # logger.info('requesting %s', url)
             time.sleep(1) # to avoid rate limit
             res = ses.get(url, allow_redirects=False)
-            logger.info('is redirect? %s', res.is_redirect)
             if res.is_redirect:
                 logger.info('response redirect to %s', res.headers['location'])
                 break
@@ -79,7 +78,6 @@ def scrape(q, ses):
             # logger.info(res.html.html)
             # extract text
             elem = res.html.find('.story_body_container > div', first=True)
-            # logger.info(elem)
             text = ''
             if elem:
                 text = elem.text
@@ -89,6 +87,7 @@ def scrape(q, ses):
                 story_div = HTML(html=inner_html)
                 text = story_div.find('.story_body_container > div, .msg > div', first=True).text
             else:
+                rowsq.put([i, 'not found', None ,pid])
                 logger.info('content not found for post id %s, skipping', pid)
                 continue
             # if it's a post with image, the nuswhispers anchor tag contains line breaks
@@ -126,7 +125,7 @@ for row in rows:
     csv_writer.writerow(row)
 
 # write buffer over csv file
-with open('data-converted.csv', 'w') as fd:
+with open('data-converted.csv', 'a') as fd:
     buf.seek(0)
     shutil.copyfileobj(buf, fd)
 
