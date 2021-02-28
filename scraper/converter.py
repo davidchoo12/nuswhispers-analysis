@@ -34,10 +34,6 @@ logger = logging.getLogger()
 logger.addHandler(file_handler)
 threading.current_thread().name = 'M'
 
-post_ids = open('post-ids.csv').readlines()[::-1]
-q = Queue()
-for i, pid in enumerate(post_ids[:1000]):
-    q.put((i, pid))
 ses = HTMLSession()
 base_url = 'https://m.facebook.com/story.php?story_fbid=%s&id=695707917166339'
 user_agent = (
@@ -50,10 +46,25 @@ default_headers = {
 }
 ses.headers.update(default_headers)
 
+prev_data = ses.get('https://github.com/davidchoo12/nuswhispers-analysis/releases/latest/download/data-converted.csv').text
+with open('data-converted.csv', 'w') as fd:
+    fd.write(prev_data)
+last_no = 0
+with open('data-converted.csv', 'r') as fd:
+    csv_reader = csv.reader(fd)
+    *_, last_row = csv_reader
+    last_no = int(last_row[0])
+logger.info('last no %d', last_no)
+
+post_ids = open('post-ids.csv').readlines()[::-1]
+q = Queue()
+for i, pid in enumerate(post_ids[last_no:last_no+10], start=last_no):
+    q.put((i, pid))
+
 buf = io.StringIO()
 csv_writer = csv.writer(buf, delimiter=',')
-cols = ['no', 'text', 'image', 'post_id', 'likes', 'comments', 'shares', 'post_time', 'scraped_at']
-csv_writer.writerow(cols)
+# cols = ['no', 'text', 'image', 'post_id', 'likes', 'comments', 'shares', 'post_time', 'scraped_at']
+# csv_writer.writerow(cols)
 
 rowsq = Queue()
 broken_url = re.compile(r'http[s]://\swww\.nuswhispers\.\scom/confession/\s(\d+)')
@@ -69,7 +80,7 @@ def scrape(q, ses):
             pid = pid.rstrip()
             url = base_url % pid
             # logger.info('requesting %s', url)
-            time.sleep(1) # to avoid rate limit
+            # time.sleep(1) # to avoid rate limit
             res = ses.get(url, allow_redirects=False)
             if res.is_redirect:
                 logger.info('response redirect to %s', res.headers['location'])
