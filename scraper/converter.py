@@ -126,14 +126,17 @@ def scrape(q, ses):
         logger.error('exception ', exc_info=1)
 
 
-with ThreadPoolExecutor(max_workers=1, thread_name_prefix='T') as executor:
+with ThreadPoolExecutor(max_workers=2, thread_name_prefix='T') as executor:
     for i in range(executor._max_workers):
         executor.submit(scrape, q, ses)
 
 rows = list(rowsq.queue)
 rows.sort(key=lambda e: e[0])
-for row in rows:
-    csv_writer.writerow(row)
+for i, row in enumerate(rows, start=1):
+    if row[0] == last_no+i:
+        csv_writer.writerow(row)
+    else:
+        break
 
 # write buffer over csv file
 with open('data-converted.csv', 'a') as fd:
