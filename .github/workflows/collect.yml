@@ -5,6 +5,7 @@ on:
   #   - cron: '*/20 * * * *'
   workflow_dispatch:
   repository_dispatch:
+    types: [run]
 
 jobs:
   collect:
