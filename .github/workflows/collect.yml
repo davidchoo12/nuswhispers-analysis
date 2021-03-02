@@ -4,10 +4,7 @@ on:
   # schedule:
   #   - cron: '*/20 * * * *'
   workflow_dispatch:
-  workflow_run:
-    workflows: ['Collect Data']
-    types:
-      - completed
+  repository_dispatch:
 
 jobs:
   collect:
