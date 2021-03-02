@@ -68,5 +68,6 @@ jobs:
           curl -v -X POST \
           --url https://api.github.com/repos/${{ github.repository }}/dispatches \
           -H 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+          -H 'content-type: application/json' \
           -H 'accept: application/vnd.github.v3+json' \
           -d '{"event_type":"run"}'
