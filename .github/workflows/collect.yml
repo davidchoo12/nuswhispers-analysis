@@ -65,7 +65,7 @@ jobs:
           asset_content_type: text/plain
       - name: Trigger repository_dispatch
         run: |
-          curl -X POST \
+          curl -v -X POST \
           --url https://api.github.com/repos/${{ github.repository }}/dispatches \
           -H 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
           -H 'accept: application/vnd.github.v3+json' \
