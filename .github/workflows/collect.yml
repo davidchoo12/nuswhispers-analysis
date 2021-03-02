@@ -1,11 +1,9 @@
 name: 'Collect Data'
 
 on:
-  # schedule:
-  #   - cron: '*/20 * * * *'
+  schedule:
+    - cron: '*/20 * * * *'
   workflow_dispatch:
-  repository_dispatch:
-    types: [run]
 
 jobs:
   collect:
@@ -64,11 +62,3 @@ jobs:
           asset_path: ./scraper/logs2.txt
           asset_name: logs2.txt
           asset_content_type: text/plain
-      - name: Trigger repository_dispatch
-        run: |
-          curl -v -X POST \
-          --url https://api.github.com/repos/${{ github.repository }}/dispatches \
-          -H 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
-          -H 'content-type: application/json' \
-          -H 'accept: application/vnd.github.v3+json' \
-          -d '{"event_type":"run"}'
