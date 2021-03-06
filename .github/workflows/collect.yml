@@ -18,6 +18,9 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           pip install -r requirements.txt
         working-directory: ./scraper
+      - name: Scrape post ids
+        run: python post-id-scraper.py
+        working-directory: ./scraper
       - name: Scrape!
         env:
           FB_EMAIL: ${{ secrets.fb_email }}
@@ -35,6 +38,24 @@ jobs:
         with:
           release_name: ${{ steps.date.outputs.today }}
           tag_name: ${{ github.run_number }}-1
+      - name: Upload Release Asset - post-ids.csv
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./scraper/post-ids.csv
+          asset_name: post-ids.csv
+          asset_content_type: text/csv
+      - name: Upload Release Asset - logs-post-id-scraper.txt
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./scraper/logs-post-id-scraper.txt
+          asset_name: logs-post-id-scraper.txt
+          asset_content_type: text/plain
       - name: Upload Release Asset - data.csv
         uses: actions/upload-release-asset@v1
         env:
@@ -66,6 +87,9 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           pip install -r requirements.txt
         working-directory: ./scraper
+      - name: Scrape post ids
+        run: python post-id-scraper.py
+        working-directory: ./scraper
       - name: Scrape!
         env:
           FB_EMAIL: ${{ secrets.fb_email }}
@@ -83,6 +107,24 @@ jobs:
         with:
           release_name: ${{ steps.date.outputs.today }}
           tag_name: ${{ github.run_number }}-2
+      - name: Upload Release Asset - post-ids.csv
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./scraper/post-ids.csv
+          asset_name: post-ids.csv
+          asset_content_type: text/csv
+      - name: Upload Release Asset - logs-post-id-scraper.txt
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./scraper/logs-post-id-scraper.txt
+          asset_name: logs-post-id-scraper.txt
+          asset_content_type: text/plain
       - name: Upload Release Asset - data.csv
         uses: actions/upload-release-asset@v1
         env:
@@ -114,6 +156,9 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           pip install -r requirements.txt
         working-directory: ./scraper
+      - name: Scrape post ids
+        run: python post-id-scraper.py
+        working-directory: ./scraper
       - name: Scrape!
         env:
           FB_EMAIL: ${{ secrets.fb_email }}
@@ -131,6 +176,24 @@ jobs:
         with:
           release_name: ${{ steps.date.outputs.today }}
           tag_name: ${{ github.run_number }}-3
+      - name: Upload Release Asset - post-ids.csv
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./scraper/post-ids.csv
+          asset_name: post-ids.csv
+          asset_content_type: text/csv
+      - name: Upload Release Asset - logs-post-id-scraper.txt
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./scraper/logs-post-id-scraper.txt
+          asset_name: logs-post-id-scraper.txt
+          asset_content_type: text/plain
       - name: Upload Release Asset - data.csv
         uses: actions/upload-release-asset@v1
         env:
@@ -162,6 +225,9 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           pip install -r requirements.txt
         working-directory: ./scraper
+      - name: Scrape post ids
+        run: python post-id-scraper.py
+        working-directory: ./scraper
       - name: Scrape!
         env:
           FB_EMAIL: ${{ secrets.fb_email }}
@@ -179,6 +245,24 @@ jobs:
         with:
           release_name: ${{ steps.date.outputs.today }}
           tag_name: ${{ github.run_number }}-4
+      - name: Upload Release Asset - post-ids.csv
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./scraper/post-ids.csv
+          asset_name: post-ids.csv
+          asset_content_type: text/csv
+      - name: Upload Release Asset - logs-post-id-scraper.txt
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./scraper/logs-post-id-scraper.txt
+          asset_name: logs-post-id-scraper.txt
+          asset_content_type: text/plain
       - name: Upload Release Asset - data.csv
         uses: actions/upload-release-asset@v1
         env:
@@ -210,6 +294,9 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           pip install -r requirements.txt
         working-directory: ./scraper
+      - name: Scrape post ids
+        run: python post-id-scraper.py
+        working-directory: ./scraper
       - name: Scrape!
         env:
           FB_EMAIL: ${{ secrets.fb_email }}
@@ -227,6 +314,24 @@ jobs:
         with:
           release_name: ${{ steps.date.outputs.today }}
           tag_name: ${{ github.run_number }}-5
+      - name: Upload Release Asset - post-ids.csv
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./scraper/post-ids.csv
+          asset_name: post-ids.csv
+          asset_content_type: text/csv
+      - name: Upload Release Asset - logs-post-id-scraper.txt
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./scraper/logs-post-id-scraper.txt
+          asset_name: logs-post-id-scraper.txt
+          asset_content_type: text/plain
       - name: Upload Release Asset - data.csv
         uses: actions/upload-release-asset@v1
         env:
@@ -258,6 +363,9 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           pip install -r requirements.txt
         working-directory: ./scraper
+      - name: Scrape post ids
+        run: python post-id-scraper.py
+        working-directory: ./scraper
       - name: Scrape!
         env:
           FB_EMAIL: ${{ secrets.fb_email }}
@@ -275,6 +383,24 @@ jobs:
         with:
           release_name: ${{ steps.date.outputs.today }}
           tag_name: ${{ github.run_number }}-6
+      - name: Upload Release Asset - post-ids.csv
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./scraper/post-ids.csv
+          asset_name: post-ids.csv
+          asset_content_type: text/csv
+      - name: Upload Release Asset - logs-post-id-scraper.txt
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./scraper/logs-post-id-scraper.txt
+          asset_name: logs-post-id-scraper.txt
+          asset_content_type: text/plain
       - name: Upload Release Asset - data.csv
         uses: actions/upload-release-asset@v1
         env:
@@ -306,6 +432,9 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           pip install -r requirements.txt
         working-directory: ./scraper
+      - name: Scrape post ids
+        run: python post-id-scraper.py
+        working-directory: ./scraper
       - name: Scrape!
         env:
           FB_EMAIL: ${{ secrets.fb_email }}
@@ -323,6 +452,24 @@ jobs:
         with:
           release_name: ${{ steps.date.outputs.today }}
           tag_name: ${{ github.run_number }}-7
+      - name: Upload Release Asset - post-ids.csv
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./scraper/post-ids.csv
+          asset_name: post-ids.csv
+          asset_content_type: text/csv
+      - name: Upload Release Asset - logs-post-id-scraper.txt
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./scraper/logs-post-id-scraper.txt
+          asset_name: logs-post-id-scraper.txt
+          asset_content_type: text/plain
       - name: Upload Release Asset - data.csv
         uses: actions/upload-release-asset@v1
         env:
@@ -354,6 +501,9 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           pip install -r requirements.txt
         working-directory: ./scraper
+      - name: Scrape post ids
+        run: python post-id-scraper.py
+        working-directory: ./scraper
       - name: Scrape!
         env:
           FB_EMAIL: ${{ secrets.fb_email }}
@@ -371,6 +521,24 @@ jobs:
         with:
           release_name: ${{ steps.date.outputs.today }}
           tag_name: ${{ github.run_number }}-8
+      - name: Upload Release Asset - post-ids.csv
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./scraper/post-ids.csv
+          asset_name: post-ids.csv
+          asset_content_type: text/csv
+      - name: Upload Release Asset - logs-post-id-scraper.txt
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./scraper/logs-post-id-scraper.txt
+          asset_name: logs-post-id-scraper.txt
+          asset_content_type: text/plain
       - name: Upload Release Asset - data.csv
         uses: actions/upload-release-asset@v1
         env:
@@ -402,6 +570,9 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           pip install -r requirements.txt
         working-directory: ./scraper
+      - name: Scrape post ids
+        run: python post-id-scraper.py
+        working-directory: ./scraper
       - name: Scrape!
         env:
           FB_EMAIL: ${{ secrets.fb_email }}
@@ -419,6 +590,24 @@ jobs:
         with:
           release_name: ${{ steps.date.outputs.today }}
           tag_name: ${{ github.run_number }}-9
+      - name: Upload Release Asset - post-ids.csv
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./scraper/post-ids.csv
+          asset_name: post-ids.csv
+          asset_content_type: text/csv
+      - name: Upload Release Asset - logs-post-id-scraper.txt
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./scraper/logs-post-id-scraper.txt
+          asset_name: logs-post-id-scraper.txt
+          asset_content_type: text/plain
       - name: Upload Release Asset - data.csv
         uses: actions/upload-release-asset@v1
         env:
