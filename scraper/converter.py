@@ -56,7 +56,7 @@ with open('data-converted.csv', 'r') as fd:
     last_no = int(last_row[0])
 logger.info('last no %d', last_no)
 
-post_ids = open('post-ids.csv').readlines()[::-1]
+post_ids = open('post-ids.csv').readlines()
 q = Queue()
 for i, pid in enumerate(post_ids[last_no+1:last_no+1000], start=last_no+1):
     q.put((i, pid))
