@@ -6,11 +6,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  collect1:
+  collect:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        start_index: [0,1]
+        start_index: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -33,7 +33,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: temp
+          name: data
           path: ./scraper/data-*-*.csv
       # - name: Set current date as env variable
       #   id: date
