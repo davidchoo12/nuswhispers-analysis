@@ -8,6 +8,9 @@ on:
 jobs:
   collect1:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        start_index: [0,1]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -25,39 +28,13 @@ jobs:
         env:
           FB_EMAIL: ${{ secrets.fb_email }}
           FB_PASS: ${{ secrets.fb_pass }}
-        run: python converter.py 0 100
+        run: python converter.py ${{ matrix.start_index }}
         working-directory: ./scraper
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: temp
-          path: ./scraper/data-converted-*-*.csv
-  collect2:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip setuptools wheel
-          pip install -r requirements.txt
-        working-directory: ./scraper
-      - name: Scrape post ids
-        run: python post-id-scraper.py
-        working-directory: ./scraper
-      - name: Scrape!
-        env:
-          FB_EMAIL: ${{ secrets.fb_email }}
-          FB_PASS: ${{ secrets.fb_pass }}
-        run: python converter.py 100 200
-        working-directory: ./scraper
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: temp
-          path: ./scraper/data-converted-*-*.csv
+          path: ./scraper/data-*-*.csv
       # - name: Set current date as env variable
       #   id: date
       #   run: echo ::set-output name=today::$(date +'%Y-%m-%dT%H:%M:%SZ')

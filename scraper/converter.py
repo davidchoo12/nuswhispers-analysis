@@ -56,10 +56,10 @@ ses.headers.update(default_headers)
 #     *_, last_row = csv_reader
 #     last_no = int(last_row[0])
 # logger.info('last no %d', last_no)
-
-start_index = int(sys.argv[1])
-end_index = int(sys.argv[2])
-# exit(0)
+paginate_limit = 100
+start_index = int(sys.argv[1]) * paginate_limit
+end_index = int(sys.argv[2]) if len(sys.argv)>=3 else start_index+paginate_limit
+logger.info('start_index %d, end_index %d', start_index, end_index)
 
 post_ids = open('post-ids.csv').readlines()
 q = Queue()
@@ -137,14 +137,16 @@ with ThreadPoolExecutor(max_workers=4, thread_name_prefix='T') as executor:
 
 rows = list(rowsq.queue)
 rows.sort(key=lambda e: e[0])
+last_saved_index = 0
 for i, row in enumerate(rows):
     if row[0] == start_index+i:
         csv_writer.writerow(row)
+        last_saved_index = row[0]
     else:
         break
 
 # write buffer over csv file
-with open('data-converted-%d-%d.csv' % (start_index, end_index), 'w') as fd:
+with open('data-%d-%d.csv' % (start_index, last_saved_index), 'w') as fd:
     buf.seek(0)
     shutil.copyfileobj(buf, fd)
 
