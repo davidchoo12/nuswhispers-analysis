@@ -25,55 +25,86 @@ jobs:
         env:
           FB_EMAIL: ${{ secrets.fb_email }}
           FB_PASS: ${{ secrets.fb_pass }}
-        run: python converter.py
+        run: python converter.py 0 100
         working-directory: ./scraper
-      - name: Set current date as env variable
-        id: date
-        run: echo ::set-output name=today::$(date +'%Y-%m-%dT%H:%M:%SZ')
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
         with:
-          release_name: ${{ steps.date.outputs.today }}
-          tag_name: ${{ github.run_number }}-1
-      - name: Upload Release Asset - post-ids.csv
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: temp
+          path: ./scraper/data-converted-*-*.csv
+  collect2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./scraper/post-ids.csv
-          asset_name: post-ids.csv
-          asset_content_type: text/csv
-      - name: Upload Release Asset - logs-post-id-scraper.txt
-        uses: actions/upload-release-asset@v1
+          python-version: '3.x'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install -r requirements.txt
+        working-directory: ./scraper
+      - name: Scrape post ids
+        run: python post-id-scraper.py
+        working-directory: ./scraper
+      - name: Scrape!
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FB_EMAIL: ${{ secrets.fb_email }}
+          FB_PASS: ${{ secrets.fb_pass }}
+        run: python converter.py 100 200
+        working-directory: ./scraper
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./scraper/logs-post-id-scraper.txt
-          asset_name: logs-post-id-scraper.txt
-          asset_content_type: text/plain
-      - name: Upload Release Asset - data.csv
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./scraper/data-converted.csv
-          asset_name: data-converted.csv
-          asset_content_type: text/csv
-      - name: Upload Release Asset - logs.txt
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./scraper/logs2.txt
-          asset_name: logs2.txt
-          asset_content_type: text/plain
+          name: temp
+          path: ./scraper/data-converted-*-*.csv
+      # - name: Set current date as env variable
+      #   id: date
+      #   run: echo ::set-output name=today::$(date +'%Y-%m-%dT%H:%M:%SZ')
+      # - name: Create Release
+      #   id: create_release
+      #   uses: actions/create-release@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     release_name: ${{ steps.date.outputs.today }}
+      #     tag_name: ${{ github.run_number }}-1
+      # - name: Upload Release Asset - post-ids.csv
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #     asset_path: ./scraper/post-ids.csv
+      #     asset_name: post-ids.csv
+      #     asset_content_type: text/csv
+      # - name: Upload Release Asset - logs-post-id-scraper.txt
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #     asset_path: ./scraper/logs-post-id-scraper.txt
+      #     asset_name: logs-post-id-scraper.txt
+      #     asset_content_type: text/plain
+      # - name: Upload Release Asset - data.csv
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #     asset_path: ./scraper/data-converted.csv
+      #     asset_name: data-converted.csv
+      #     asset_content_type: text/csv
+      # - name: Upload Release Asset - logs.txt
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #     asset_path: ./scraper/logs2.txt
+      #     asset_name: logs2.txt
+      #     asset_content_type: text/plain
   # collect2:
   #   needs: collect1
   #   runs-on: ubuntu-latest

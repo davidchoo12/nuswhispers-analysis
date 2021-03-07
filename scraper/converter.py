@@ -10,6 +10,7 @@ import shutil
 import itertools
 import re
 import time
+import sys
 
 # converts old data.csv scraped from nuswhispers api
 
@@ -46,19 +47,23 @@ default_headers = {
 }
 ses.headers.update(default_headers)
 
-prev_data = ses.get('https://github.com/davidchoo12/nuswhispers-analysis/releases/latest/download/data-converted.csv').text
-with open('data-converted.csv', 'w') as fd:
-    fd.write(prev_data)
-last_no = 0
-with open('data-converted.csv', 'r') as fd:
-    csv_reader = csv.reader(fd)
-    *_, last_row = csv_reader
-    last_no = int(last_row[0])
-logger.info('last no %d', last_no)
+# prev_data = ses.get('https://github.com/davidchoo12/nuswhispers-analysis/releases/latest/download/data-converted.csv').text
+# with open('data-converted.csv', 'w') as fd:
+#     fd.write(prev_data)
+# last_no = 0
+# with open('data-converted.csv', 'r') as fd:
+#     csv_reader = csv.reader(fd)
+#     *_, last_row = csv_reader
+#     last_no = int(last_row[0])
+# logger.info('last no %d', last_no)
+
+start_index = int(sys.argv[1])
+end_index = int(sys.argv[2])
+# exit(0)
 
 post_ids = open('post-ids.csv').readlines()
 q = Queue()
-for i, pid in enumerate(post_ids[last_no+1:last_no+1000], start=last_no+1):
+for i, pid in enumerate(post_ids[start_index:end_index], start=start_index):
     q.put((i, pid))
 
 buf = io.StringIO()
@@ -68,9 +73,9 @@ csv_writer = csv.writer(buf, delimiter=',')
 
 rowsq = Queue()
 broken_url = re.compile(r'http[s]://\swww\.nuswhispers\.\scom/confession/\s(\d+)')
-likes_re = re.compile(r',like_count:(\d+)')
-comments_re = re.compile(r',comment_count:(\d+)')
-shares_re = re.compile(r',share_count:(\d+)')
+# likes_re = re.compile(r',like_count:(\d+)')
+# comments_re = re.compile(r',comment_count:(\d+)')
+# shares_re = re.compile(r',share_count:(\d+)')
 post_time_re = re.compile(r'time[^\d]+?(\d{10})[^\d]')
 logger.info('my ip %s', ses.get('https://httpbin.org/ip').json()['origin'])
 def scrape(q, ses):
@@ -110,9 +115,9 @@ def scrape(q, ses):
                 image = image.attrs['src']
             # logger.info('image %s', str(image))
             # extract likes
-            likes = int(likes_re.search(res.html.html).group(1))
-            comments = int(comments_re.search(res.html.html).group(1))
-            shares = int(shares_re.search(res.html.html).group(1))
+            likes = int(re.search(r'ft_ent_identifier:%s.*?,like_count:(\d+)'%pid, res.html.html).group(1))
+            comments = int(re.search(r'ft_ent_identifier:%s.*?,comment_count:(\d+)'%pid, res.html.html).group(1))
+            shares = int(re.search(r'ft_ent_identifier:%s.*?,share_count:(\d+)'%pid, res.html.html).group(1))
             post_time_int = int(post_time_re.search(res.html.html).group(1))
             post_time = datetime.fromtimestamp(post_time_int).astimezone().astimezone(timezone.utc).isoformat(timespec='seconds')
             # logger.info('post_time %s', post_time)
@@ -132,14 +137,14 @@ with ThreadPoolExecutor(max_workers=4, thread_name_prefix='T') as executor:
 
 rows = list(rowsq.queue)
 rows.sort(key=lambda e: e[0])
-for i, row in enumerate(rows, start=1):
-    if row[0] == last_no+i:
+for i, row in enumerate(rows):
+    if row[0] == start_index+i:
         csv_writer.writerow(row)
     else:
         break
 
 # write buffer over csv file
-with open('data-converted.csv', 'a') as fd:
+with open('data-converted-%d-%d.csv' % (start_index, end_index), 'w') as fd:
     buf.seek(0)
     shutil.copyfileobj(buf, fd)
 
