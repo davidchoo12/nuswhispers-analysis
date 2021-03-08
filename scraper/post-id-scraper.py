@@ -102,7 +102,7 @@ overlapping_oldpids = old_post_ids[last_nonoverlapping_oldpid+1:]
 try:
     first_new_pid_index = next(i for i,p in enumerate(post_ids) if p > old_post_ids[-1])
 except StopIteration: # no new post ids
-    first_new_pid_index = None
+    first_new_pid_index = 0
 overlapping_pids = post_ids[:first_new_pid_index]
 # logger.debug('OP %s', overlapping_pids)
 overlapping_oldpids = set(overlapping_oldpids)
@@ -115,7 +115,8 @@ logger.info('%d removed (not found in scraped but found in old data): %s', len(r
 logger.info('%d missed (not found in old data but found in scraped): %s', len(missed_post_ids), missed_post_ids)
 # logger.debug('union %s', union)
 post_ids_to_save = old_post_ids[:last_nonoverlapping_oldpid+1] + union + post_ids[first_new_pid_index:]
-
+if post_ids_to_save == old_post_ids:
+    logger.info('post ids no change')
 # f = open('removed.txt', 'w')
 # f.write('\n'.join(str(p) for p in removed_post_ids))
 # f = open('missed.txt', 'w')
