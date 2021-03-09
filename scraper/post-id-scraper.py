@@ -52,17 +52,18 @@ ses.headers.update(default_headers)
 
 page_content_re = re.compile(r'/page_content[^"]+')
 page_content_re2 = re.compile(r'\\\\\\(/page_content.+?)\\"')
-story_ids_re = re.compile(r'/story\.php\?story_fbid=(\d+)&amp;id=695707917166339&amp;__tn__=-R')
+story_ids_re = re.compile(r'/story\.php\?story_fbid=(\d+)')
 
 old_post_ids = [int(l.rstrip()) for l in open('post-ids.csv').readlines()]
 
 res = ses.get('https://m.facebook.com/nuswhispers/posts')
-prev_post_ids = post_ids = story_ids_re.findall(res.text)
+# unique post ids, src https://stackoverflow.com/a/37163210/4858751
+curr_post_ids = post_ids = list(dict.fromkeys(story_ids_re.findall(res.text)))
 next_url = page_content_re.search(res.text).group(0)
 posts_per_loop = 200
 i = 0
 # change to while True to scrape all the way to the oldest post
-while int(prev_post_ids[-1]) > old_post_ids[-1]:
+while int(curr_post_ids[-1]) > old_post_ids[-1]:
     logger.debug('%d %d %s', i, len(post_ids), post_ids[-1])
     next_url = next_url.replace('num_to_fetch=4&', f'num_to_fetch={posts_per_loop}&')
     # logger.debug('next_url %s', next_url)
@@ -72,8 +73,8 @@ while int(prev_post_ids[-1]) > old_post_ids[-1]:
     except:
         logger.error('exception ', exc_info=1)
         break
-    prev_post_ids = story_ids_re.findall(res.text)
-    post_ids.extend(prev_post_ids)
+    curr_post_ids = list(dict.fromkeys(story_ids_re.findall(res.text)))
+    post_ids.extend(curr_post_ids)
     next_url_match = page_content_re2.search(res.text)
     if next_url_match:
         next_url = next_url_match[1].replace('\\\\', '\\').encode('utf-8').decode('unicode_escape').replace('\\/', '/')
