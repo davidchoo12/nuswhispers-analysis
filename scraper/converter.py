@@ -56,10 +56,15 @@ ses.headers.update(default_headers)
 #     *_, last_row = csv_reader
 #     last_no = int(last_row[0])
 # logger.info('last no %d', last_no)
-paginate_limit = 100
-start_index = int(sys.argv[1]) * paginate_limit
-end_index = int(sys.argv[2]) if len(sys.argv)>=3 else start_index+paginate_limit
+if len(sys.argv) == 2:
+    paginate_limit = 100
+    start_index = int(sys.argv[1]) * paginate_limit
+    end_index = start_index+paginate_limit
+elif len(sys.argv) == 3:
+    start_index = int(sys.argv[1])
+    end_index = int(sys.argv[2])
 logger.info('start_index %d, end_index %d', start_index, end_index)
+assert(start_index < end_index)
 
 post_ids = open('post-ids.csv').readlines()
 q = Queue()
