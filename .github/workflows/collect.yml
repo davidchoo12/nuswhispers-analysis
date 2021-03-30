@@ -36,9 +36,12 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: data
-          path: |
-            ./scraper/ips/*
-            ./scraper/data/data-*-*.csv
+          path: ./scraper/data/data-*-*.csv
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ips
+          path: ./scraper/ips/*
   merge:
     needs: collect
     runs-on: ubuntu-latest
