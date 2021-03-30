@@ -22,7 +22,7 @@ jobs:
           pip install -r requirements.txt
         working-directory: ./scraper
       - name: Save IP address
-        run: touch ip-${{ matrix.start_index }}-$(curl -fsSL https://httpbin.org/ip | grep -oE '[0-9].+[0-9]')
+        run: touch scraper/ips/${{ matrix.start_index }}-$(curl -fsSL https://httpbin.org/ip | grep -oE '[0-9].+[0-9]')
       - name: Scrape post ids
         run: python post-id-scraper.py
         working-directory: ./scraper
@@ -37,25 +37,34 @@ jobs:
         with:
           name: data
           path: |
-            ip*
-            ./scraper/data-*-*.csv
+            ./scraper/ips/*
+            ./scraper/data/data-*-*.csv
   merge:
     needs: collect
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
           name: data
-      - name: Concat data
+          path: ./scraper/data
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
         run: |
-          ls -lah
-          cat * > data.csv
+          python -m pip install --upgrade pip setuptools wheel
+          pip install -r requirements.txt
+        working-directory: ./scraper
+      - name: Run merger
+        run: python merger.py
+        working-directory: ./scraper
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: data-merged
-          path: data.csv
+          path: ./scraper/data/data-merged-*.csv
       # - name: Set current date as env variable
       #   id: date
       #   run: echo ::set-output name=today::$(date +'%Y-%m-%dT%H:%M:%SZ')
