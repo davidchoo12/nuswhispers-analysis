@@ -11,6 +11,7 @@ import itertools
 import re
 import time
 import sys
+from pathlib import Path
 
 # converts old data.csv scraped from nuswhispers api
 
@@ -151,6 +152,7 @@ def scrape_post_id_range(start_index, end_index):
     if len(rows) == 0:
         return -1
     # write buffer over csv file
+    Path('data').mkdir(exist_ok=True) # ensure data dir exists
     with open('data/data-%d-%d.csv' % (start_index, last_saved_index), 'w', newline='', encoding='utf-8') as fd:
         buf.seek(0)
         shutil.copyfileobj(buf, fd)
