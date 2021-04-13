@@ -165,6 +165,7 @@ if __name__ == '__main__':
     if len(sys.argv) == 1: # python converter.py
         # continue from the last data file index
         files = glob.glob('data/data-*.csv')
+        logger.info('data files %s', ','.join(files))
         start_index = 0
         if len(files) > 0:
             with open(files[-1], 'r') as fd:
