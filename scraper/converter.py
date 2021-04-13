@@ -12,6 +12,7 @@ import re
 import time
 import sys
 from pathlib import Path
+import glob
 
 # converts old data.csv scraped from nuswhispers api
 
@@ -160,11 +161,23 @@ def scrape_post_id_range(start_index, end_index):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) == 2:
-        paginate_limit = 100
+    paginate_limit = 100
+    if len(sys.argv) == 1: # python converter.py
+        # continue from the last data file index
+        files = glob.glob('data/data-*.csv')
+        start_index = 0
+        if len(files) > 0:
+            with open(files[-1], 'r') as fd:
+                csv_reader = csv.reader(fd)
+                *_, last_row = csv_reader
+                last_no = int(last_row[0])
+            logger.info('last no %d', last_no)
+            start_index = last_no+1
+        end_index = start_index+paginate_limit
+    elif len(sys.argv) == 2: # python converter.py 556
         start_index = int(sys.argv[1]) * paginate_limit
         end_index = start_index+paginate_limit
-    elif len(sys.argv) == 3:
+    elif len(sys.argv) == 3: # python converter.py 55600 55900
         start_index = int(sys.argv[1])
         end_index = int(sys.argv[2])
     logger.info('start_index %d, end_index %d', start_index, end_index)
