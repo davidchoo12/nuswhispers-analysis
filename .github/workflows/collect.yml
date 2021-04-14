@@ -12,8 +12,8 @@ jobs:
       # adapted from https://github.com/actions/download-artifact/issues/3#issuecomment-580658517
       - name: Download artifact from prev run
         run: |
-          artifact_url=$(curl -s --url https://api.github.com/repos/davidchoo12/nuswhispers-analysis/actions/workflows/3883077/runs | jq -r ".workflow_runs[0].artifacts_url")
-          echo $artifacts_url
+          artifact_url=$(curl -s --url 'https://api.github.com/repos/davidchoo12/nuswhispers-analysis/actions/workflows/3883077/runs' | jq -r ".workflow_runs[0].artifacts_url")
+          echo $artifact_url
           download_url=$(curl -s --url $artifact_url | jq -r ".artifacts[] | select(.name == \"data-merged\").archive_download_url")
           echo $download_url
           curl -L -o data-merged.zip -H 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' $download_url
