@@ -6,12 +6,29 @@ on:
   workflow_dispatch:
 
 jobs:
+  download-prev-run-artifact:
+    runs-on: ubuntu-latest
+    steps:
+      # adapted from https://github.com/actions/download-artifact/issues/3#issuecomment-580658517
+      - name: Download artifact from prev run
+        run: |
+          artifact_url=$(curl -s https://api.github.com/repos/davidchoo12/nuswhispers-analysis/actions/workflows/3883077/runs | jq -r ".workflow_runs[0].artifacts_url")
+          download_url=$(curl -s $artifact_url | jq -r ".artifacts[] | select(.name == \"data-merged\").archive_download_url")
+          curl -L -o data-merged.zip -H 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' $download_url
+          ls -lah
+          unzip data-merged.zip
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: data
+          path: ./data-*.csv
   collect:
+    needs: download-prev-run-artifact
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 1
       matrix:
-        start_index: [556, '', '', '', '']
+        start_index: ['', '', '', '', '']
     steps:
       - uses: actions/checkout@v2
       - name: Download artifact
