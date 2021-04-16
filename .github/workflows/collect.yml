@@ -95,7 +95,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: data-merged
-          path: ./scraper/data/data-merged-*.csv
+          path: ./scraper/merged/data-*.csv
       # - name: Set current date as env variable
       #   id: date
       #   run: echo ::set-output name=today::$(date +'%Y-%m-%dT%H:%M:%SZ')

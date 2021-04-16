@@ -164,7 +164,7 @@ if __name__ == '__main__':
     paginate_limit = 100
     if len(sys.argv) == 1: # python converter.py
         # continue from the last data file index
-        files = sorted(glob.glob('data/data-*.csv'))
+        files = sorted(glob.glob('data/data-[0-9]*-[0-9]*.csv'))
         logger.info('data files %s', ','.join(files))
         start_index = 0
         if len(files) > 0:

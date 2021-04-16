@@ -14,7 +14,7 @@ file_handler.setFormatter(logging.Formatter(log_format))
 logger = logging.getLogger()
 logger.addHandler(file_handler)
 
-files = glob.glob('data/*.csv')
+files = glob.glob('data/data-[0-9]*-[0-9]*.csv')
 indexes = []
 for file in files:
     try:
@@ -48,7 +48,7 @@ for start, end in indexes:
     last_saved_index = end
     prev_end = end
 
-with open('data/data-%d-%d.csv' % (indexes[0][0], last_saved_index), 'w') as fd:
+with open('merged/data-%d-%d.csv' % (indexes[0][0], last_saved_index), 'w') as fd:
     buf.seek(0)
     shutil.copyfileobj(buf, fd)
 
