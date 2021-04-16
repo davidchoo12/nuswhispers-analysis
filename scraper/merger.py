@@ -17,9 +17,12 @@ logger.addHandler(file_handler)
 files = glob.glob('data/*.csv')
 indexes = []
 for file in files:
-    start = int(file.split('-')[1])
-    end = int(file.split('-')[2].rstrip('.csv'))
-    indexes.append((start, end))
+    try:
+        start = int(file.split('-')[1])
+        end = int(file.split('-')[2].rstrip('.csv'))
+        indexes.append((start, end))
+    except ValueError: # fail to parse int, skip file
+        continue
 
 indexes.sort(key=lambda e: e[0])
 
@@ -45,7 +48,7 @@ for start, end in indexes:
     last_saved_index = end
     prev_end = end
 
-with open('data/data-merged-%d-%d.csv' % (indexes[0][0], last_saved_index), 'w') as fd:
+with open('data/data-%d-%d.csv' % (indexes[0][0], last_saved_index), 'w') as fd:
     buf.seek(0)
     shutil.copyfileobj(buf, fd)
 

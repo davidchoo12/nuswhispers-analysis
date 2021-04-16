@@ -4,6 +4,10 @@ on:
   # schedule:
   #   - cron: '*/20 * * * *'
   workflow_dispatch:
+    inputs:
+      start_index:
+        description: index to start scraping from (index is line no of post-ids.csv)
+        default: ''
 
 jobs:
   download-prev-run-artifact:
@@ -14,7 +18,7 @@ jobs:
         run: |
           download_url=$(curl -s --url 'https://api.github.com/repos/davidchoo12/nuswhispers-analysis/actions/artifacts' | jq -r "[.artifacts[] | select(.name == \"data-merged\")][0].archive_download_url")
           echo 'download url:' $download_url
-          curl -L -o data-merged.zip -H 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' $download_url
+          curl -s -L -o data-merged.zip -H 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' $download_url
           ls -lah
           unzip data-merged.zip
       - name: Upload artifact
