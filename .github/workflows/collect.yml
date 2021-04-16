@@ -75,6 +75,7 @@ jobs:
           path: ./scraper/ips/*
   merge:
     needs: collect
+    if: always()
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
