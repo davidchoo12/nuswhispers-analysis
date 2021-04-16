@@ -48,7 +48,7 @@ for start, end in indexes:
     last_saved_index = end
     prev_end = end
 
-with open('merged/data-%d-%d.csv' % (indexes[0][0], last_saved_index), 'w') as fd:
+with open('data-%d-%d.csv' % (indexes[0][0], last_saved_index), 'w') as fd:
     buf.seek(0)
     shutil.copyfileobj(buf, fd)
 
