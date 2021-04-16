@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       start_index:
-        description: index to start scraping from (index is line no of post-ids.csv)
+        description: Index to start scraping from (index is line no of post-ids.csv). Will continue scraping from previous merged artifact if left empty.
         default: ''
 
 jobs:
@@ -34,7 +34,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        start_index: ${{ fromJSON(format('[{0},'''']', github.event.inputs.start_index)) }}
+        start_index: ${{ fromJSON(format('[{0},"","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""]', github.event.inputs.start_index)) }}
     steps:
       - uses: actions/checkout@v2
       - name: Download artifact
