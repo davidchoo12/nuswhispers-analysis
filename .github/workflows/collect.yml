@@ -38,6 +38,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Download artifact
+        if: ${{ matrix.start_index == '' }}
         uses: actions/download-artifact@v2
         with:
           name: data
