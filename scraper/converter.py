@@ -163,17 +163,22 @@ def scrape_post_id_range(start_index, end_index):
 if __name__ == '__main__':
     paginate_limit = 100
     if len(sys.argv) == 1: # python converter.py
-        # continue from the last data file index
-        files = sorted(glob.glob('data/data-[0-9]*-[0-9]*.csv'))
-        logger.info('data files %s', ','.join(files))
-        start_index = 0
-        if len(files) > 0:
-            with open(files[-1], 'r') as fd:
-                csv_reader = csv.reader(fd)
-                *_, last_row = csv_reader
-                last_no = int(last_row[0])
-            logger.info('last no %d', last_no)
-            start_index = last_no+1
+        config = ses.get('https://drive.google.com/uc?id=1Dw0hD-lmGtUDRjYniHlWBcYl-jHVNu7b&export=download').text
+        try:
+            logger.info('config text %s', config)
+            start_index = int(config)
+        except ValueError:
+            # continue from the last data file index
+            files = sorted(glob.glob('data/data-[0-9]*-[0-9]*.csv'))
+            logger.info('data files %s', ','.join(files))
+            start_index = 0
+            if len(files) > 0:
+                with open(files[-1], 'r') as fd:
+                    csv_reader = csv.reader(fd)
+                    *_, last_row = csv_reader
+                    last_no = int(last_row[0])
+                logger.info('last no %d', last_no)
+                start_index = last_no+1
         end_index = start_index+paginate_limit
     elif len(sys.argv) == 2: # python converter.py 556
         start_index = int(sys.argv[1]) * paginate_limit
