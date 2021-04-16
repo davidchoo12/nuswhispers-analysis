@@ -11,6 +11,7 @@ on:
 
 jobs:
   download-prev-run-artifact:
+    if: ${{ github.event.inputs.start_index == '' }}
     runs-on: ubuntu-latest
     steps:
       # adapted from https://github.com/actions/download-artifact/issues/3#issuecomment-580658517
@@ -32,7 +33,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        start_index: ['', '', '', '', '']
+        start_index: [${{ github.event.inputs.start_index }}, '', '', '', '']
     steps:
       - uses: actions/checkout@v2
       - name: Download artifact
