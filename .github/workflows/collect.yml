@@ -34,7 +34,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        start_index: ${{ fromJSON('[github.event.inputs.start_index, ""]) }}
+        start_index: ${{ fromJSON('[github.event.inputs.start_index, ""]') }}
     steps:
       - uses: actions/checkout@v2
       - name: Download artifact
