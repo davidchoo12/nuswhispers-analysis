@@ -10,23 +10,6 @@ on:
         default: ''
 
 jobs:
-  download-prev-run-artifact:
-    if: ${{ github.event.inputs.start_index == '' }}
-    runs-on: ubuntu-latest
-    steps:
-      # adapted from https://github.com/actions/download-artifact/issues/3#issuecomment-580658517
-      - name: Download artifact from prev run
-        run: |
-          download_url=$(curl -s --url 'https://api.github.com/repos/davidchoo12/nuswhispers-analysis/actions/artifacts' | jq -r "[.artifacts[] | select(.name == \"data-merged\")][0].archive_download_url")
-          echo 'download url:' $download_url
-          curl -s -L -o data-merged.zip -H 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' $download_url
-          ls -lah
-          unzip data-merged.zip
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: data
-          path: ./data-*.csv
   collect:
     needs: download-prev-run-artifact
     if: always()
@@ -36,12 +19,16 @@ jobs:
         offset: [0, 1, 2, 3, 4, 5]
     steps:
       - uses: actions/checkout@v2
-      - name: Download artifact
-        if: ${{ matrix.offset == 0 && github.event.inputs.start_index == '' }}
-        uses: actions/download-artifact@v2
-        with:
-          name: data
-          path: ./scraper/data
+      # adapted from https://github.com/actions/download-artifact/issues/3#issuecomment-580658517
+      - name: Download artifact from prev run
+        if: ${{ github.event.inputs.start_index == '' }}
+        run: |
+          download_url=$(curl -s --url 'https://api.github.com/repos/davidchoo12/nuswhispers-analysis/actions/artifacts' | jq -r "[.artifacts[] | select(.name == \"data-merged\")][0].archive_download_url")
+          echo 'download url:' $download_url
+          curl -s -L -o data-merged.zip -H 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' $download_url
+          ls -lah
+          unzip data-merged.zip -d ./scraper/data/
+          ls -lah ./scraper/data/
         continue-on-error: true
       - uses: actions/setup-python@v2
         with:
