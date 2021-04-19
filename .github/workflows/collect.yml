@@ -32,13 +32,12 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 1
       matrix:
-        start_index: ${{ fromJSON(format('[{0},"","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""]', github.event.inputs.start_index)) }}
+        offset: [0, 1, 2, 3, 4, 5]
     steps:
       - uses: actions/checkout@v2
       - name: Download artifact
-        if: ${{ matrix.start_index == '' }}
+        if: ${{ matrix.offset == 0 && github.event.inputs.start_index == '' }}
         uses: actions/download-artifact@v2
         with:
           name: data
@@ -53,7 +52,7 @@ jobs:
           pip install -r requirements.txt
         working-directory: ./scraper
       - name: Save IP address
-        run: mkdir scraper/ips && touch scraper/ips/${{ matrix.start_index }}-$(curl -fsSL https://httpbin.org/ip | grep -oE '[0-9].+[0-9]')
+        run: mkdir scraper/ips && touch scraper/ips/${{ matrix.offset }}-$(curl -fsSL https://httpbin.org/ip | grep -oE '[0-9].+[0-9]')
       - name: Scrape post ids
         run: python post-id-scraper.py
         working-directory: ./scraper
@@ -61,7 +60,7 @@ jobs:
         env:
           FB_EMAIL: ${{ secrets.fb_email }}
           FB_PASS: ${{ secrets.fb_pass }}
-        run: python converter.py ${{ matrix.start_index }}
+        run: python converter.py -s ${{ github.event.inputs.start_index }} -p ${{ matrix.offset }}
         working-directory: ./scraper
       - name: Upload artifact
         uses: actions/upload-artifact@v2

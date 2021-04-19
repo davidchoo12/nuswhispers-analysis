@@ -13,6 +13,7 @@ import time
 import sys
 from pathlib import Path
 import glob
+import argparse
 
 # converts old data.csv scraped from nuswhispers api
 
@@ -161,8 +162,21 @@ def scrape_post_id_range(start_index, end_index):
 
 
 if __name__ == '__main__':
-    paginate_limit = 100
-    if len(sys.argv) == 1: # python converter.py
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-s', '--start_index', type=int, nargs='?',
+                        help='index to start scraping from, refer to post-ids.csv (line 1 = index 0)')
+    parser.add_argument('-e', '--end_index', type=int,
+                        help='index to stop scraping at')
+    parser.add_argument('-p', '--page', type=int, default=0,
+                        help='offset page from start_index to start from')
+    parser.add_argument('-l', '--limit', type=int, default=30,
+                        help='pagination limit')
+    args = parser.parse_args()
+    logger.info('args %s', args)
+
+    paginate_limit = args.limit
+    start_index = args.start_index
+    if start_index is None:
         # config = ses.get('https://drive.google.com/uc?id=1Dw0hD-lmGtUDRjYniHlWBcYl-jHVNu7b&export=download').text
         # try:
         #     logger.info('config text %s', config)
@@ -179,15 +193,13 @@ if __name__ == '__main__':
                 last_no = int(last_row[0])
             logger.info('last no %d', last_no)
             start_index = last_no+1
+    start_index += args.page * paginate_limit
+
+    end_index = args.end_index
+    if end_index is None:
         end_index = start_index+paginate_limit
-    elif len(sys.argv) == 2: # python converter.py 556
-        start_index = int(sys.argv[1]) * paginate_limit
-        end_index = start_index+paginate_limit
-    elif len(sys.argv) == 3: # python converter.py 55600 55900
-        start_index = int(sys.argv[1])
-        end_index = int(sys.argv[2])
+
     logger.info('start_index %d, end_index %d', start_index, end_index)
     assert(start_index < end_index)
-
     scrape_post_id_range(start_index, end_index)
     logger.info('time elapsed %s', str(datetime.now() - start_time))
