@@ -24,7 +24,7 @@ jobs:
           start_index="${{ github.event.inputs.start_index }}"
           if [ -z "$start_index" ]
           then
-            last_index=$(curl -s --url 'https://api.github.com/repos/davidchoo12/nuswhispers-analysis/actions/artifacts' | jq -r "[.artifacts[] | select(.name | contains(\"data-\"))][0].name" | sed -r "s/data-[0-9]+-([0-9]+).*/\1/g")
+            last_index=$(curl -s --url 'https://api.github.com/repos/davidchoo12/nuswhispers-analysis/actions/artifacts' | jq -r "[.artifacts[] | select(.name | contains(\"data-0-\"))][0].name" | sed -r "s/data-[0-9]+-([0-9]+).*/\1/g")
             start_index=$(( last_index + 1 ))
           fi
           echo "::set-output name=start_index::$start_index"
@@ -67,7 +67,7 @@ jobs:
       - name: Download artifact from prev run
         if: ${{ github.event.inputs.start_index == '' }}
         run: |
-          download_url=$(curl -s --url 'https://api.github.com/repos/davidchoo12/nuswhispers-analysis/actions/artifacts' | jq -r "[.artifacts[] | select(.name == \"data-merged\")][0].archive_download_url")
+          download_url=$(curl -s --url 'https://api.github.com/repos/davidchoo12/nuswhispers-analysis/actions/artifacts' | jq -r "[.artifacts[] | select(.name | contains(\"data-0-\"))][0].archive_download_url")
           echo 'download url:' $download_url
           curl -s -L -o data-merged.zip -H 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' $download_url
           ls -lah
