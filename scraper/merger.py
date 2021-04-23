@@ -15,7 +15,6 @@ logger = logging.getLogger()
 logger.addHandler(file_handler)
 
 files = glob.glob('data/data-[0-9]*-[0-9]*.csv')
-logger.info('data files %s', files)
 indexes = []
 for file in files:
     try:
@@ -26,7 +25,7 @@ for file in files:
         continue
 
 indexes.sort(key=lambda e: (e[0], -e[1]))
-
+logger.info('indexes %s', indexes)
 
 last_saved_index = 0
 buf = io.StringIO()
