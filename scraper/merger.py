@@ -31,7 +31,12 @@ last_saved_index = 0
 buf = io.StringIO()
 prev_end = indexes[0][0]-1
 for start, end in indexes:
-    if start < prev_end:
+    # nothing more to merge
+    if start == indexes[0][0] and end == indexes[-1][1]:
+        logger.info('nothing more to merge, exiting')
+        exit(1)
+    # ensure the next start is >= prev_end and >= end
+    if start < prev_end or end < start:
         continue
     # if there is a gap
     if prev_end + 1 != start:
