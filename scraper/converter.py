@@ -151,7 +151,8 @@ def scrape_post_id_range(start_index, end_index, threads=100):
         else:
             break
 
-    if len(rows) == 0:
+    if len(rows) == 0 or last_saved_index == 0:
+        logger.info('not saving data file, rows count %d, last_saved_index %d', len(rows), last_saved_index)
         return -1
     # write buffer over csv file
     Path('data').mkdir(exist_ok=True) # ensure data dir exists
