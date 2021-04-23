@@ -15,6 +15,7 @@ logger = logging.getLogger()
 logger.addHandler(file_handler)
 
 files = glob.glob('data/data-[0-9]*-[0-9]*.csv')
+logger.info('data files %s', files)
 indexes = []
 for file in files:
     try:
@@ -24,13 +25,15 @@ for file in files:
     except ValueError: # fail to parse int, skip file
         continue
 
-indexes.sort(key=lambda e: e[0])
+indexes.sort(key=lambda e: (e[0], -e[1]))
 
 
 last_saved_index = 0
 buf = io.StringIO()
 prev_end = indexes[0][0]-1
 for start, end in indexes:
+    if start < prev_end:
+        continue
     # if there is a gap
     if prev_end + 1 != start:
         logger.info('missing %d-%d, scraping to fill gap', prev_end+1, start-1)
@@ -39,6 +42,7 @@ for start, end in indexes:
         if last_saved_index + 1 != start:
             # failed to fill gap
             logger.info('failed to fill gap, stopping merge')
+            last_saved_index = prev_end
             break
         else:
             buf.write(open('data/data-%d-%d.csv' % (prev_end+1, last_saved_index)).read())
