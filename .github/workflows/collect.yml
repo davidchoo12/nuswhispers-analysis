@@ -57,6 +57,7 @@ jobs:
   fillgaps:
     needs: collect
     runs-on: ubuntu-latest
+    if: ${{ env.stop_fillgaps != 'true' }}
     strategy:
       fail-fast: true
       max-parallel: 1
@@ -78,7 +79,12 @@ jobs:
           pip install -r requirements.txt
         working-directory: ./scraper
       - name: Run merger
-        run: python merger.py
+        shell: bash {0}
+        run: |
+          python merger.py
+          [ $? -eq 1 ] && echo "stop_fillgaps=true" >> $GITHUB_ENV
+          echo $GITHUB_ENV
+          cat $GITHUB_ENV
         working-directory: ./scraper
       - name: Move merged file to data artifact
         run: mv scraper/data-*.csv scraper/data/
