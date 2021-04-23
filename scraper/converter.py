@@ -60,7 +60,7 @@ ses.headers.update(default_headers)
 #     last_no = int(last_row[0])
 # logger.info('last no %d', last_no)
 
-def scrape_post_id_range(start_index, end_index):
+def scrape_post_id_range(start_index, end_index, threads=100):
     post_ids = open('post-ids.csv').readlines()
     q = Queue()
     for i, pid in enumerate(post_ids[start_index:end_index], start=start_index):
@@ -137,7 +137,7 @@ def scrape_post_id_range(start_index, end_index):
             logger.error('exception ', exc_info=1)
 
 
-    with ThreadPoolExecutor(max_workers=100, thread_name_prefix='T') as executor:
+    with ThreadPoolExecutor(max_workers=threads, thread_name_prefix='T') as executor:
         for i in range(executor._max_workers):
             executor.submit(scrape, q, ses)
 
@@ -171,6 +171,8 @@ if __name__ == '__main__':
                         help='offset page from start_index to start from')
     parser.add_argument('-l', '--limit', type=int, default=30,
                         help='pagination limit')
+    parser.add_argument('-t', '--threads', type=int, default=100,
+                        help='no of threads to run with')
     args = parser.parse_args()
     logger.info('args %s', args)
 
@@ -201,5 +203,5 @@ if __name__ == '__main__':
 
     logger.info('start_index %d, end_index %d', start_index, end_index)
     assert(start_index < end_index)
-    scrape_post_id_range(start_index, end_index)
+    scrape_post_id_range(start_index, end_index, args.threads)
     logger.info('time elapsed %s', str(datetime.now() - start_time))
