@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        offset: [0, 1, 2, 3, 4, 5]
+        offset: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
     steps:
       - uses: actions/checkout@v2
       - name: Get start_index
@@ -42,7 +42,7 @@ jobs:
         run: python post-id-scraper.py
         working-directory: ./scraper
       - name: Scrape!
-        run: python converter.py -s ${{ steps.get-start-index.outputs.start_index }} -p ${{ matrix.offset }}
+        run: python converter.py -s ${{ steps.get-start-index.outputs.start_index }} -p ${{ matrix.offset }} -l 50
         working-directory: ./scraper
       - name: Upload artifact
         uses: actions/upload-artifact@v2
