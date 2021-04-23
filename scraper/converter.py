@@ -137,7 +137,7 @@ def scrape_post_id_range(start_index, end_index):
             logger.error('exception ', exc_info=1)
 
 
-    with ThreadPoolExecutor(max_workers=2, thread_name_prefix='T') as executor:
+    with ThreadPoolExecutor(max_workers=4, thread_name_prefix='T') as executor:
         for i in range(executor._max_workers):
             executor.submit(scrape, q, ses)
 
