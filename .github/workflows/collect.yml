@@ -42,7 +42,7 @@ jobs:
         run: python post-id-scraper.py
         working-directory: ./scraper
       - name: Scrape!
-        run: python converter.py -s ${{ steps.get-start-index.outputs.start_index }} -p ${{ matrix.offset }} -l 200 -t 150
+        run: python converter.py -s ${{ steps.get-start-index.outputs.start_index }} -p ${{ matrix.offset }} -l 1000 -t 1000
         working-directory: ./scraper
       - name: Upload artifact
         uses: actions/upload-artifact@v2
