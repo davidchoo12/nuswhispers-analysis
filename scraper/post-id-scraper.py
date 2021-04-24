@@ -52,7 +52,7 @@ ses.headers.update(default_headers)
 
 page_content_re = re.compile(r'/page_content[^"]+')
 page_content_re2 = re.compile(r'\\\\\\(/page_content.+?)\\"')
-story_ids_re = re.compile(r'/story\.php\?story_fbid=(\d+)')
+story_ids_re = re.compile(r'/story\.php\?story_fbid=(\d+)&(?:amp;)?id=695707917166339')
 
 old_post_ids = [int(l.rstrip()) for l in open('post-ids.csv').readlines()]
 
@@ -103,7 +103,7 @@ overlapping_oldpids = old_post_ids[last_nonoverlapping_oldpid+1:]
 try:
     first_new_pid_index = next(i for i,p in enumerate(post_ids) if p > old_post_ids[-1])
 except StopIteration: # no new post ids
-    first_new_pid_index = 0
+    first_new_pid_index = len(post_ids)
 overlapping_pids = post_ids[:first_new_pid_index]
 # logger.debug('OP %s', overlapping_pids)
 overlapping_oldpids = set(overlapping_oldpids)
