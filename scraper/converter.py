@@ -40,7 +40,7 @@ logger.addHandler(file_handler)
 threading.current_thread().name = 'M'
 
 ses = HTMLSession()
-ses.mount('https://', HTTPAdapter(pool_maxsize=1000))
+ses.mount('https://', HTTPAdapter(pool_maxsize=2000))
 base_url = 'https://m.facebook.com/story.php?story_fbid=%s&id=695707917166339'
 user_agent = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
