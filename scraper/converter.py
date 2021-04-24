@@ -4,6 +4,7 @@ import logging
 from concurrent.futures import ThreadPoolExecutor
 from queue import Queue, Empty
 from requests_html import HTMLSession, Element, PyQuery, HTML
+from requests.adapters import HTTPAdapter
 import threading
 from datetime import datetime, timezone
 import shutil
@@ -39,6 +40,7 @@ logger.addHandler(file_handler)
 threading.current_thread().name = 'M'
 
 ses = HTMLSession()
+ses.mount('https://', HTTPAdapter(pool_maxsize=1000))
 base_url = 'https://m.facebook.com/story.php?story_fbid=%s&id=695707917166339'
 user_agent = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
