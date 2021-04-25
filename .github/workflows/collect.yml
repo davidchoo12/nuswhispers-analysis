@@ -8,10 +8,12 @@ on:
       start_index:
         description: Index to start scraping from (index is line no of post-ids.csv). Will continue scraping from previous merged artifact if left empty.
         default: ''
+env:
+  completed_latest: false
 
 jobs:
   collect:
-    if: always()
+    if: ${{ env.completed_latest == 'false' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -54,6 +56,13 @@ jobs:
         with:
           name: ips
           path: ./scraper/ips/*
+      - name: Check if scraped until latest
+        run: |
+          last_index="$(ls ./scraper/data/data-*-*.csv | cut -d'-' -f3 | cut -d'.' -f1)"
+          total_pids="$(wc -l post-ids.csv | cut -d' ' -f1)"
+          echo "last_index $last_index, total_pids $total_pids"
+          [ $last_index -eq $total_pids ] && echo "completed_latest=true" >> $GITHUB_ENV
+          echo $GITHUB_ENV
   fillgaps:
     needs: collect
     runs-on: ubuntu-latest
@@ -130,6 +139,14 @@ jobs:
         with:
           name: ${{ steps.print-name.outputs.merged-file-name }}
           path: ./scraper/data-*.csv
+      - name: Create release if scraped until latest
+        if: ${{ env.completed_latest == 'true' }}
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.run_number }}
+          files: ${{ steps.print-name.outputs.merged-file-name }}
       # - name: Set current date as env variable
       #   id: date
       #   run: echo ::set-output name=today::$(date +'%Y-%m-%dT%H:%M:%SZ')
