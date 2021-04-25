@@ -13,7 +13,7 @@ env:
 
 jobs:
   collect:
-    if: ${{ env.completed_latest == 'false' }}
+    if: always()
     runs-on: ubuntu-latest
     strategy:
       matrix:
