@@ -8,8 +8,6 @@ on:
       start_index:
         description: Index to start scraping from (index is line no of post-ids.csv). Will continue scraping from previous merged artifact if left empty.
         default: ''
-env:
-  completed_latest: false
 
 jobs:
   collect:
@@ -44,9 +42,14 @@ jobs:
         run: python post-id-scraper.py
         working-directory: ./scraper
       - name: Scrape!
-        run: python converter.py -s ${{ steps.get-start-index.outputs.start_index }} -p ${{ matrix.offset }} -l 120 -t 300
+        id: scrape
+        run: |
+          python converter.py -s ${{ steps.get-start-index.outputs.start_index }} -p ${{ matrix.offset }} -l 120 -t 300
+          [ -e data/data-*-*.csv ]
+          echo "::set-output name=data_exists::$?" # exit code of prev test command
         working-directory: ./scraper
       - name: Upload artifact
+        if: ${{ steps.scrape.outputs.data_exists == '0' }}
         uses: actions/upload-artifact@v2
         with:
           name: data
@@ -56,13 +59,6 @@ jobs:
         with:
           name: ips
           path: ./scraper/ips/*
-      - name: Check if scraped until latest
-        run: |
-          last_index="$(ls ./scraper/data/data-*-*.csv | cut -d'-' -f3 | cut -d'.' -f1)"
-          total_pids="$(wc -l post-ids.csv | cut -d' ' -f1)"
-          echo "last_index $last_index, total_pids $total_pids"
-          [ $last_index -eq $total_pids ] && echo "completed_latest=true" >> $GITHUB_ENV
-          echo $GITHUB_ENV
   fillgaps:
     needs: collect
     runs-on: ubuntu-latest
@@ -100,6 +96,8 @@ jobs:
     needs: fillgaps
     if: always()
     runs-on: ubuntu-latest
+    env:
+      completed_latest: false
     steps:
       - uses: actions/checkout@v2
       # adapted from https://github.com/actions/download-artifact/issues/3#issuecomment-580658517
@@ -139,6 +137,16 @@ jobs:
         with:
           name: ${{ steps.print-name.outputs.merged-file-name }}
           path: ./scraper/data-*.csv
+      - name: Check if scraped until latest
+        run: |
+          python post-id-scraper.py
+          last_index="$(ls data/data-*-*.csv | cut -d'-' -f3 | cut -d'.' -f1)"
+          total_pids="$(wc -l post-ids.csv | cut -d' ' -f1)"
+          echo "last_index $last_index, total_pids $total_pids"
+          [ $last_index -eq $total_pids ] && echo "completed_latest=true" >> $GITHUB_ENV
+          echo $GITHUB_ENV
+          cat $GITHUB_ENV
+        working-directory: ./scraper
       - name: Create release if scraped until latest
         if: ${{ env.completed_latest == 'true' }}
         uses: softprops/action-gh-release@v1
