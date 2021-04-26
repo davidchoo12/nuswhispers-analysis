@@ -45,11 +45,15 @@ jobs:
         id: scrape
         run: |
           python converter.py -s ${{ steps.get-start-index.outputs.start_index }} -p ${{ matrix.offset }} -l 120 -t 300
-          [ -e data/data-*-*.csv ]
-          echo "::set-output name=data_exists::$?" # exit code of prev test command
+          if compgen -G 'data/data-*-*.csv' > /dev/null # check glob match, src https://stackoverflow.com/a/34195247/4858751
+          then
+            echo "::set-output name=data_exists::true"
+          else
+            echo "::set-output name=data_exists::false"
+          fi
         working-directory: ./scraper
       - name: Upload artifact
-        if: ${{ steps.scrape.outputs.data_exists == '0' }}
+        if: ${{ steps.scrape.outputs.data_exists == 'true' }}
         uses: actions/upload-artifact@v2
         with:
           name: data
@@ -140,7 +144,7 @@ jobs:
       - name: Check if scraped until latest
         run: |
           python post-id-scraper.py
-          last_index="$(ls data/data-*-*.csv | cut -d'-' -f3 | cut -d'.' -f1)"
+          last_index="$(ls data-*-*.csv | cut -d'-' -f3 | cut -d'.' -f1)"
           total_pids="$(wc -l post-ids.csv | cut -d' ' -f1)"
           echo "last_index $last_index, total_pids $total_pids"
           [ $last_index -eq $total_pids ] && echo "completed_latest=true" >> $GITHUB_ENV
@@ -154,7 +158,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.run_number }}
-          files: ${{ steps.print-name.outputs.merged-file-name }}
+          files: |
+            ./scraper/${{ steps.print-name.outputs.merged-file-name }}
+            ./scraper/post-ids.csv
       # - name: Set current date as env variable
       #   id: date
       #   run: echo ::set-output name=today::$(date +'%Y-%m-%dT%H:%M:%SZ')
