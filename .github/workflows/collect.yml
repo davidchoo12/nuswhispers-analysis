@@ -22,10 +22,12 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           pip install -r requirements.txt
         working-directory: ./scraper
+      - name: Scrape post ids
+        run: python post-id-scraper.py
+        working-directory: ./scraper
       - name: Check for any new posts
         id: new-posts
         run: |
-          python post-id-scraper.py
           prev_released_end_index="$(curl -s --url 'https://api.github.com/repos/davidchoo12/nuswhispers-analysis/actions/artifacts' | jq -r "[.artifacts[] | select(.name | contains(\"data-0-\"))][0].name" | cut -d'-' -f3 | cut -d'.' -f1)"
           total_pids="$(wc -l post-ids.csv | cut -d' ' -f1)"
           echo "prev_released_end_index $prev_released_end_index, total_pids $total_pids"
@@ -162,9 +164,11 @@ jobs:
         with:
           name: ${{ steps.print-name.outputs.merged-file-name }}
           path: ./scraper/data-*.csv
+      - name: Scrape post ids
+        run: python post-id-scraper.py
+        working-directory: ./scraper
       - name: Check if scraped until latest
         run: |
-          python post-id-scraper.py
           last_index="$(ls data-*-*.csv | cut -d'-' -f3 | cut -d'.' -f1)"
           total_pids="$(wc -l post-ids.csv | cut -d' ' -f1)"
           echo "last_index $last_index, total_pids $total_pids"
