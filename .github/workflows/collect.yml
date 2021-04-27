@@ -28,6 +28,7 @@ jobs:
       - name: Check for any new posts
         id: new-posts
         run: |
+          wc -l post-ids.csv
           prev_released_end_index="$(curl -s --url 'https://api.github.com/repos/davidchoo12/nuswhispers-analysis/actions/artifacts' | jq -r "[.artifacts[] | select(.name | contains(\"data-0-\"))][0].name" | cut -d'-' -f3 | cut -d'.' -f1)"
           total_pids="$(wc -l post-ids.csv | cut -d' ' -f1)"
           echo "prev_released_end_index $prev_released_end_index, total_pids $total_pids"

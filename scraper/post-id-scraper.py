@@ -126,6 +126,7 @@ if post_ids_to_save == old_post_ids:
 # f.write('\n'.join(str(p) for p in union))
 # f = open('post-ids-scraped.csv', 'w')
 # f.write('\n'.join(str(p) for p in post_ids))
+logger.info('%d new post ids, new total %d', len(post_ids[first_new_pid_index:]), len(post_ids_to_save))
 with open('post-ids.csv', 'w') as fd:
     fd.write('\n'.join(str(p) for p in post_ids_to_save))
 
