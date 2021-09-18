@@ -37,16 +37,12 @@ logger.addHandler(file_handler)
 ses = requests.Session()
 base_url = 'https://m.facebook.com'
 user_agent = (
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-    "Gecko/20100101 Firefox/92.0"
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:92.0) "
+    "Gecko/20100101 Firefox/86.0"
 )
 default_headers = {
     'User-Agent': user_agent,
-    'Accept': 'image/webp,*/*',
-    'Accept-Encoding': 'gzip, deflate',
-    'Accept-Language': 'en-US,en;q=0.5',
-    'Dnt': '1',
-    'Upgrade-Insecure-Requests': '1',
+    'Accept': '*/*'
 }
 ses.headers.update(default_headers)
 
