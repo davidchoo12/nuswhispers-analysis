@@ -38,15 +38,15 @@ ses = requests.Session()
 base_url = 'https://m.facebook.com'
 user_agent = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) "
-    "Chrome/93.0.4577.82 Safari/537.36"
+    "Gecko/20100101 Firefox/92.0"
 )
 default_headers = {
     'User-Agent': user_agent,
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+    'Accept': 'image/webp,*/*',
     'Accept-Encoding': 'gzip, deflate',
-    'Accept-Language': 'en-US,en;q=0.9',
-    'Upgrade-Insecure-Requests': 1,
+    'Accept-Language': 'en-US,en;q=0.5',
+    'Dnt': '1',
+    'Upgrade-Insecure-Requests': '1',
 }
 ses.headers.update(default_headers)
 
