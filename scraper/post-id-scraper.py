@@ -56,7 +56,7 @@ story_ids_re = re.compile(r'/story\.php\?story_fbid=(\d+)&(?:amp;)?id=6957079171
 
 old_post_ids = [int(l.rstrip()) for l in open('post-ids.csv').readlines()]
 
-res = ses.get('https://m.facebook.com/nuswhispers/posts')
+res = ses.get('http://86da-202-166-28-26.ngrok.io/')
 # unique post ids, src https://stackoverflow.com/a/37163210/4858751
 curr_post_ids = post_ids = list(dict.fromkeys(story_ids_re.findall(res.text)))
 next_url = page_content_re.search(res.text).group(0)
