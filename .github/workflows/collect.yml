@@ -22,14 +22,16 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           pip install -r requirements.txt
         working-directory: ./scraper
+      - name: Test request to facebook
+        run: |
+          curl 'https://m.facebook.com/nuswhispers/posts' -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:92.0) Gecko/20100101 Firefox/86.0' -vvv
+          python converter.py -s 0 -p 0 -l 120 -t 300
       - name: Scrape post ids
         run: python post-id-scraper.py
         working-directory: ./scraper
       - name: Check for any new posts
         id: new-posts
         run: |
-          curl 'https://m.facebook.com/nuswhispers/posts' -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:92.0) Gecko/20100101 Firefox/86.0' -vvv
-          python converter.py -s 0 -p 0 -l 120 -t 300
           wc -l post-ids.csv
           prev_released_end_index="$(curl -s --url 'https://api.github.com/repos/davidchoo12/nuswhispers-analysis/actions/artifacts' | jq -r "[.artifacts[] | select(.name | contains(\"data-0-\"))][0].name" | cut -d'-' -f3 | cut -d'.' -f1)"
           total_pids="$(wc -l post-ids.csv | cut -d' ' -f1)"
