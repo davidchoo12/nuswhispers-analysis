@@ -1,18 +1,23 @@
-import logo from './logo.svg';
+import React, { useEffect, useState } from 'react';
+import Papa from 'papaparse';
 import './App.css';
 
 function App() {
-  const data = [];
-  for (let i = 0; i < 10; i++) {
-    data[i] = {
-      id: i,
-      text: 'aaa',
-      url: 'https://www.facebook.com/posts/' + i,
-      likes: i,
-      comments: i,
-      shares: i
-    };
-  }
+  const [data, setData] = useState([]);
+  useEffect(() => {
+    Papa.parse('/sample.csv', {
+      download: true,
+      header: true,
+      dynamicTyping: true,
+      complete: result => {
+        if (result.errors.length > 0) {
+          console.error('parse data failed', result.errors);
+          return;
+        }
+        setData(result.data);
+      }
+    });
+  }, []);
   return (
     <div className="App">
       {/*<header className="App-header">
@@ -30,8 +35,10 @@ function App() {
         </a>
       </header>*/}
       <nav>sidebar here</nav>
-      <h1>Top 10 most liked posts of all time</h1>
-      <table>
+      <h1 class="text-3xl text-center my-8">
+        Top 10 most liked posts of all time
+      </h1>
+      <table class="border border-separate border-spacing-10">
         <thead>
           <tr>
             <th>No</th>
@@ -49,7 +56,7 @@ function App() {
               <td>
                 <a href={d.url}>{d.id}</a>
               </td>
-              <td>{d.text}</td>
+              <td class="line-clamp-2">{d.text}</td>
               <td>{d.likes}</td>
               <td>{d.comments}</td>
               <td>{d.shares}</td>
