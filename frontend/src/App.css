@@ -44,10 +44,3 @@ nav {
   height: 100%;
   width: 400px;
 }
-table {
-  border-spacing: 1em;
-}
-table th,
-table td {
-  border: 1px transparent;
-}
