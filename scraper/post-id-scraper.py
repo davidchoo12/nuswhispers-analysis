@@ -115,7 +115,7 @@ union = sorted(list(overlapping_oldpids.union(overlapping_pids)))
 logger.info('%d removed (not found in scraped but found in old data): %s', len(removed_post_ids), removed_post_ids)
 logger.info('%d missed (not found in old data but found in scraped): %s', len(missed_post_ids), missed_post_ids)
 # logger.debug('union %s', union)
-post_ids_to_save = old_post_ids[:last_nonoverlapping_oldpid+1] + union + post_ids[first_new_pid_index:]
+post_ids_to_save = sorted(set(old_post_ids[:last_nonoverlapping_oldpid+1] + union + post_ids[first_new_pid_index:]))
 if post_ids_to_save == old_post_ids:
     logger.info('post ids no change')
 # f = open('removed.txt', 'w')
