@@ -3,5 +3,8 @@ module.exports = {
     postcss: {
       plugins: [require('tailwindcss'), require('autoprefixer')]
     }
+  },
+  eslint: {
+    enable: false
   }
 };
