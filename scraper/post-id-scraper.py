@@ -23,6 +23,8 @@ from datetime import datetime
 import logging
 import re
 import requests
+from requests.exceptions import HTTPError
+import time
 import json
 
 start_time = datetime.now()
@@ -36,13 +38,11 @@ logger.addHandler(file_handler)
 
 ses = requests.Session()
 base_url = 'https://m.facebook.com'
-user_agent = (
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:92.0) "
-    "Gecko/20100101 Firefox/86.0"
-)
+# src https://github.com/kevinzg/facebook-scraper/blob/master/facebook_scraper/facebook_scraper.py#L50
 default_headers = {
-    'User-Agent': user_agent,
-    'Accept': '*/*'
+    'Accept-Language': 'en-US,en;q=0.5',
+    'Sec-Fetch-User': '?1',
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8',
 }
 ses.headers.update(default_headers)
 
@@ -56,22 +56,39 @@ story_ids_re = re.compile(r'/story\.php\?story_fbid=(\d+)&(?:amp;)?id=6957079171
 
 old_post_ids = [int(l.rstrip()) for l in open('post-ids.csv').readlines()]
 
-res = ses.get('https://m.facebook.com/nuswhispers/posts')
+
+res = ses.get('https://m.facebook.com/nuswhispers/posts/')
 # unique post ids, src https://stackoverflow.com/a/37163210/4858751
 curr_post_ids = post_ids = list(dict.fromkeys(story_ids_re.findall(res.text)))
 next_url = page_content_re.search(res.text).group(0)
-posts_per_loop = 200
+# override next_url here if scraping failed and rerun to continue from where it left off
+# next_url = '/page_content_list_view/more/?page_id=695707917166339&start_cursor=%7B%22timeline_cursor%22%3A%22AQHRgyWnW-PY8R7r1fLfRhmMlPgdYuqWan2roipqAcXXQ5MB1wMinPDt1Y5LMD469hOXkq3gxC1kj4IeiaH5Thj0j5YeTYWLU6LRtxRkNne6N9PzsMdqZGFLNpAO0ffEmZza%22%2C%22timeline_section_cursor%22%3Anull%2C%22has_next_page%22%3Atrue%7D&num_to_fetch=30&surface_type=posts_tab'
+posts_per_loop = 30
 i = 0
+logger.debug('len post_ids %d', len(post_ids))
+if len(post_ids) == 0:
+    logger.error('empty first page post ids, try rerun cos it may fail for no reason sometimes')
+    exit(1)
 # change to while True to scrape all the way to the oldest post
 while int(curr_post_ids[-1]) > old_post_ids[-1]:
     logger.debug('%d %d %s', i, len(post_ids), post_ids[-1])
     next_url = next_url.replace('num_to_fetch=4&', f'num_to_fetch={posts_per_loop}&')
     # logger.debug('next_url %s', next_url)
-    try:
-        res = ses.get(base_url + next_url)
-        res.raise_for_status()
-    except:
-        logger.error('exception ', exc_info=1)
+    # src https://github.com/kevinzg/facebook-scraper/blob/master/facebook_scraper/page_iterators.py#L88
+    RETRY_LIMIT = 10
+    for retry in range(1, RETRY_LIMIT + 1):
+        try:
+            res = ses.get(base_url + next_url)
+            res.raise_for_status()
+            break
+        except HTTPError as e:
+            if e.response.status_code == 500 and retry < RETRY_LIMIT:
+                sleep_duration = retry * 2
+                logger.debug(f'response HTTP 500 from attempt no {retry}, sleeping for {sleep_duration} seconds')
+                time.sleep(sleep_duration)
+            else:
+                logger.error('exception ', exc_info=1)
+    if not res.ok:
         break
     curr_post_ids = list(dict.fromkeys(story_ids_re.findall(res.text)))
     post_ids.extend(curr_post_ids)
