@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import Papa from 'papaparse';
+import React from 'react';
 import './App.css';
 import PostsTable from './components/PostsTable';
+import TimelineChart from './components/TimelineChart';
 
 function App() {
   return (
@@ -25,6 +25,7 @@ function App() {
         Top 10 most liked posts of all time
       </h1>
       <PostsTable csvUrl="/sample.csv" />
+      <TimelineChart dateStart="2020-01-01" dateEnd="2020-12-31" />
     </div>
   );
 }

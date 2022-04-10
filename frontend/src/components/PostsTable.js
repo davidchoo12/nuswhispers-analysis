@@ -17,7 +17,7 @@ export default function PostsTable({ csvUrl }) {
         setData(result.data);
       }
     });
-  }, []);
+  }, [csvUrl]);
   return (
     <table class="border border-collapse">
       <thead>
@@ -33,18 +33,19 @@ export default function PostsTable({ csvUrl }) {
       <tbody>
         {data.map((d, i) => (
           <tr>
-            <td>{i}</td>
+            <td>{i + 1}</td>
             <td>
               <a
                 href={'https://www.facebook.com/nuswhispers/posts/' + d.pid}
                 target="_blank"
+                rel="noreferrer"
                 class="underline"
               >
                 {d.pid}
               </a>
             </td>
             <td>
-              <span class="line-clamp-2">{d.text}</span>
+              <span class="line-clamp-2 hover:color-green">{d.text}</span>
             </td>
             <td>{d.likes}</td>
             <td>{d.comments}</td>
