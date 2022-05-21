@@ -30,7 +30,7 @@ import json
 start_time = datetime.now()
 log_format = '%(relativeCreated)8d %(message)s'
 logging.basicConfig(level=logging.DEBUG, format=log_format)
-file_handler = logging.FileHandler('logs-post-id-scraper.txt', 'w')
+file_handler = logging.FileHandler('logs/post-id-scraper.txt', 'w')
 file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(logging.Formatter(log_format))
 logger = logging.getLogger()

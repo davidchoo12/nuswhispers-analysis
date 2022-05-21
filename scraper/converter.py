@@ -32,7 +32,7 @@ import argparse
 start_time = datetime.now()
 log_format = '%(relativeCreated)8d %(threadName)4s %(message)s'
 logging.basicConfig(level=logging.DEBUG, format=log_format)
-file_handler = logging.FileHandler('logs.txt', 'w')
+file_handler = logging.FileHandler('logs/converter.txt', 'w')
 file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(logging.Formatter(log_format))
 logger = logging.getLogger()
