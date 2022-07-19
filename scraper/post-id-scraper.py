@@ -50,16 +50,27 @@ ses.headers.update(default_headers)
 # with open('post-ids.csv', 'w') as fd:
 #     fd.write(prev_data)
 
-page_content_re = re.compile(r'/page_content[^"]+')
-page_content_re2 = re.compile(r'\\\\\\(/page_content.+?)\\"')
-story_ids_re = re.compile(r'/story\.php\?story_fbid=(\d+)&(?:amp;)?id=695707917166339')
+page_content_re = re.compile(r'/page_content[^"]+') # for first response
+page_content_re2 = re.compile(r'\\\\\\(/page_content.+?)\\"') # for subsequent responses
+# story_ids_re = re.compile(r'/story\.php\?story_fbid=(\d+)&(?:amp;)?id=695707917166339') # old regex
+story_ids_re = re.compile(r'story_fbid&quot;:\[(\d+)\]') # for first response
+story_ids_re2 = re.compile(r'story_fbid\\\\&quot;:\[(\d+)\]') # for subsequent responses
 
 old_post_ids = [int(l.rstrip()) for l in open('post-ids.csv').readlines()]
 
+RETRY_LIMIT = 10
 
-res = ses.get('https://m.facebook.com/nuswhispers/posts/')
+post_ids_matches = []
+for retry in range(1, RETRY_LIMIT + 1):
+    res = ses.get('https://m.facebook.com/nuswhispers/posts/', stream=True)
+    server_ip = res.raw._connection.sock.getpeername()[0]
+    logger.debug(f'attempt no {retry}, server ip {server_ip}, code {res.status_code}')
+    post_ids_matches = story_ids_re.findall(res.text)
+    if len(post_ids_matches) > 0:
+        break
+
 # unique post ids, src https://stackoverflow.com/a/37163210/4858751
-curr_post_ids = post_ids = list(dict.fromkeys(story_ids_re.findall(res.text)))
+curr_post_ids = post_ids = list(dict.fromkeys(post_ids_matches))
 next_url = page_content_re.search(res.text).group(0)
 # override next_url here if scraping failed and rerun to continue from where it left off
 # next_url = '/page_content_list_view/more/?page_id=695707917166339&start_cursor=%7B%22timeline_cursor%22%3A%22AQHRgyWnW-PY8R7r1fLfRhmMlPgdYuqWan2roipqAcXXQ5MB1wMinPDt1Y5LMD469hOXkq3gxC1kj4IeiaH5Thj0j5YeTYWLU6LRtxRkNne6N9PzsMdqZGFLNpAO0ffEmZza%22%2C%22timeline_section_cursor%22%3Anull%2C%22has_next_page%22%3Atrue%7D&num_to_fetch=30&surface_type=posts_tab'
@@ -67,7 +78,10 @@ posts_per_loop = 30
 i = 0
 logger.debug('len post_ids %d', len(post_ids))
 if len(post_ids) == 0:
-    logger.error('empty first page post ids, try rerun cos it may fail for no reason sometimes')
+    res_dest = '/tmp/post-id-scraper-first-page.html'
+    logger.error('empty first page post ids, try rerun cos it may fail for no reason sometimes, saving response to file://' + res_dest)
+    with open(res_dest, 'w') as fd:
+        fd.write(res.text)
     exit(1)
 # change to while True to scrape all the way to the oldest post
 while int(curr_post_ids[-1]) > old_post_ids[-1]:
@@ -75,7 +89,6 @@ while int(curr_post_ids[-1]) > old_post_ids[-1]:
     next_url = next_url.replace('num_to_fetch=4&', f'num_to_fetch={posts_per_loop}&')
     # logger.debug('next_url %s', next_url)
     # src https://github.com/kevinzg/facebook-scraper/blob/master/facebook_scraper/page_iterators.py#L88
-    RETRY_LIMIT = 10
     for retry in range(1, RETRY_LIMIT + 1):
         try:
             res = ses.get(base_url + next_url)
@@ -90,7 +103,7 @@ while int(curr_post_ids[-1]) > old_post_ids[-1]:
                 logger.error('exception ', exc_info=1)
     if not res.ok:
         break
-    curr_post_ids = list(dict.fromkeys(story_ids_re.findall(res.text)))
+    curr_post_ids = list(dict.fromkeys(story_ids_re2.findall(res.text)))
     post_ids.extend(curr_post_ids)
     next_url_match = page_content_re2.search(res.text)
     if next_url_match:

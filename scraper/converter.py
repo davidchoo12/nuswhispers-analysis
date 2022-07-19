@@ -123,7 +123,7 @@ def scrape_post_id_range(start_index, end_index, threads=100):
                     image = image.attrs['src']
                 # logger.info('image %s', str(image))
                 # extract likes
-                ft_ent_identifier = re.search(r'og:url.*?story_fbid=(\w+?)\W', res.html.html).group(1)
+                ft_ent_identifier = re.search(r'story_fbid=(\w+?)\W', res.html.html).group(1)
                 likes = int(re.search(r'ft_ent_identifier:"?%s"?.*?,like_count:(\d+)'%ft_ent_identifier, res.html.html).group(1))
                 comments = int(re.search(r'ft_ent_identifier:"?%s"?.*?,comment_count:(\d+)'%ft_ent_identifier, res.html.html).group(1))
                 shares = int(re.search(r'ft_ent_identifier:"?%s"?.*?,share_count:(\d+)'%ft_ent_identifier, res.html.html).group(1))
