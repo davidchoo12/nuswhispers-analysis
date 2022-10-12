@@ -1,76 +1,85 @@
-import React, { useEffect, useRef } from 'react';
-import uPlot from 'uplot';
-import 'uplot/dist/uPlot.min.css';
-import { wheelZoomPlugin, touchZoomPlugin } from './UplotPlugins';
-// import {
-//   BarChart,
-//   Bar,
-//   Brush,
-//   ReferenceLine,
-//   XAxis,
-//   YAxis,
-//   CartesianGrid,
-//   Tooltip,
-//   Legend,
-//   ResponsiveContainer
-// } from 'recharts';
+import React, { useEffect, useRef } from 'react'
+import uPlot from 'uplot'
+import 'uplot/dist/uPlot.min.css'
+import { tooltipsPlugin } from './UplotPlugins'
+import './TimelineChart.css'
 
-export default function TimelineChart({ dateStart, dateEnd }) {
-  const start = new Date(dateStart);
-  const end = new Date(dateEnd);
-  const days = (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);
-  let data = [];
-  let d = start;
-  let i = 0;
-  let xValues = [];
-  let yValues = [];
-  while (d <= end) {
-    xValues.push(d.getTime() / 1000);
-    yValues.push(Math.round(Math.random() * 1000));
-    d.setDate(d.getDate() + 1);
-  }
-  data = [xValues, yValues];
-  console.log(data);
+export default function TimelineChart({ data, isXAxisDateType=true, isCategorical=false }) {
   const chartRef = useRef(null);
+  // console.log('data', data)
 
   useEffect(() => {
-    new uPlot(
-      {
-        width: 1200,
-        height: 600,
-        plugins: [wheelZoomPlugin({ factor: 0.75 })],
-        scales: {
-          x: {
-            time: true
-          }
+    if (!data || data.length == 0) {
+      return
+    }
+    let uplotData = [...data] // copy so that original data is not mutated
+    const xLabels = [...uplotData[0]]
+    if (isCategorical) {
+      uplotData[0] = [...xLabels.keys()]
+    }
+    chartRef.current.innerHTML = ''
+    const opts = {
+      width: 1200,
+      height: 600,
+      scales: {
+        x: {
+          time: isXAxisDateType,
+          distr: isCategorical ? 2 : 1, // align x axis ticks with labels, src https://jsfiddle.net/571rx4y0/2/
         },
-        series: [
-          {},
-          {
-            // in-legend display
-            label: 'Duration in hours',
-            // series style
-            stroke: '#1c5878',
-            width: 1,
-            fill: '#2e8fc2'
-          }
-        ]
       },
-      data,
-      chartRef.current
-    );
-  }, []);
+      cursor: {
+        points: {
+          size: 8,
+          stroke: 'blue',
+          width: 2,
+          fill: 'white',
+        },
+      },
+      plugins: [
+        tooltipsPlugin(isCategorical ? { xLabels } : undefined),
+      ],
+      tzDate: ts => uPlot.tzDate(new Date(ts * 1e3), 'Etc/UTC'),
+      series: [
+        {},
+        {
+          stroke: '#0057b7',
+          width: 1,
+          fill: 'rgba(0, 87, 183,0.15)',
+        }
+      ],
+      legend: {
+        show: false,
+      },
+      axes: [
+        {
+          font: '12px "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+          ticks: {
+            stroke: 'rgba(0,0,0,0.1)',
+            width: 1,
+          },
+          grid: {
+            stroke: 'rgba(0,0,0,0.1)',
+            width: 1,
+          },
+          values: isCategorical ? xLabels : undefined,
+        },
+        {
+          size: 60,
+          font: '12px "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+          ticks: {
+            stroke: 'rgba(0,0,0,0.1)',
+            width: 1,
+          },
+          grid: {
+            stroke: 'rgba(0,0,0,0.1)',
+            width: 1,
+          },
+        },
+      ]
+    }
+    new uPlot(opts, uplotData, chartRef.current)
+  }, [data]);
   return (
     <div ref={chartRef}></div>
-    // <ResponsiveContainer width="100%" height={300}>
-    //   <BarChart width={500} height={300} data={data}>
-    //     <CartesianGrid strokeDasharray="3 3" />
-    //     <XAxis dataKey="date" />
-    //     <YAxis />
-    //     <Tooltip isAnimationActive={false} />
-    //     <Brush dataKey="date" height={30} stroke="#8884d8" />
-    //     <Bar dataKey="y" fill="blue" />
-    //   </BarChart>
-    // </ResponsiveContainer>
   );
 }

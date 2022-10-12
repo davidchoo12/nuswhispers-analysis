@@ -1,29 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import Papa from 'papaparse';
+import { useEffect, useState } from 'react';
 import './PostsTable.css';
 
-export default function PostsTable({ csvUrl }) {
-  const [data, setData] = useState([]);
-  useEffect(() => {
-    Papa.parse(csvUrl, {
-      download: true,
-      header: true,
-      dynamicTyping: true,
-      complete: result => {
-        if (result.errors.length > 0) {
-          console.error('parse data failed', result.errors);
-          return;
-        }
-        setData(result.data);
-      }
-    });
-  }, [csvUrl]);
+export default function PostsTable({ csvData }) {
+  const [fulltextRows, setFulltextRows] = useState([])
+  useEffect(() => setFulltextRows(csvData.map(() => false)), [csvData])
   return (
-    <table class="border border-collapse">
+    <table className="border border-collapse">
       <thead>
         <tr>
           <th>No</th>
-          <th>ID</th>
+          <th>Post #</th>
           <th>Post</th>
           <th>Likes</th>
           <th>Comments</th>
@@ -31,25 +17,35 @@ export default function PostsTable({ csvUrl }) {
         </tr>
       </thead>
       <tbody>
-        {data.map((d, i) => (
-          <tr>
+        {csvData.map((d, i) => (
+          <tr key={i}>
             <td>{i + 1}</td>
             <td>
               <a
                 href={'https://www.facebook.com/nuswhispers/posts/' + d.pid}
                 target="_blank"
                 rel="noreferrer"
-                class="underline"
+                className="underline"
               >
-                {d.pid}
+                #{d.cid}
               </a>
             </td>
             <td>
-              <span class="line-clamp-2 hover:color-green">{d.text}</span>
+              <span className={`${fulltextRows[i] ? '' : 'line-clamp-2'} whitespace-pre-line`}>{d.text}</span>
+              {fulltextRows[i] ? (<br />) : ''}
+              <a href="#" onClick={(e) => {
+                e.preventDefault()
+                const copy = Array.from(fulltextRows)
+                copy[i] = !copy[i]
+                console.log('fulltextRows', copy)
+                setFulltextRows(copy)
+              }}>
+                {fulltextRows[i] ? 'less' : 'more'}
+              </a>
             </td>
-            <td>{d.likes}</td>
-            <td>{d.comments}</td>
-            <td>{d.shares}</td>
+            <td className='text-right'>{d.likes}</td>
+            <td className='text-right'>{d.comments}</td>
+            <td className='text-right'>{d.shares}</td>
           </tr>
         ))}
       </tbody>

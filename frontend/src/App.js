@@ -1,32 +1,26 @@
 import React from 'react';
 import './App.css';
-import PostsTable from './components/PostsTable';
-import TimelineChart from './components/TimelineChart';
+import TableOfContent from './components/TableOfContent';
+import MetricsDistribution from './sections/MetricsDistribution';
+import MetricsMedians from './sections/MetricsMedians';
+import TopPosts from './sections/TopPosts';
+import TopTerms from './sections/TopTerms';
+import TopNetworks from './sections/TopNetworks';
+import PostsFrequency from './sections/PostsFrequency';
 
 function App() {
   return (
-    <div className="App">
-      {/*<header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>*/}
-      <nav>sidebar here</nav>
-      <h1 class="text-3xl text-center my-8">
-        Top 10 most liked posts of all time
-      </h1>
-      <PostsTable csvUrl="/sample.csv" />
-      <TimelineChart dateStart="2020-01-01" dateEnd="2020-12-31" />
-    </div>
+    <>
+      <TableOfContent />
+      <main>
+        <TopPosts />
+        <MetricsDistribution />
+        <MetricsMedians />
+        <PostsFrequency />
+        <TopTerms />
+        <TopNetworks />
+      </main>
+    </>
   );
 }
 

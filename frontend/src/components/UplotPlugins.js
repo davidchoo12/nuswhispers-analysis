@@ -228,4 +228,65 @@ function touchZoomPlugin(opts) {
   };
 }
 
-export { wheelZoomPlugin, touchZoomPlugin };
+function tooltipsPlugin(opts) {
+  function init(u, opts, data) {
+    let over = u.over
+
+    let ttc = u.cursortt = document.createElement("div")
+    ttc.className = "tooltip"
+    over.appendChild(ttc)
+
+    function hideTips() {
+      ttc.style.display = "none"
+    }
+
+    function showTips() {
+      ttc.style.display = null
+    }
+
+    over.addEventListener("mouseleave", () => {
+      if (!u.cursor._lock) {
+        hideTips()
+      }
+    })
+
+    over.addEventListener("mouseenter", () => {
+      showTips()
+    })
+
+    hideTips()
+  }
+
+  function setCursor(u) {
+    // console.log(u, opts)
+    let {left, top, idx} = u.cursor
+    if (u.data.length < 2) {
+      return
+    }
+    const x = opts?.xLabels ? opts.xLabels[idx] : u.data[0][idx]
+    const y = u.data[1][idx]
+
+    if (x) {
+      u.cursortt.innerHTML = `<span class="x-value">${u.scales.x.time ? new Date(x*1000).toISOString().split('T')[0] : x}</span>&nbsp;&nbsp;${y.toLocaleString()}`
+    }
+    const cursorX = u.over.getBoundingClientRect().x + left
+    const cursorY = u.over.getBoundingClientRect().y + top
+    if (cursorX + u.cursortt.offsetWidth > document.documentElement.clientWidth - 16) {
+      left -= u.cursortt.offsetWidth
+    }
+    if (cursorY + u.cursortt.offsetHeight > document.documentElement.clientHeight - 16) {
+      top -= u.cursortt.offsetHeight
+    }
+    u.cursortt.style.left = left + "px"
+    u.cursortt.style.top = top + "px"
+  }
+
+  return {
+    hooks: {
+      init,
+      setCursor,
+    },
+  }
+}
+
+export { wheelZoomPlugin, touchZoomPlugin, tooltipsPlugin };
