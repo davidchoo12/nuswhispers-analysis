@@ -1,17 +1,11 @@
+/** @type {import('tailwindcss').Config} */
 module.exports = {
-  purge: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
-  darkMode: false, // or 'media' or 'class'
+  content: [
+    "./src/**/*.{js,jsx,ts,tsx}",
+    "./public/index.html"
+  ],
   theme: {
-    extend: {
-      zIndex: {
-        '-1': '-1'
-      }
-    }
+    extend: {},
   },
-  variants: {
-    extend: {
-      opacity: ['disabled']
-    }
-  },
-  plugins: [require('@tailwindcss/line-clamp')]
-};
+  plugins: [require('@tailwindcss/line-clamp')],
+}

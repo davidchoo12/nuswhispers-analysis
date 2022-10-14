@@ -141,6 +141,12 @@ function useHighlightMarker(nestedHeadings) {
 
     drawPath()
     window.addEventListener('scroll', sync, false)
+    const observer = new ResizeObserver(sync)
+    observer.observe(document.body)
+    return () => {
+      window.removeEventListener('scroll', sync, false)
+      observer.disconnect()
+    }
   }, [nestedHeadings])
 }
 
@@ -162,7 +168,7 @@ export default function TableOfContent() {
             </ul>
           </li>
         ))}
-        <svg className="toc-marker absolute top-0 left-0 w-full h-full -z-1" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+        <svg className="toc-marker absolute top-0 left-0 w-full h-full -z-10" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
           <path className="transition-all duration-300" stroke="#444" stroke-width="3" fill="transparent" stroke-dasharray="0, 0, 0, 1000" stroke-linecap="round" stroke-linejoin="round" transform="translate(-0.5, -0.5)" />
         </svg>
       </ul>

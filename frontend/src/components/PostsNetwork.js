@@ -3,10 +3,7 @@ import { useRef, useEffect } from 'react'
 import { Network, DataSet } from 'vis-network/standalone/esm/vis-network'
 
 // todo highlight root nodes
-export default function PostsNetwork({ nodes, edges, highlightNodes = [], highlightEdges = [] }) {
-  if (!nodes || !edges || nodes.length == 0) {
-    return null
-  }
+export default function PostsNetwork({ nodes=[], edges=[], highlightNodes=[], highlightEdges=[] }) {
   // console.log('rendering PostsNetwork with nodes ', nodes, 'edges', edges, 'highlightEdges', highlightEdges)
   const divRef = useRef(null)
   const options = {
@@ -43,13 +40,20 @@ export default function PostsNetwork({ nodes, edges, highlightNodes = [], highli
     edges: new DataSet(edges.map(edge => ({from: edge[0], to: edge[1], color: highlightEdges.find(e => e[0]==edge[0] && e[1]==edge[1]) ? {color: 'rgba(251, 191, 36)'} : undefined}))),
   }
   useEffect(() => {
-    new Network(divRef.current, data, options)
+    if (nodes.length > 0) {
+      new Network(divRef.current, data, options)
+    }
   }, [data])
+
+  if (nodes.length == 0) {
+    return null
+  }
+
   return (
     <div className='relative'>
       <div ref={divRef} className='h-96'></div>
       <div className='absolute top-0 left-0 bg-white'>
-        <div>1 -> 2 means post #1 mentions post #2.</div>
+        <div>1 -&gt; 2 means post #1 mentions post #2.</div>
         <div>Nodes: {nodes.length}</div>
         <div>Edges: {edges.length}</div>
       </div>

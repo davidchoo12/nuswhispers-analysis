@@ -49,7 +49,6 @@ export default function TopNetworks() {
     }
     Promise.all(promises)
     .then(results => {
-      console.log('promise.all results', results)
       for (const {datasetName, data} of results) {
         const parsedData = data.map(row => {
           if ('nodes' in row) {

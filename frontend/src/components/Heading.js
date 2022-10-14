@@ -1,10 +1,14 @@
 export default function Heading({ title, level }) {
   const id = encodeURIComponent(title.toLowerCase().replaceAll(' ', '-'))
   const Hx = `h${level}`
+  const levelClass = {
+    2: 'text-3xl',
+    3: 'text-2xl',
+  }
   return (
     <>
       <header className="my-3">
-        <Hx id={id} className={`inline text-${5-level}xl text-center`} style={{'scrollMarginTop': '2em'}}>
+        <Hx id={id} className={`inline ${levelClass[level] || 'text-2xl'} text-center`} style={{'scrollMarginTop': '2em'}}>
           {title}
         </Hx>
         <a href={'#'+id} className="text-2xl no-underline ml-3 opacity-30 transition hover:opacity-100">
