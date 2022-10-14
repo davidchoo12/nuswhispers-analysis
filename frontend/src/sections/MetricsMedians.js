@@ -18,17 +18,18 @@ function MetricMedians({ title, metricDataset, timedeltas }) {
   )
 }
 
+const metrics = ['likes', 'comments', 'shares']
+const timedeltas = {
+  'year': 'Per Year',
+  'month': 'Per Month',
+  'week': 'Per Week',
+  'day': 'Per Day',
+  'hourofday': 'Per Hour of Day',
+  // 'minuteofday': 'Per Minute of Day',
+}
+const titles = ['Median Likes', 'Median Comments', 'Median Shares']
+
 export default function MetricsMedians() {
-  const metrics = ['likes', 'comments', 'shares']
-  const timedeltas = {
-    'year': 'Per Year',
-    'month': 'Per Month',
-    'week': 'Per Week',
-    'day': 'Per Day',
-    'hourofday': 'Per Hour of Day',
-    // 'minuteofday': 'Per Minute of Day',
-  }
-  const titles = ['Median Likes', 'Median Comments', 'Median Shares']
   const defaultDataset = {}
   for (const metric of metrics) {
     defaultDataset[metric] = {}
@@ -63,14 +64,15 @@ export default function MetricsMedians() {
     }
     Promise.all(promises)
     .then(results => {
+      const queriedDatasets = {}
       for (const {metric, timedelta, data} of results) {
-        if (!datasets[metric]) {
-          datasets[metric] = {}
+        if (!queriedDatasets[metric]) {
+          queriedDatasets[metric] = {}
         }
-        datasets[metric][timedelta] = data
+        queriedDatasets[metric][timedelta] = data
       }
       // console.log('MetricsMedians promise all setting datasets')
-      setDatasets({...datasets})
+      setDatasets(queriedDatasets)
     })
     .catch(console.error)
   }, [])

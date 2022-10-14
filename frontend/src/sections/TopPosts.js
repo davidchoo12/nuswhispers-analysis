@@ -17,10 +17,11 @@ function TopPostsByMetric({ title, metricDataset, timedeltas }) {
   )
 }
 
+const metrics = ['likes', 'comments', 'shares']
+const timedeltas = {'all': 'All Time', 'year': 'This Year', 'month': 'This Month', 'week': 'This Week'}
+const titles = ['Top 10 most liked posts', 'Top 10 most commented posts', 'Top 10 most shared posts']
+
 export default function TopPosts() {
-  const metrics = ['likes', 'comments', 'shares']
-  const timedeltas = {'all': 'All Time', 'year': 'This Year', 'month': 'This Month', 'week': 'This Week'}
-  const titles = ['Top 10 most liked posts', 'Top 10 most commented posts', 'Top 10 most shared posts']
   const defaultDataset = {}
   for (const metric of metrics) {
     defaultDataset[metric] = {}
@@ -54,13 +55,14 @@ export default function TopPosts() {
     }
     Promise.all(promises)
     .then(results => {
+      const queriedDatasets = {}
       for (const {metric, timedelta, data} of results) {
-        if (!datasets[metric]) {
-          datasets[metric] = {}
+        if (!queriedDatasets[metric]) {
+          queriedDatasets[metric] = {}
         }
-        datasets[metric][timedelta] = data
+        queriedDatasets[metric][timedelta] = data
       }
-      setDatasets({...datasets})
+      setDatasets(queriedDatasets)
     })
   }, [])
   return (

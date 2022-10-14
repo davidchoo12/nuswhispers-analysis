@@ -9,7 +9,7 @@ export default function ButtonGroup({ options, onChange }) {
           key={option?.value}
           value={option?.value}
           onClick={() => {setValue(option?.value); onChange(option?.value);}}
-          className={`border-2 transition py-1.5 px-6 m-0.5 rounded-full font-semibold ${value == option?.value ? 'bg-blue-600 border-blue-600 text-white' : 'bg-none border-blue-200 hover:bg-blue-100'}`}
+          className={`border-2 transition py-1.5 px-6 m-0.5 rounded-full font-semibold ${value === option?.value ? 'bg-blue-600 border-blue-600 text-white' : 'bg-none border-blue-200 hover:bg-blue-100'}`}
         >
           {option?.name}
         </button>

@@ -5,8 +5,21 @@ import PostsNetwork from '../components/PostsNetwork'
 import ButtonGroup from '../components/ButtonGroup'
 import PostsTable from '../components/PostsTable'
 
+const datasetNames = ['biggest', 'longest', 'biggest-posts', 'longest-posts']
+const nthOptions = [
+  { name: '1st', value: 0 },
+  { name: '2nd', value: 1 },
+  { name: '3rd', value: 2 },
+  { name: '4th', value: 3 },
+  { name: '5th', value: 4 },
+  { name: '6th', value: 5 },
+  { name: '7th', value: 6 },
+  { name: '8th', value: 7 },
+  { name: '9th', value: 8 },
+  { name: '10th', value: 9 },
+]
+
 export default function TopNetworks() {
-  const datasetNames = ['biggest', 'longest', 'biggest-posts', 'longest-posts']
   const defaultDataset = {}
   for (const datasetName of datasetNames) {
     defaultDataset[datasetName] = []
@@ -14,18 +27,6 @@ export default function TopNetworks() {
   const [datasets, setDatasets] = useState(defaultDataset)
   const [selectedNthBiggest, setSelectedNthBiggest] = useState(0)
   const [selectedNthLongest, setSelectedNthLongest] = useState(0)
-  const nthOptions = [
-    { name: '1st', value: 0 },
-    { name: '2nd', value: 1 },
-    { name: '3rd', value: 2 },
-    { name: '4th', value: 3 },
-    { name: '5th', value: 4 },
-    { name: '6th', value: 5 },
-    { name: '7th', value: 6 },
-    { name: '8th', value: 7 },
-    { name: '9th', value: 8 },
-    { name: '10th', value: 9 },
-  ]
 
   useEffect(() => {
     const promises = []
@@ -49,6 +50,7 @@ export default function TopNetworks() {
     }
     Promise.all(promises)
     .then(results => {
+      const queriedDatasets = {}
       for (const {datasetName, data} of results) {
         const parsedData = data.map(row => {
           if ('nodes' in row) {
@@ -62,11 +64,13 @@ export default function TopNetworks() {
           }
           return row
         })
-        datasets[datasetName] = parsedData
+        queriedDatasets[datasetName] = parsedData
       }
-      setDatasets({...datasets})
+      console.log('topnetworks setting datasets')
+      setDatasets(queriedDatasets)
     })
   }, [])
+  console.log('topnetworks')
   return (
     <Section title="Most controversial posts" level={2}>
       <Section title="Biggest networks" level={3}>

@@ -34,7 +34,7 @@ function wheelZoomPlugin(opts) {
 
         // wheel drag pan
         over.addEventListener('mousedown', e => {
-          if (e.button == 1) {
+          if (e.button === 1) {
             //	plot.style.cursor = "move";
             e.preventDefault();
 
@@ -124,7 +124,7 @@ function touchZoomPlugin(opts) {
       let t0x = t0.clientX - rect.left;
       let t0y = t0.clientY - rect.top;
 
-      if (ts.length == 1) {
+      if (ts.length === 1) {
         t.x = t0x;
         t.y = t0y;
         t.d = t.dx = t.dy = 1;

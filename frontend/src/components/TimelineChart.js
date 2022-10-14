@@ -9,7 +9,7 @@ export default function TimelineChart({ data, isXAxisDateType=true, isCategorica
   // console.log('data', data)
 
   useEffect(() => {
-    if (!data || data.length == 0) {
+    if (!data || data.length === 0) {
       return
     }
     let uplotData = [...data] // copy so that original data is not mutated
@@ -77,8 +77,14 @@ export default function TimelineChart({ data, isXAxisDateType=true, isCategorica
         },
       ]
     }
-    new uPlot(opts, uplotData, chartRef.current)
-  }, [data]);
+    const elem = chartRef.current
+    new uPlot(opts, uplotData, elem)
+    return () => {
+      if (elem?.innerHTML) {
+        elem.innerHTML = ''
+      }
+    }
+  }, [data, isXAxisDateType, isCategorical]);
   return (
     <div ref={chartRef}></div>
   );

@@ -1,11 +1,12 @@
 import Papa from 'papaparse'
-import { useEffect, useState, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import ButtonGroup from '../components/ButtonGroup'
 import Section from '../components/Section'
 import TimelineChart from '../components/TimelineChart'
 
+const metrics = {'likes': 'Likes', 'comments': 'Comments', 'shares': 'Shares'}
+
 export default function MetricsDistribution() {
-  const metrics = {'likes': 'Likes', 'comments': 'Comments', 'shares': 'Shares'}
   const [datasets, setDatasets] = useState({})
   const [selectedMetric, setSelectedMetric] = useState('likes')
   useEffect(() => {
@@ -32,10 +33,11 @@ export default function MetricsDistribution() {
     }
     Promise.all(promises)
     .then(results => {
+      const queriedDatasets = {}
       for (const {metric, data} of results) {
-        datasets[metric] = data
+        queriedDatasets[metric] = data
       }
-      setDatasets({...datasets})
+      setDatasets(queriedDatasets)
     })
   }, [])
   return (

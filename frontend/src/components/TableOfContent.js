@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import './TableOfContent.css'
 
 // adapted from https://www.emgoto.com/react-table-of-contents/
@@ -32,7 +32,7 @@ const useHeadingsData = () => {
 // adapted from https://codepen.io/hakimel/pen/BpKNPg
 function useHighlightMarker(nestedHeadings) {
   useEffect(() => {
-    if (!nestedHeadings || nestedHeadings.length == 0) {
+    if (!nestedHeadings || nestedHeadings.length === 0) {
       return
     }
     const toc = document.querySelector('.toc')
@@ -72,7 +72,7 @@ function useHighlightMarker(nestedHeadings) {
       }
 
       // if none of the headers are visible, set it to the last visible header
-      if (visibleItems == 0) {
+      if (visibleItems === 0) {
         pathStart = lastItemAbove.pathStart
         pathEnd = lastItemAbove.pathEnd
         visibleItems = 1

@@ -33,15 +33,14 @@ export default function PostsTable({ csvData }) {
             <td>
               <span className={`${fulltextRows[i] ? '' : 'line-clamp-2'} whitespace-pre-line`}>{d.text}</span>
               {fulltextRows[i] ? (<br />) : ''}
-              <a href="#" onClick={(e) => {
-                e.preventDefault()
+              <span className='text-blue-600 underline cursor-pointer' onClick={() => {
                 const copy = Array.from(fulltextRows)
                 copy[i] = !copy[i]
                 console.log('fulltextRows', copy)
                 setFulltextRows(copy)
               }}>
                 {fulltextRows[i] ? 'less' : 'more'}
-              </a>
+              </span>
             </td>
             <td className='text-right'>{d.likes}</td>
             <td className='text-right'>{d.comments}</td>
