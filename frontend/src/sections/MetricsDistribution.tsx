@@ -6,6 +6,11 @@ import TimelineChart from '../components/TimelineChart'
 
 const metrics = {'likes': 'Likes', 'comments': 'Comments', 'shares': 'Shares'}
 
+// type DatasetCombo = {
+//   metric: string
+//   data: any[]
+// }
+
 export default function MetricsDistribution() {
   const [datasets, setDatasets] = useState({})
   const [selectedMetric, setSelectedMetric] = useState('likes')
