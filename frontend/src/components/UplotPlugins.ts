@@ -1,29 +1,29 @@
-import uPlot from "uplot";
+import uPlot from 'uplot'
 
-function tooltipsPlugin(opts?: { xLabels: (string|number)[] }): uPlot.Plugin {
+function tooltipsPlugin(opts?: { xLabels: (string | number)[] }): uPlot.Plugin {
   let ttc: HTMLDivElement
   function init(u: uPlot, opts: uPlot.Options, data: uPlot.AlignedData) {
     let over = u.over
 
-    ttc = document.createElement("div")
-    ttc.className = "tooltip"
+    ttc = document.createElement('div')
+    ttc.className = 'tooltip'
     over.appendChild(ttc)
 
     function hideTips() {
-      ttc.style.display = "none"
+      ttc.style.display = 'none'
     }
 
     function showTips() {
-      ttc.style.display = 'block'//null
+      ttc.style.display = 'block' //null
     }
 
-    over.addEventListener("mouseleave", () => {
+    over.addEventListener('mouseleave', () => {
       if (!u.cursor.lock) {
         hideTips()
       }
     })
 
-    over.addEventListener("mouseenter", () => {
+    over.addEventListener('mouseenter', () => {
       showTips()
     })
 
@@ -31,8 +31,7 @@ function tooltipsPlugin(opts?: { xLabels: (string|number)[] }): uPlot.Plugin {
   }
 
   function setCursor(u: uPlot) {
-    // console.log(u, opts)
-    let {left = 0, top = 0, idx = 0} = u.cursor
+    let { left = 0, top = 0, idx = 0 } = u.cursor
     if (idx == null) {
       idx = 0
     }
@@ -42,8 +41,10 @@ function tooltipsPlugin(opts?: { xLabels: (string|number)[] }): uPlot.Plugin {
     const x = opts?.xLabels ? opts.xLabels[idx] : u.data[0][idx]
     const y = u.data[1][idx]
 
-    if (typeof(x) === 'number' && typeof(y) === 'number') {
-      ttc.innerHTML = `<span class="x-value">${u.scales.x.time ? new Date(x*1000).toISOString().split('T')[0] : x}</span>&nbsp;&nbsp;${y.toLocaleString()}`
+    if (typeof x === 'number' && typeof y === 'number') {
+      ttc.innerHTML = `<span class="x-value">${
+        u.scales.x.time ? new Date(x * 1000).toISOString().split('T')[0] : x
+      }</span>&nbsp;&nbsp;${y.toLocaleString()}`
     }
     const cursorX = u.over.getBoundingClientRect().x + left
     const cursorY = u.over.getBoundingClientRect().y + top
@@ -53,8 +54,8 @@ function tooltipsPlugin(opts?: { xLabels: (string|number)[] }): uPlot.Plugin {
     if (cursorY + ttc.offsetHeight > document.documentElement.clientHeight - 16) {
       top -= ttc.offsetHeight
     }
-    ttc.style.left = left + "px"
-    ttc.style.top = top + "px"
+    ttc.style.left = left + 'px'
+    ttc.style.top = top + 'px'
   }
 
   return {
@@ -65,4 +66,4 @@ function tooltipsPlugin(opts?: { xLabels: (string|number)[] }): uPlot.Plugin {
   }
 }
 
-export { tooltipsPlugin };
+export { tooltipsPlugin }

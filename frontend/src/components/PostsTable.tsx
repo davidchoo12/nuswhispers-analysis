@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { Post } from '../models';
-import './PostsTable.css';
+import { useEffect, useState } from 'react'
+import { Post } from '../models'
+import './PostsTable.css'
 
 interface PostsTableProps {
   csvData: Post[]
@@ -9,6 +9,7 @@ interface PostsTableProps {
 export default function PostsTable({ csvData }: PostsTableProps) {
   const [fulltextRows, setFulltextRows] = useState<boolean[]>([])
   useEffect(() => setFulltextRows(csvData.map(() => false)), [csvData])
+
   return (
     <table className="border border-collapse">
       <thead>
@@ -37,22 +38,25 @@ export default function PostsTable({ csvData }: PostsTableProps) {
             </td>
             <td>
               <span className={`${fulltextRows[i] ? '' : 'line-clamp-2'} whitespace-pre-line`}>{d.text}</span>
-              {fulltextRows[i] ? (<br />) : ''}
-              <span className='text-blue-600 underline cursor-pointer' onClick={() => {
-                const copy = Array.from(fulltextRows)
-                copy[i] = !copy[i]
-                console.log('fulltextRows', copy)
-                setFulltextRows(copy)
-              }}>
+              {fulltextRows[i] ? <br /> : ''}
+              <span
+                className="text-blue-600 underline cursor-pointer"
+                onClick={() => {
+                  const copy = Array.from(fulltextRows)
+                  copy[i] = !copy[i]
+                  console.log('fulltextRows', copy)
+                  setFulltextRows(copy)
+                }}
+              >
                 {fulltextRows[i] ? 'less' : 'more'}
               </span>
             </td>
-            <td className='text-right'>{d.likes}</td>
-            <td className='text-right'>{d.comments}</td>
-            <td className='text-right'>{d.shares}</td>
+            <td className="text-right">{d.likes}</td>
+            <td className="text-right">{d.comments}</td>
+            <td className="text-right">{d.shares}</td>
           </tr>
         ))}
       </tbody>
     </table>
-  );
+  )
 }

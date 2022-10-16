@@ -17,7 +17,7 @@ function TopPostsByMetric({ title, metricDataset, timedeltas }: TopPostsByMetric
   return (
     <Section title={title} level={3}>
       <ButtonGroup
-        options={Object.entries(timedeltas).map(([value, name]) => ({name, value}))}
+        options={Object.entries(timedeltas).map(([value, name]) => ({ name, value }))}
         onChange={(value: string) => setSelectedTimedelta(value)}
       />
       <PostsTable csvData={metricDataset[selectedTimedelta].slice(0, 10)} />
@@ -26,7 +26,7 @@ function TopPostsByMetric({ title, metricDataset, timedeltas }: TopPostsByMetric
 }
 
 const metrics = ['likes', 'comments', 'shares']
-const timedeltas = {'all': 'All Time', 'year': 'This Year', 'month': 'This Month', 'week': 'This Week'}
+const timedeltas = { all: 'All Time', year: 'This Year', month: 'This Month', week: 'This Week' }
 const titles = ['Top 10 most liked posts', 'Top 10 most commented posts', 'Top 10 most shared posts']
 
 type TimedeltaPostDataset = Record<string, Post[]>
@@ -44,20 +44,19 @@ export default function TopPosts() {
 
   useEffect(() => {
     const promises: Promise<ParseResult<Post>>[] = []
-    const metricTimedeltas: {metric: string, timedelta: string}[] = []
+    const metricTimedeltas: { metric: string; timedelta: string }[] = []
     for (const metric of metrics) {
       for (const timedelta of Object.keys(timedeltas)) {
         const csvUrl = `/data/top-posts/${metric}-${timedelta}.csv`
         promises.push(FetchCsv<Post>(csvUrl))
-        metricTimedeltas.push({metric, timedelta})
+        metricTimedeltas.push({ metric, timedelta })
       }
     }
 
-    Promise.all(promises)
-    .then(results => {
+    Promise.all(promises).then((results) => {
       const queriedDatasets: MetricTimedeltaPostDataset = {}
       for (const [i, result] of results.entries()) {
-        const {metric, timedelta} = metricTimedeltas[i]
+        const { metric, timedelta } = metricTimedeltas[i]
         if (!queriedDatasets[metric]) {
           queriedDatasets[metric] = {}
         }
@@ -66,15 +65,11 @@ export default function TopPosts() {
       setDatasets(queriedDatasets)
     })
   }, [])
+
   return (
-    <Section title='Top Posts' level={2}>
+    <Section title="Top Posts" level={2}>
       {metrics.map((metric, i) => (
-        <TopPostsByMetric
-          key={metric}
-          title={titles[i]}
-          metricDataset={datasets[metric]}
-          timedeltas={timedeltas}
-        />
+        <TopPostsByMetric key={metric} title={titles[i]} metricDataset={datasets[metric]} timedeltas={timedeltas} />
       ))}
     </Section>
   )

@@ -40,30 +40,9 @@ export default function PostsFrequency() {
   const [datasets, setDatasets] = useState<TimedeltaFrequencyDataset>({})
   const [selectedTimedelta, setSelectedTimedelta] = useState<string>('year')
   useEffect(() => {
-    const promises: Promise<ParseResult<Frequency>>[] = datasetConfigs.map(conf => FetchCsv<Frequency>(conf.url))
-    // for (const datasetConfig of datasetConfigs) {
-    //   Papa.parse(datasetConfig.url, {
-    //     download: true,
-    //     header: true,
-    //     dynamicTyping: true,
-    //     skipEmptyLines: true,
-    //     complete: result => {
-    //       if (result.errors.length > 0) {
-    //         console.error('parse data failed', result.errors)
-    //         return
-    //       }
-    //       let transposed = result.meta.fields.map(field => result.data.map(row => row[field]))
-    //       transposed[0] = transposed[0].map(timestamp => Date.parse(timestamp)/1000 || parseInt(timestamp))
-    //       setDatasets(datasets => {
-    //         datasets[datasetConfig.id] = transposed
-    //         return datasets
-    //       })
-    //     }
-    //   })
-    // }
+    const promises: Promise<ParseResult<Frequency>>[] = datasetConfigs.map((conf) => FetchCsv<Frequency>(conf.url))
 
-    Promise.all(promises)
-    .then(results => {
+    Promise.all(promises).then((results) => {
       const queriedDatasets: TimedeltaFrequencyDataset = {}
       for (const [i, result] of results.entries()) {
         const timedelta = datasetConfigs[i].id
@@ -74,10 +53,17 @@ export default function PostsFrequency() {
   }, [])
 
   const frequencies = datasets[selectedTimedelta] || []
-  const xySeries: [number[], number[]] = [frequencies.map(f => Date.parse(f.post_time)/1000 || parseInt(f.post_time)), frequencies.map(f => f.count)]
+  const xySeries: [number[], number[]] = [
+    frequencies.map((f) => Date.parse(f.post_time) / 1000 || parseInt(f.post_time)),
+    frequencies.map((f) => f.count),
+  ]
+
   return (
     <Section title="Posts Frequency" level={2}>
-      <ButtonGroup options={datasetConfigs.map(config => ({name: config.name, value: config.id}))} onChange={(value: string) => setSelectedTimedelta(value)}/>
+      <ButtonGroup
+        options={datasetConfigs.map((config) => ({ name: config.name, value: config.id }))}
+        onChange={(value: string) => setSelectedTimedelta(value)}
+      />
       <TimelineChart data={xySeries} isXAxisDateType={!['hourofday', 'minuteofday'].includes(selectedTimedelta)} />
     </Section>
   )

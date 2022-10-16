@@ -5,20 +5,20 @@ import { tooltipsPlugin } from './UplotPlugins'
 import './TimelineChart.css'
 
 interface TimelineChartProps {
-  data: [(number|string)[], number[]]
+  data: [(number | string)[], number[]]
   isXAxisDateType?: boolean
   isCategorical?: boolean
 }
 
-export default function TimelineChart({ data, isXAxisDateType=true, isCategorical=false }: TimelineChartProps) {
-  const chartRef = useRef<HTMLDivElement>(null);
-  // console.log('data', data)
+export default function TimelineChart({ data, isXAxisDateType = true, isCategorical = false }: TimelineChartProps) {
+  const chartRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!data || chartRef.current === null) {
       return
     }
-    let uplotData: [number[], number[]] = [[],[]] // copy so that original data is not mutated
+
+    let uplotData: [number[], number[]] = [[], []] // copy so that original data is not mutated
     const xLabels = [...data[0]]
     if (isCategorical) {
       uplotData[0] = [...xLabels.keys()]
@@ -27,7 +27,6 @@ export default function TimelineChart({ data, isXAxisDateType=true, isCategorica
     }
     uplotData[1] = [...data[1]]
 
-    chartRef.current.innerHTML = ''
     const opts: uPlot.Options = {
       width: 1200,
       height: 600,
@@ -45,17 +44,15 @@ export default function TimelineChart({ data, isXAxisDateType=true, isCategorica
           fill: 'white',
         },
       },
-      plugins: [
-        tooltipsPlugin(isCategorical ? { xLabels } : undefined),
-      ],
-      tzDate: ts => uPlot.tzDate(new Date(ts * 1e3), 'Etc/UTC'),
+      plugins: [tooltipsPlugin(isCategorical ? { xLabels } : undefined)],
+      tzDate: (ts) => uPlot.tzDate(new Date(ts * 1e3), 'Etc/UTC'),
       series: [
         {},
         {
           stroke: '#0057b7',
           width: 1,
           fill: 'rgba(0, 87, 183,0.15)',
-        }
+        },
       ],
       legend: {
         show: false,
@@ -85,17 +82,19 @@ export default function TimelineChart({ data, isXAxisDateType=true, isCategorica
             width: 1,
           },
         },
-      ]
+      ],
     }
+
+    chartRef.current.innerHTML = ''
     const elem = chartRef.current
     new uPlot(opts, uplotData, elem)
+
     return () => {
       if (elem?.innerHTML) {
         elem.innerHTML = ''
       }
     }
-  }, [data, isXAxisDateType, isCategorical]);
-  return (
-    <div ref={chartRef}></div>
-  );
+  }, [data, isXAxisDateType, isCategorical])
+
+  return <div ref={chartRef}></div>
 }

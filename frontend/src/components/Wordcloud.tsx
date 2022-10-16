@@ -7,11 +7,11 @@ interface WordcloudProps {
 
 export default function Wordcloud({ wordWeights }: WordcloudProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  // console.log(sum, wordWeights)
+
   useEffect(() => {
     const sum = wordWeights.reduce((a, e) => a + e[1], 0)
     const options = {
-      list: wordWeights.map(([word, weight]) => [word, weight/sum]),
+      list: wordWeights.map(([word, weight]) => [word, weight / sum]),
       weightFactor: 200,
       rotationSteps: 2,
     }
@@ -23,7 +23,6 @@ export default function Wordcloud({ wordWeights }: WordcloudProps) {
       }
     }
   }, [wordWeights])
-  return (
-    <canvas ref={canvasRef}></canvas>
-  )
+
+  return <canvas ref={canvasRef}></canvas>
 }

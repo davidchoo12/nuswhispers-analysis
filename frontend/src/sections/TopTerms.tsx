@@ -9,21 +9,23 @@ export default function TopTerms() {
   const [currPage, setCurrPage] = useState(1) // 1 indexed for pagination
   const pageSize = 20
   const entries = Object.entries(wordcloudData)
-  const sliceStart = pageSize * (currPage-1)
+  const sliceStart = pageSize * (currPage - 1)
   const sliceEnd = pageSize * currPage
   const entriesToShow = entries.reverse().slice(sliceStart, sliceEnd)
 
   useEffect(() => {
     fetch('/data/top-terms/terms.json')
-      .then(res => res.json())
-      .then(data => setWordcloudData(data))
+      .then((res) => res.json())
+      .then((data) => setWordcloudData(data))
   }, [])
 
   return (
     <Section title="Most mentioned words per week" level={2}>
       <Pagination
         currentPage={currPage}
-        onPageChange={(newPage) => {setCurrPage(newPage)}}
+        onPageChange={(newPage) => {
+          setCurrPage(newPage)
+        }}
         pageSize={pageSize}
         totalCount={entries.length}
       />

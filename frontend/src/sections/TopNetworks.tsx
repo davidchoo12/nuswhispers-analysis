@@ -51,18 +51,17 @@ export default function TopNetworks() {
       postPromises.push(FetchCsv<Post>(postCsvUrl))
     }
 
-    Promise.allSettled(networkPromises)
-    .then(promiseResults => {
+    Promise.allSettled(networkPromises).then((promiseResults) => {
       const datasets: SizeParsedNetworkDataset = {}
       for (const [i, promiseResult] of promiseResults.entries()) {
         if (promiseResult.status === 'rejected') {
           continue
         }
-        const parsedNetworks: ParsedNetwork[] = promiseResult.value.data.map(row => ({
+        const parsedNetworks: ParsedNetwork[] = promiseResult.value.data.map((row) => ({
           root: row.root,
-          nodes: row.nodes.split(',').map(e => parseInt(e)),
+          nodes: row.nodes.split(',').map((e) => parseInt(e)),
           edges: JSON.parse(row.edges),
-          longest_path: row.longest_path.split(',').map(e => parseInt(e)),
+          longest_path: row.longest_path.split(',').map((e) => parseInt(e)),
         }))
         const size = sizes[i]
         datasets[size] = parsedNetworks
@@ -70,8 +69,7 @@ export default function TopNetworks() {
       setNetworkDatasets(datasets)
     })
 
-    Promise.allSettled(postPromises)
-    .then(promisesResults => {
+    Promise.allSettled(postPromises).then((promisesResults) => {
       const datasets: SizePostDataset = {}
       for (const [i, promiseResult] of promisesResults.entries()) {
         if (promiseResult.status === 'rejected') {
@@ -87,32 +85,31 @@ export default function TopNetworks() {
   return (
     <Section title="Most controversial posts" level={2}>
       <Section title="Biggest networks" level={3}>
-        <ButtonGroup
-          options={nthOptions}
-          onChange={(value) => setSelectedNthBiggest(value)}
-        />
+        <ButtonGroup options={nthOptions} onChange={(value) => setSelectedNthBiggest(value)} />
         <PostsNetwork
           nodes={networkDatasets?.biggest?.[selectedNthBiggest]?.nodes || []}
           edges={networkDatasets?.biggest?.[selectedNthBiggest]?.edges || []}
           highlightNodes={[networkDatasets?.biggest?.[selectedNthBiggest]?.root || 0]}
         />
-        <PostsTable csvData={postDatasets?.biggest?.filter(post => {
-          return networkDatasets?.biggest?.[selectedNthBiggest]?.nodes?.includes(post.cid)
-        })} />
-      </Section>
-      <Section title="Longest networks" level={3}>
-        <ButtonGroup
-          options={nthOptions}
-          onChange={(value) => setSelectedNthLongest(value)}
+        <PostsTable
+          csvData={postDatasets?.biggest?.filter((post) => {
+            return networkDatasets?.biggest?.[selectedNthBiggest]?.nodes?.includes(post.cid)
+          })}
         />
+      </Section>
+
+      <Section title="Longest networks" level={3}>
+        <ButtonGroup options={nthOptions} onChange={(value) => setSelectedNthLongest(value)} />
         <PostsNetwork
           nodes={networkDatasets?.longest?.[selectedNthLongest]?.longest_path || []}
           edges={networkDatasets?.longest?.[selectedNthLongest]?.edges || []}
-          highlightEdges={networkDatasets?.longest?.[selectedNthLongest]?.longest_path?.map((e,i,a) => ([e,a[i+1]]))}
+          highlightEdges={networkDatasets?.longest?.[selectedNthLongest]?.longest_path?.map((e, i, a) => [e, a[i + 1]])}
         />
-        <PostsTable csvData={postDatasets?.longest?.filter(post => {
-          return networkDatasets?.longest?.[selectedNthLongest]?.longest_path?.includes(post.cid)
-        })} />
+        <PostsTable
+          csvData={postDatasets?.longest?.filter((post) => {
+            return networkDatasets?.longest?.[selectedNthLongest]?.longest_path?.includes(post.cid)
+          })}
+        />
       </Section>
     </Section>
   )

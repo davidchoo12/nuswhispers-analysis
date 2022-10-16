@@ -27,7 +27,6 @@ const useHeadingsData = () => {
 
   useEffect(() => {
     const headingElements: HTMLHeadingElement[] = Array.from(document.querySelectorAll('h2, h3'))
-
     const newNestedHeadings = getNestedHeadings(headingElements)
     setNestedHeadings(newNestedHeadings)
   }, [])
@@ -49,22 +48,19 @@ function useHighlightMarker(nestedHeadings: NestedHeadings[]) {
     if (!nestedHeadings || nestedHeadings.length === 0) {
       return
     }
+
     const toc = document.querySelector('.toc') as Element
     const tocPath: SVGPathElement = document.querySelector('.toc-marker path') as SVGPathElement
     let tocItems: TocItem[] = []
-
     // Fraction of viewport height that the element must cross before it's considered visible
     const TOP_MARGIN = 0.1
     const BOTTOM_MARGIN = 0.2
-
     let pathLength = 0
 
     function sync() {
       let windowHeight = window.innerHeight
-
       let pathStart = pathLength
       let pathEnd = 0
-
       let visibleItems = 0
       let lastItemAbove = tocItems[0]
 
@@ -74,7 +70,6 @@ function useHighlightMarker(nestedHeadings: NestedHeadings[]) {
         if (targetBounds.bottom <= windowHeight * TOP_MARGIN) {
           lastItemAbove = item
         }
-
         if (targetBounds.bottom > windowHeight * TOP_MARGIN && targetBounds.top < windowHeight * (1 - BOTTOM_MARGIN)) {
           pathStart = Math.min(item.pathStart, pathStart)
           pathEnd = Math.max(item.pathEnd, pathEnd)
@@ -96,13 +91,12 @@ function useHighlightMarker(nestedHeadings: NestedHeadings[]) {
       // Draw the path
       if (pathStart < pathEnd) {
         tocPath.setAttribute('stroke-dashoffset', '1')
-        tocPath.setAttribute('stroke-dasharray', '1, '+ pathStart +', '+ (pathEnd - pathStart) +', ' + pathLength)
+        tocPath.setAttribute('stroke-dasharray', '1, ' + pathStart + ', ' + (pathEnd - pathStart) + ', ' + pathLength)
       }
     }
 
     function drawPath() {
       const listItems = [].slice.call(toc.querySelectorAll('li')) as HTMLLIElement[]
-
       // Cache element references and measurements
       for (const item of listItems) {
         let anchor = item.querySelector('a') as HTMLAnchorElement
@@ -159,6 +153,7 @@ function useHighlightMarker(nestedHeadings: NestedHeadings[]) {
     window.addEventListener('scroll', sync, false)
     const observer = new ResizeObserver(sync)
     observer.observe(document.body)
+
     return () => {
       window.removeEventListener('scroll', sync, false)
       observer.disconnect()
@@ -169,23 +164,43 @@ function useHighlightMarker(nestedHeadings: NestedHeadings[]) {
 export default function TableOfContent() {
   const nestedHeadings = useHeadingsData()
   useHighlightMarker(nestedHeadings)
+
   return (
-    <nav className='toc'>
-      <ul className='relative mt-20'>
+    <nav className="toc">
+      <ul className="relative mt-20">
         {nestedHeadings.map((heading) => (
           <li key={heading.id} className={'text-xl pl-3 my-0.5'}>
-            <a href={`#${heading.id}`} className={'no-underline text-gray-400'}>{heading.title}</a>
+            <a href={`#${heading.id}`} className={'no-underline text-gray-400'}>
+              {heading.title}
+            </a>
             <ul className={`ml-6`}>
-              {heading.items && heading.items.map(child => (
-                <li key={child.id} className={'text-lg pl-3'}>
-                  <a href={`#${child.id}`} className={'no-underline text-gray-400'}>{child.title}</a>
-                </li>
-              ))}
+              {heading.items &&
+                heading.items.map((child) => (
+                  <li key={child.id} className={'text-lg pl-3'}>
+                    <a href={`#${child.id}`} className={'no-underline text-gray-400'}>
+                      {child.title}
+                    </a>
+                  </li>
+                ))}
             </ul>
           </li>
         ))}
-        <svg className="toc-marker absolute top-0 left-0 w-full h-full -z-10" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
-          <path className="transition-all duration-300" stroke="#444" strokeWidth="3" fill="transparent" strokeDasharray="0, 0, 0, 1000" strokeLinecap="round" strokeLinejoin="round" transform="translate(-0.5, -0.5)" />
+        <svg
+          className="toc-marker absolute top-0 left-0 w-full h-full -z-10"
+          width="200"
+          height="200"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            className="transition-all duration-300"
+            stroke="#444"
+            strokeWidth="3"
+            fill="transparent"
+            strokeDasharray="0, 0, 0, 1000"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            transform="translate(-0.5, -0.5)"
+          />
         </svg>
       </ul>
     </nav>
