@@ -1,8 +1,13 @@
 import { useEffect, useState } from 'react';
+import { Post } from '../models';
 import './PostsTable.css';
 
-export default function PostsTable({ csvData }) {
-  const [fulltextRows, setFulltextRows] = useState([])
+interface PostsTableProps {
+  csvData: Post[]
+}
+
+export default function PostsTable({ csvData }: PostsTableProps) {
+  const [fulltextRows, setFulltextRows] = useState<boolean[]>([])
   useEffect(() => setFulltextRows(csvData.map(() => false)), [csvData])
   return (
     <table className="border border-collapse">

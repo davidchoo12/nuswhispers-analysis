@@ -1,6 +1,12 @@
 import Heading from './Heading'
 
-export default function Section({ children, title, level }) {
+interface SectionProps {
+  children: React.ReactNode
+  title: string
+  level: number
+}
+
+export default function Section({ children, title, level }: SectionProps) {
   return (
     <section className="py-3">
       <Heading title={title} level={level} />

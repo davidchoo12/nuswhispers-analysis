@@ -1,7 +1,20 @@
-export default function Heading({ title, level }) {
+interface HeadingProps {
+  title: string
+  level: number
+}
+enum HeadingTag {
+  h1 = 'h1',
+  h2 = 'h2',
+  h3 = 'h3',
+  h4 = 'h4',
+  h5 = 'h5',
+  h6 = 'h6',
+}
+
+export default function Heading({ title, level }: HeadingProps) {
   const id = encodeURIComponent(title.toLowerCase().replaceAll(' ', '-'))
-  const Hx = `h${level}`
-  const levelClass = {
+  const Hx = `h${level}` as HeadingTag
+  const levelClass: Record<number, string> = {
     2: 'text-3xl',
     3: 'text-2xl',
   }

@@ -1,54 +1,60 @@
-import Papa from 'papaparse'
+import { ParseResult } from 'papaparse'
 import { useState, useEffect } from 'react'
 import ButtonGroup from '../components/ButtonGroup'
 import Section from '../components/Section'
 import TimelineChart from '../components/TimelineChart'
+import FetchCsv from '../CsvFetcher'
+import { Distribution } from '../models'
 
 const metrics = {'likes': 'Likes', 'comments': 'Comments', 'shares': 'Shares'}
 
-// type DatasetCombo = {
-//   metric: string
-//   data: any[]
-// }
+type MetricDistributionDataset = Record<string, Distribution[]>
 
 export default function MetricsDistribution() {
-  const [datasets, setDatasets] = useState({})
-  const [selectedMetric, setSelectedMetric] = useState('likes')
+  const [datasets, setDatasets] = useState<MetricDistributionDataset>({})
+  const [selectedMetric, setSelectedMetric] = useState<string>('likes')
   useEffect(() => {
-    const promises = []
+    const promises: Promise<ParseResult<Distribution>>[] = []
     for (const metric of Object.keys(metrics)) {
       const csvUrl = `/data/metrics-distribution/${metric}.csv`
-      promises.push(new Promise((resolve) => {
-        Papa.parse(csvUrl, {
-          download: true,
-          header: true,
-          dynamicTyping: true,
-          skipEmptyLines: true,
-          complete: result => {
-            if (result.errors.length > 0) {
-              console.error('parse data failed', csvUrl, result.errors)
-              resolve({metric, data: []})
-            }
-            let transposed = result.meta.fields.map(field => result.data.map(row => row[field]))
-            transposed[0] = transposed[0].map(label => label.toString())
-            resolve({metric, data: transposed})
-          }
-        })
-      }))
+      promises.push(FetchCsv<Distribution>(csvUrl))
+
+      // promises.push(new Promise((resolve) => {
+      //   Papa.parse(csvUrl, {
+      //     download: true,
+      //     header: true,
+      //     dynamicTyping: true,
+      //     skipEmptyLines: true,
+      //     complete: result => {
+      //       if (result.errors.length > 0) {
+      //         console.error('parse data failed', csvUrl, result.errors)
+      //         resolve({metric, data: []})
+      //       }
+      //       let transposed = result.meta.fields.map(field => result.data.map(row => row[field]))
+      //       transposed[0] = transposed[0].map(label => label.toString())
+      //       resolve({metric, data: transposed})
+      //     }
+      //   })
+      // }))
     }
+
     Promise.all(promises)
     .then(results => {
-      const queriedDatasets = {}
-      for (const {metric, data} of results) {
-        queriedDatasets[metric] = data
+      const queriedDatasets: MetricDistributionDataset = {}
+      for (const [i, result] of results.entries()) {
+        const metric = Object.keys(metrics)[i]
+        queriedDatasets[metric] = result.data
       }
       setDatasets(queriedDatasets)
     })
   }, [])
+
+  const distributions = datasets[selectedMetric] || []
+  const xySeries: [string[], number[]] = [distributions.map(d => d.range.toString()), distributions.map(d => d.count)]
   return (
     <Section title="Metrics Distribution" level={2}>
-      <ButtonGroup options={Object.entries(metrics).map(([k,v]) => ({name: v, value: k}))} onChange={(value) => setSelectedMetric(value)}/>
-      <TimelineChart data={datasets[selectedMetric]} isXAxisDateType={false} isCategorical={true} />
+      <ButtonGroup options={Object.entries(metrics).map(([k,v]) => ({name: v, value: k}))} onChange={(value: string) => setSelectedMetric(value)}/>
+      <TimelineChart data={xySeries} isXAxisDateType={false} isCategorical={true} />
     </Section>
   )
 }

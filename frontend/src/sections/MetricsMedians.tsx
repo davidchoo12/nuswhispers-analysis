@@ -1,22 +1,10 @@
-import Papa from 'papaparse'
+import { ParseResult } from 'papaparse'
 import { useEffect, useState } from 'react'
 import ButtonGroup from '../components/ButtonGroup'
 import Section from '../components/Section'
 import TimelineChart from '../components/TimelineChart'
-
-function MetricMedians({ title, metricDataset, timedeltas }) {
-  const [selectedTimedelta, setSelectedTimedelta] = useState(Object.keys(timedeltas)[0])
-  // console.log('MetricMedians metricDataset[selectedTimedelta]', metricDataset[selectedTimedelta])
-  return (
-    <Section title={title} level={3}>
-      <ButtonGroup
-        options={Object.entries(timedeltas).map(([value, name]) => ({name, value}))}
-        onChange={(value) => setSelectedTimedelta(value)}
-      />
-      <TimelineChart data={[...metricDataset[selectedTimedelta]]} isXAxisDateType={!['hourofday', 'minuteofday'].includes(selectedTimedelta)} />
-    </Section>
-  )
-}
+import FetchCsv from '../CsvFetcher'
+import { Median } from '../models'
 
 const metrics = ['likes', 'comments', 'shares']
 const timedeltas = {
@@ -29,49 +17,80 @@ const timedeltas = {
 }
 const titles = ['Median Likes', 'Median Comments', 'Median Shares']
 
+interface MetricMediansProps {
+  title: string
+  timedeltaMedians: Record<string, Median[]>
+  // timedeltas: Record<string, string>
+}
+
+function MetricMedians({ title, timedeltaMedians }: MetricMediansProps) {
+  const [selectedTimedelta, setSelectedTimedelta] = useState<string>(Object.keys(timedeltas)[0])
+  // console.log('MetricMedians metricDataset[selectedTimedelta]', metricDataset[selectedTimedelta])
+  // transpose [{X: 1, Y: 10}, {X: 2, Y: 20}] => [[1,2], [10,20]]
+  const medians = timedeltaMedians[selectedTimedelta]
+  const xySeries: [number[], number[]] = [medians.map(m => Date.parse(m.post_time)/1000 || parseInt(m.post_time)), medians.map(m => m.median)]
+  return (
+    <Section title={title} level={3}>
+      <ButtonGroup
+        options={Object.entries(timedeltas).map(([value, name]) => ({name, value}))}
+        onChange={(value: string) => setSelectedTimedelta(value)}
+      />
+      <TimelineChart data={xySeries} isXAxisDateType={!['hourofday', 'minuteofday'].includes(selectedTimedelta)} />
+    </Section>
+  )
+}
+
+type TimedeltaMedianDataset = Record<string, Median[]>
+type MetricTimedeltaMedianDataset = Record<string, TimedeltaMedianDataset>
+
 export default function MetricsMedians() {
-  const defaultDataset = {}
+  const defaultDataset: MetricTimedeltaMedianDataset = {}
   for (const metric of metrics) {
     defaultDataset[metric] = {}
     for (const timedelta of Object.keys(timedeltas)) {
       defaultDataset[metric][timedelta] = []
     }
   }
-  const [datasets, setDatasets] = useState(defaultDataset)
+  const [datasets, setDatasets] = useState<MetricTimedeltaMedianDataset>(defaultDataset)
 
   useEffect(() => {
-    const promises = []
+    const promises: Promise<ParseResult<Median>>[] = []
+    const metricTimedeltas: {metric: string, timedelta: string}[] = []
     for (const metric of metrics) {
       for (const timedelta of Object.keys(timedeltas)) {
         const csvUrl = `/data/metrics-medians/${metric}-${timedelta}.csv`
-        promises.push(new Promise((resolve) => {
-          Papa.parse(csvUrl, {
-            download: true,
-            header: true,
-            skipEmptyLines: true,
-            complete: result => {
-              if (result.errors.length > 0) {
-                console.error('parse data failed', csvUrl, result.errors)
-                resolve({metric, timedelta, data: []})
-              }
-              let transposed = result.meta.fields.map(field => result.data.map(row => row[field]))
-              transposed[0] = transposed[0].map(timestamp => Date.parse(timestamp)/1000 || parseInt(timestamp))
-              resolve({metric, timedelta, data: transposed})
-            }
-          })
-        }))
+        promises.push(FetchCsv<Median>(csvUrl))
+        metricTimedeltas.push({metric, timedelta})
+
+        // promises.push(new Promise((resolve) => {
+        //   Papa.parse(csvUrl, {
+        //     download: true,
+        //     header: true,
+        //     skipEmptyLines: true,
+        //     complete: result => {
+        //       if (result.errors.length > 0) {
+        //         console.error('parse data failed', csvUrl, result.errors)
+        //         resolve({metric, timedelta, data: []})
+        //       }
+        //       let transposed = result.meta.fields.map(field => result.data.map(row => row[field]))
+        //       transposed[0] = transposed[0].map(timestamp => Date.parse(timestamp)/1000 || parseInt(timestamp))
+        //       resolve({metric, timedelta, data: transposed})
+        //     }
+        //   })
+        // }))
       }
     }
+
     Promise.all(promises)
     .then(results => {
-      const queriedDatasets = {}
-      for (const {metric, timedelta, data} of results) {
+      const queriedDatasets: MetricTimedeltaMedianDataset = {}
+      for (const [i, result] of results.entries()) {
+        const {metric, timedelta} = metricTimedeltas[i]
         if (!queriedDatasets[metric]) {
           queriedDatasets[metric] = {}
         }
-        queriedDatasets[metric][timedelta] = data
+        queriedDatasets[metric][timedelta] = result.data
       }
-      // console.log('MetricsMedians promise all setting datasets')
       setDatasets(queriedDatasets)
     })
     .catch(console.error)
@@ -82,8 +101,8 @@ export default function MetricsMedians() {
         <MetricMedians
           key={metric}
           title={titles[i]}
-          metricDataset={datasets[metric]}
-          timedeltas={timedeltas}
+          timedeltaMedians={datasets[metric]}
+          // timedeltas={timedeltas}
         />
       ))}
     </Section>

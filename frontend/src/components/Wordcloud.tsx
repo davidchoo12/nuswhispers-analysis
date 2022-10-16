@@ -1,8 +1,12 @@
 import { useRef, useEffect } from 'react'
-import wordcloudPlot from 'wordcloud/src/wordcloud2'
+import wordcloudPlot from 'wordcloud'
 
-export default function Wordcloud({ title, wordWeights }) {
-  const canvasRef = useRef(null)
+interface WordcloudProps {
+  wordWeights: [string, number][]
+}
+
+export default function Wordcloud({ wordWeights }: WordcloudProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
   // console.log(sum, wordWeights)
   useEffect(() => {
     const sum = wordWeights.reduce((a, e) => a + e[1], 0)
@@ -11,7 +15,7 @@ export default function Wordcloud({ title, wordWeights }) {
       weightFactor: 200,
       rotationSteps: 2,
     }
-    const elem = canvasRef.current
+    const elem = canvasRef.current as HTMLElement
     wordcloudPlot(elem, options)
     return () => {
       if (elem?.innerHTML) {

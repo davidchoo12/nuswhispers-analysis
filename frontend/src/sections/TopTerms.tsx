@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react'
 import Pagination from '../components/Pagination'
 import Section from '../components/Section'
 import Wordcloud from '../components/Wordcloud'
+import { Terms } from '../models'
 
 export default function TopTerms() {
-  const [wordcloudData, setWordcloudData] = useState({})
+  const [wordcloudData, setWordcloudData] = useState<Terms>({})
   const [currPage, setCurrPage] = useState(1) // 1 indexed for pagination
   const pageSize = 20
   const entries = Object.entries(wordcloudData)

@@ -1,8 +1,10 @@
-import Papa from 'papaparse'
+import { ParseResult } from 'papaparse'
 import { useEffect, useState } from 'react'
 import ButtonGroup from '../components/ButtonGroup'
 import Section from '../components/Section'
 import TimelineChart from '../components/TimelineChart'
+import FetchCsv from '../CsvFetcher'
+import { Frequency } from '../models'
 
 const datasetConfigs = [
   {
@@ -32,35 +34,51 @@ const datasetConfigs = [
   },
 ]
 
+type TimedeltaFrequencyDataset = Record<string, Frequency[]>
+
 export default function PostsFrequency() {
-  const [datasets, setDatasets] = useState({})
-  const [selectedTimedelta, setSelectedTimedelta] = useState('year')
+  const [datasets, setDatasets] = useState<TimedeltaFrequencyDataset>({})
+  const [selectedTimedelta, setSelectedTimedelta] = useState<string>('year')
   useEffect(() => {
-    for (const datasetConfig of datasetConfigs) {
-      Papa.parse(datasetConfig.url, {
-        download: true,
-        header: true,
-        dynamicTyping: true,
-        skipEmptyLines: true,
-        complete: result => {
-          if (result.errors.length > 0) {
-            console.error('parse data failed', result.errors)
-            return
-          }
-          let transposed = result.meta.fields.map(field => result.data.map(row => row[field]))
-          transposed[0] = transposed[0].map(timestamp => Date.parse(timestamp)/1000 || parseInt(timestamp))
-          setDatasets(datasets => {
-            datasets[datasetConfig.id] = transposed
-            return datasets
-          })
-        }
-      })
-    }
+    const promises: Promise<ParseResult<Frequency>>[] = datasetConfigs.map(conf => FetchCsv<Frequency>(conf.url))
+    // for (const datasetConfig of datasetConfigs) {
+    //   Papa.parse(datasetConfig.url, {
+    //     download: true,
+    //     header: true,
+    //     dynamicTyping: true,
+    //     skipEmptyLines: true,
+    //     complete: result => {
+    //       if (result.errors.length > 0) {
+    //         console.error('parse data failed', result.errors)
+    //         return
+    //       }
+    //       let transposed = result.meta.fields.map(field => result.data.map(row => row[field]))
+    //       transposed[0] = transposed[0].map(timestamp => Date.parse(timestamp)/1000 || parseInt(timestamp))
+    //       setDatasets(datasets => {
+    //         datasets[datasetConfig.id] = transposed
+    //         return datasets
+    //       })
+    //     }
+    //   })
+    // }
+
+    Promise.all(promises)
+    .then(results => {
+      const queriedDatasets: TimedeltaFrequencyDataset = {}
+      for (const [i, result] of results.entries()) {
+        const timedelta = datasetConfigs[i].id
+        queriedDatasets[timedelta] = result.data
+      }
+      setDatasets(queriedDatasets)
+    })
   }, [])
+
+  const frequencies = datasets[selectedTimedelta] || []
+  const xySeries: [number[], number[]] = [frequencies.map(f => Date.parse(f.post_time)/1000 || parseInt(f.post_time)), frequencies.map(f => f.count)]
   return (
     <Section title="Posts Frequency" level={2}>
-      <ButtonGroup options={datasetConfigs.map(config => ({name: config.name, value: config.id}))} onChange={(value) => setSelectedTimedelta(value)}/>
-      <TimelineChart data={datasets[selectedTimedelta]} isXAxisDateType={!['hourofday', 'minuteofday'].includes(selectedTimedelta)} />
+      <ButtonGroup options={datasetConfigs.map(config => ({name: config.name, value: config.id}))} onChange={(value: string) => setSelectedTimedelta(value)}/>
+      <TimelineChart data={xySeries} isXAxisDateType={!['hourofday', 'minuteofday'].includes(selectedTimedelta)} />
     </Section>
   )
 }

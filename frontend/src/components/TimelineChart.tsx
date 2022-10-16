@@ -4,21 +4,31 @@ import 'uplot/dist/uPlot.min.css'
 import { tooltipsPlugin } from './UplotPlugins'
 import './TimelineChart.css'
 
-export default function TimelineChart({ data, isXAxisDateType=true, isCategorical=false }) {
-  const chartRef = useRef(null);
+interface TimelineChartProps {
+  data: [(number|string)[], number[]]
+  isXAxisDateType?: boolean
+  isCategorical?: boolean
+}
+
+export default function TimelineChart({ data, isXAxisDateType=true, isCategorical=false }: TimelineChartProps) {
+  const chartRef = useRef<HTMLDivElement>(null);
   // console.log('data', data)
 
   useEffect(() => {
-    if (!data || data.length === 0) {
+    if (!data || chartRef.current === null) {
       return
     }
-    let uplotData = [...data] // copy so that original data is not mutated
-    const xLabels = [...uplotData[0]]
+    let uplotData: [number[], number[]] = [[],[]] // copy so that original data is not mutated
+    const xLabels = [...data[0]]
     if (isCategorical) {
       uplotData[0] = [...xLabels.keys()]
+    } else {
+      uplotData[0] = [...data[0]] as number[]
     }
+    uplotData[1] = [...data[1]]
+
     chartRef.current.innerHTML = ''
-    const opts = {
+    const opts: uPlot.Options = {
       width: 1200,
       height: 600,
       scales: {

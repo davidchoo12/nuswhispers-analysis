@@ -1,6 +1,14 @@
-import { useState } from "react"
+import { useState } from 'react'
 
-export default function ButtonGroup({ options, onChange }) {
+interface ButtonGroupProps<T> {
+  options: {
+    name: string,
+    value: T,
+  }[],
+  onChange: (value: T) => any,
+}
+
+export default function ButtonGroup<T>({ options, onChange }: ButtonGroupProps<T & (string|number)>) {
   const [value, setValue] = useState(options?.[0]?.value)
   return (
     <div>

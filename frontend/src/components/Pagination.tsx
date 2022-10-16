@@ -3,9 +3,10 @@ import { useMemo } from 'react'
 
 // adapted from https://www.freecodecamp.org/news/build-a-custom-pagination-component-in-react/
 
-export const DOTS = '...'
+const DOTS = '...' as const
+type ButtonLabel = typeof DOTS|number
 
-const range = (start, end) => {
+const range = (start: number, end: number) => {
   let length = end - start + 1
   return Array.from({ length }, (_, idx) => idx + start)
 }
@@ -15,8 +16,13 @@ const usePagination = ({
   pageSize,
   siblingCount = 1,
   currentPage
+} : {
+  totalCount: number
+  pageSize: number
+  siblingCount: number
+  currentPage: number
 }) => {
-  const paginationRange = useMemo(() => {
+  const paginationRange = useMemo<ButtonLabel[]>((): ButtonLabel[] => {
     const totalPageCount = Math.ceil(totalCount / pageSize)
 
     // Pages count is determined as siblingCount + firstPage + lastPage + currentPage + 2*DOTS
@@ -67,17 +73,34 @@ const usePagination = ({
       let middleRange = range(leftSiblingIndex, rightSiblingIndex)
       return [firstPageIndex, DOTS, ...middleRange, DOTS, lastPageIndex]
     }
+
+    return []
   }, [totalCount, pageSize, siblingCount, currentPage])
 
   return paginationRange
 }
 
-function PaginationButton({ children, selected=false, disabled=false, onClick }) {
+interface PaginationButtonProps {
+  children: React.ReactNode
+  selected?: boolean
+  disabled?: boolean
+  onClick?: React.MouseEventHandler<HTMLButtonElement>
+}
+
+function PaginationButton({ children, selected=false, disabled=false, onClick }: PaginationButtonProps) {
   return (
     <button className={`border-2 transition py-1.5 px-6 m-0.5 rounded-full font-semibold disabled:opacity-50 ${selected ? 'bg-blue-600 border-blue-600 text-white' : 'bg-none border-blue-200'} ${!selected && !disabled ? 'hover:bg-blue-100' : ''} ${disabled ? 'pointer-events-none' : ''}`} disabled={disabled} onClick={onClick}>
       {children}
     </button>
   )
+}
+
+interface PaginationProps {
+  onPageChange: (value: number) => any
+  totalCount: number
+  siblingCount?: number
+  currentPage: number
+  pageSize: number
 }
 
 export default function Pagination({
@@ -86,8 +109,7 @@ export default function Pagination({
   siblingCount = 1,
   currentPage,
   pageSize,
-}) {
-  console.log('in pagination')
+}: PaginationProps) {
   const paginationRange = usePagination({
     currentPage,
     totalCount,
@@ -95,12 +117,12 @@ export default function Pagination({
     pageSize
   })
 
-  console.log(currentPage, paginationRange)
   if (currentPage === 0 || paginationRange.length < 2) {
     return null
   }
 
   let lastPage = paginationRange[paginationRange.length - 1]
+
   return (
     <div>
       <PaginationButton
@@ -109,13 +131,14 @@ export default function Pagination({
       >
         &#8249;
       </PaginationButton>
+
       {paginationRange.map(pageNumber => {
         if (pageNumber === DOTS) {
-          return <PaginationButton disabled>…</PaginationButton>
+          return <PaginationButton key={pageNumber} disabled>…</PaginationButton>
         }
-
         return (
           <PaginationButton
+            key={pageNumber}
             selected={pageNumber === currentPage}
             onClick={() => onPageChange(pageNumber)}
           >
@@ -123,38 +146,13 @@ export default function Pagination({
           </PaginationButton>
         )
       })}
+
       <PaginationButton
         disabled={currentPage === lastPage}
         onClick={() => onPageChange(currentPage+1)}
       >
         &#8250;
       </PaginationButton>
-      {/* <li
-        className={`pagination-item ${currentPage === 1 ? 'disabled' : ''}`}
-        onClick={() => onPageChange(currentPage - 1)}
-      >
-        <span className="text-base">&#8249;</span>
-      </li>
-      {paginationRange.map(pageNumber => {
-        if (pageNumber === DOTS) {
-          return <li className="pagination-item dots">…</li>
-        }
-
-        return (
-          <li
-            className={`pagination-item ${pageNumber === currentPage ? 'selected' : ''}`}
-            onClick={() => onPageChange(pageNumber)}
-          >
-            {pageNumber}
-          </li>
-        )
-      })}
-      <li
-        className={`pagination-item ${currentPage === lastPage ? 'disabled' : ''}`}
-        onClick={() => onPageChange(currentPage + 1)}
-      >
-        <span className="text-base">&#8250;</span>
-      </li> */}
     </div>
   )
 }

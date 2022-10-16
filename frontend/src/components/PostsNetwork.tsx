@@ -1,15 +1,20 @@
 import { useRef, useEffect } from 'react'
 // import WordCloud from 'wordcloud/src/wordcloud2'
-import { Network, DataSet } from 'vis-network/standalone/esm/vis-network'
+import { Network, DataSet, Options } from 'vis-network/standalone/esm/vis-network'
 
-// todo highlight root nodes
-export default function PostsNetwork({ nodes=[], edges=[], highlightNodes=[], highlightEdges=[] }) {
+interface PostsNetworkProps {
+  nodes: (string|number)[]
+  edges: (string|number)[][]
+  highlightNodes?: (string|number)[]
+  highlightEdges?: (string|number)[][]
+}
+
+export default function PostsNetwork({ nodes=[], edges=[], highlightNodes=[], highlightEdges=[] }: PostsNetworkProps) {
   // console.log('rendering PostsNetwork with nodes ', nodes, 'edges', edges, 'highlightEdges', highlightEdges)
-  const divRef = useRef(null)
+  const divRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    console.log('postsnetwork useeffect', nodes)
-    const options = {
+    const options: Options = {
       nodes: {
         font: {
           size: 30,
@@ -25,11 +30,11 @@ export default function PostsNetwork({ nodes=[], edges=[], highlightNodes=[], hi
         width: 2,
       },
       layout: {
-        randomSeed: 1,
+        randomSeed: 0,
         // hierarchical: {
         //   levelSeparation: 200,
         //   nodeSpacing: 50,
-        //   direction: 'DU',
+        //   direction: 'LR',
         //   sortMethod: 'directed',
         //   shakeTowards: 'leaves',
         // }
@@ -43,11 +48,10 @@ export default function PostsNetwork({ nodes=[], edges=[], highlightNodes=[], hi
       edges: new DataSet(edges.map(edge => ({from: edge[0], to: edge[1], color: highlightEdges.find(e => e[0]===edge[0] && e[1]===edge[1]) ? {color: 'rgba(251, 191, 36)'} : undefined}))),
     }
     const elem = divRef.current
-    if (nodes.length > 0) {
+    if (nodes.length > 0 && elem != null) {
       new Network(elem, data, options)
     }
     return () => {
-      console.log('postsnetwork cleanup')
       if (elem?.innerHTML) {
         elem.innerHTML = ''
       }
@@ -62,7 +66,7 @@ export default function PostsNetwork({ nodes=[], edges=[], highlightNodes=[], hi
     <div className='relative'>
       <div ref={divRef} className='h-96'></div>
       <div className='absolute top-0 left-0 bg-white'>
-        <div>1 -&gt; 2 means post #1 mentions post #2.</div>
+        <div>X -&gt; Y means post #X is tagged by post #Y.</div>
         <div>Nodes: {nodes.length}</div>
         <div>Edges: {edges.length}</div>
       </div>
