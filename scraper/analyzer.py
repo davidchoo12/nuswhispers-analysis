@@ -26,7 +26,9 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 start_time = datetime.now()
 log_format = '%(relativeCreated)8d %(message)s'
 logging.basicConfig(level=logging.DEBUG, format=log_format)
-file_handler = logging.FileHandler('logs/analyzer.txt', 'w')
+path = Path('logs/analyzer.txt')
+path.parent.mkdir(parents=True, exist_ok=True)
+file_handler = logging.FileHandler(path, 'w')
 file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(logging.Formatter(log_format))
 logger = logging.getLogger()
