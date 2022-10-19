@@ -66,7 +66,7 @@ df.insert(1, 'cid', df.pop('cid'))
 
 # start processing
 now = datetime.now(timezone.utc)
-now = datetime.fromisoformat('2021-04-25T00:00:00+00:00') # for testing
+# now = datetime.fromisoformat('2021-04-25T00:00:00+00:00') # for testing
 logger.info('now %s', now.isoformat())
 
 # src https://stackoverflow.com/a/65151218/4858751
@@ -439,4 +439,4 @@ def gen_all():
 #     save_file(json.dumps(data), f'bundled.json')
 
 if __name__ == '__main__':
-    gen_top_posts()
+    gen_all()

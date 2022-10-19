@@ -18,11 +18,8 @@ jobs:
       - name: Generate analyzer output
         run: python analyzer.py
         working-directory: ./scraper
-      - name: Zip output
-        run: tar -czf analyzer-output.tar.gz analyzer-output
-        working-directory: ./scraper
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: data
-          path: ./scraper/analyzer-output.tar.gz
+          name: analyzer-output
+          path: ./scraper/analyzer-output/*
