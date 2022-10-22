@@ -1,5 +1,6 @@
 import uPlot from 'uplot'
 
+// adapted from https://leeoniya.github.io/uPlot/demos/tooltips.html
 function tooltipsPlugin(opts?: { xLabels: (string | number)[] }): uPlot.Plugin {
   let ttc: HTMLDivElement
   function init(u: uPlot, opts: uPlot.Options, data: uPlot.AlignedData) {
@@ -14,7 +15,7 @@ function tooltipsPlugin(opts?: { xLabels: (string | number)[] }): uPlot.Plugin {
     }
 
     function showTips() {
-      ttc.style.display = 'block' //null
+      ttc.style.display = 'block'
     }
 
     over.addEventListener('mouseleave', () => {

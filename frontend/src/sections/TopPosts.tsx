@@ -47,7 +47,7 @@ export default function TopPosts() {
     const metricTimedeltas: { metric: string; timedelta: string }[] = []
     for (const metric of metrics) {
       for (const timedelta of Object.keys(timedeltas)) {
-        const csvUrl = `/data/top-posts/${metric}-${timedelta}.csv`
+        const csvUrl = `./data/top-posts/${metric}-${timedelta}.csv`
         promises.push(FetchCsv<Post>(csvUrl))
         metricTimedeltas.push({ metric, timedelta })
       }

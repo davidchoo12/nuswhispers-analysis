@@ -60,7 +60,7 @@ export default function MetricsMedians() {
     const metricTimedeltas: { metric: string; timedelta: string }[] = []
     for (const metric of metrics) {
       for (const timedelta of Object.keys(timedeltas)) {
-        const csvUrl = `/data/metrics-medians/${metric}-${timedelta}.csv`
+        const csvUrl = `./data/metrics-medians/${metric}-${timedelta}.csv`
         promises.push(FetchCsv<Median>(csvUrl))
         metricTimedeltas.push({ metric, timedelta })
       }

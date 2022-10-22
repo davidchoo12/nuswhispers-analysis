@@ -45,9 +45,9 @@ export default function TopNetworks() {
     const networkPromises: Promise<ParseResult<Network>>[] = []
     const postPromises: Promise<ParseResult<Post>>[] = []
     for (const size of sizes) {
-      const networkCsvUrl = `/data/top-networks/${size}.csv`
+      const networkCsvUrl = `./data/top-networks/${size}.csv`
       networkPromises.push(FetchCsv<Network>(networkCsvUrl))
-      const postCsvUrl = `/data/top-networks/${size}-posts.csv`
+      const postCsvUrl = `./data/top-networks/${size}-posts.csv`
       postPromises.push(FetchCsv<Post>(postCsvUrl))
     }
 

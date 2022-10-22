@@ -14,7 +14,7 @@ export default function TopTerms() {
   const entriesToShow = entries.reverse().slice(sliceStart, sliceEnd)
 
   useEffect(() => {
-    fetch('/data/top-terms/terms.json')
+    fetch('./data/top-terms/terms.json')
       .then((res) => res.json())
       .then((data) => setWordcloudData(data))
   }, [])
