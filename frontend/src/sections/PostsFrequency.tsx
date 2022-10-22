@@ -10,27 +10,27 @@ const datasetConfigs = [
   {
     id: 'year',
     name: 'Per Year',
-    url: '/data/posts-freq/year.csv',
+    url: './data/posts-freq/year.csv',
   },
   {
     id: 'month',
     name: 'Per Month',
-    url: '/data/posts-freq/month.csv',
+    url: './data/posts-freq/month.csv',
   },
   {
     id: 'week',
     name: 'Per Week',
-    url: '/data/posts-freq/week.csv',
+    url: './data/posts-freq/week.csv',
   },
   {
     id: 'day',
     name: 'Per Day',
-    url: '/data/posts-freq/day.csv',
+    url: './data/posts-freq/day.csv',
   },
   {
     id: 'hourofday',
     name: 'Per Hour of Day',
-    url: '/data/posts-freq/hourofday.csv',
+    url: './data/posts-freq/hourofday.csv',
   },
 ]
 

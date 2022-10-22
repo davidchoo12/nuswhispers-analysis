@@ -16,7 +16,7 @@ export default function MetricsDistribution() {
   useEffect(() => {
     const promises: Promise<ParseResult<Distribution>>[] = []
     for (const metric of Object.keys(metrics)) {
-      const csvUrl = `/data/metrics-distribution/${metric}.csv`
+      const csvUrl = `./data/metrics-distribution/${metric}.csv`
       promises.push(FetchCsv<Distribution>(csvUrl))
     }
 
