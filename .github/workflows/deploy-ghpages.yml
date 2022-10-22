@@ -1,0 +1,81 @@
+name: 'Deploy Github Pages'
+
+on:
+  workflow_dispatch:
+    skip_analyzer:
+      description: 'Skip analyze data'
+      type: boolean
+      default: false
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout master branch
+        uses: actions/checkout@v3
+        with:
+          ref: master
+          fetch-depth: 10 # merge-base with gh-pages should be the previous commit but just in case gh-pages didn't get updated
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v3
+        with:
+          ref: gh-pages
+          fetch-depth: 10 # merge-base with master should be latest 1 commit but just in case gh-pages is manually pushed
+      - name: Git config
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email github-actions[bot]@users.noreply.github.com
+      - name: Merge changes from master pausing before creating merge commit
+        run: git merge origin/master --no-commit --no-ff -X theirs
+      - name: Check if data changed
+        id: check_data
+        run: |
+          if [[ `git diff --name-only origin/master gh-pages | grep 'scraper/data'` ]]
+          then
+            echo 'changed=true' >> $GITHUB_OUTPUT
+          else
+            echo 'changed=false' >> $GITHUB_OUTPUT
+          fi
+      - if: ${{ !inputs.skip_analyzer && steps.check_data.outputs.changed == 'true' }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+      - name: Generate analyzer output
+        if: ${{ !inputs.skip_analyzer && steps.check_data.outputs.changed == 'true' }}
+        run: |
+          pip install -r requirements.txt
+          python analyzer.py
+        working-directory: ./scraper
+      - uses: actions/setup-node@v3
+        with:
+          node-version: latest
+      - name: Build frontend
+        run: |
+          yarn install --immutable
+          yarn build
+        working-directory: ./frontend
+      - name: Add build files, commit, push
+        run: |
+          git add -f scraper/analyzer-output frontend/build
+          git commit -m "Build `git rev-parse --short MERGE_HEAD`"
+          git push
+      - uses: actions/configure-pages@v2
+      - uses: actions/upload-pages-artifact@v1
+        with:
+          path: frontend/build
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+    # Deploy to the github-pages environment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v1
