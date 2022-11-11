@@ -1,4 +1,4 @@
-package handler
+package main
 
 import (
 	"bytes"
@@ -49,7 +49,9 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// glob data csv
-	paths, _ := filepath.Glob("scraper/data/data-0-*.csv")
+	pwd, _ := os.Getwd()
+	fmt.Println(pwd)
+	paths, _ := filepath.Glob(filepath.Join(pwd, "scraper/data/data-0-*.csv"))
 	dataCsvPath := paths[0]
 	fmt.Println(dataCsvPath)
 
