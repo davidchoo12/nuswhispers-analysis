@@ -40,13 +40,12 @@ function tooltipsPlugin(opts?: { xLabels: (string | number)[] }): uPlot.Plugin {
       return
     }
     const x = opts?.xLabels ? opts.xLabels[idx] : u.data[0][idx]
-    const y = u.data[1][idx]
+    const y = u.data[1][idx] || 0
 
-    if (typeof x === 'number' && typeof y === 'number') {
-      ttc.innerHTML = `<span class="x-value">${
-        u.scales.x.time ? new Date(x * 1000).toISOString().split('T')[0] : x
-      }</span>&nbsp;&nbsp;${y.toLocaleString()}`
-    }
+    ttc.innerHTML = `<span class="x-value">${
+      u.scales.x.time && typeof x === 'number' ? new Date(x * 1000).toISOString().split('T')[0] : x
+    }</span>&nbsp;&nbsp;${y.toLocaleString()}`
+
     const cursorX = u.over.getBoundingClientRect().x + left
     const cursorY = u.over.getBoundingClientRect().y + top
     if (cursorX + ttc.offsetWidth > document.documentElement.clientWidth - 16) {

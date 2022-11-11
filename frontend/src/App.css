@@ -38,14 +38,3 @@
     margin-right: 400px;
   }
 }
-nav {
-  position: fixed;
-  right: 0;
-  height: 100%;
-  width: 400px;
-}
-
-main {
-  width: calc(100vw - 400px);
-  padding: 3em;
-}

@@ -10,7 +10,7 @@
     @apply text-lg;
   }
   a {
-    @apply text-blue-600 underline;
+    @apply text-blue-700 dark:text-blue-500 opacity-90 transition hover:opacity-100 no-underline;
   }
 }
 @tailwind components;
@@ -26,4 +26,8 @@ body {
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+p {
+  margin: 1rem 0;
 }

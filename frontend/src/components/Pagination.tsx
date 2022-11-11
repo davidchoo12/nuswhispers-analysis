@@ -69,18 +69,21 @@ const usePagination = ({
 }
 
 interface PaginationButtonProps {
+  className?: string
   children: React.ReactNode
   selected?: boolean
   disabled?: boolean
   onClick?: React.MouseEventHandler<HTMLButtonElement>
 }
 
-function PaginationButton({ children, selected = false, disabled = false, onClick }: PaginationButtonProps) {
+function PaginationButton({ className, children, selected = false, disabled = false, onClick }: PaginationButtonProps) {
   return (
     <button
-      className={`border-2 transition py-1.5 px-6 m-0.5 rounded-full font-semibold disabled:opacity-50 ${
-        selected ? 'bg-blue-600 border-blue-600 text-white' : 'bg-none border-blue-200'
-      } ${!selected && !disabled ? 'hover:bg-blue-100' : ''} ${disabled ? 'pointer-events-none' : ''}`}
+      className={`border-2 border-emerald-600 transition py-1.5 px-6 mr-3 my-1 rounded-lg font-semibold disabled:opacity-50 ${
+        selected ? 'bg-emerald-600 text-white' : 'bg-none'
+      } ${!selected && !disabled ? 'hover:bg-emerald-200 hover:dark:bg-emerald-800' : ''} ${
+        disabled ? 'pointer-events-none' : ''
+      } ${className}`}
       disabled={disabled}
       onClick={onClick}
     >
@@ -100,7 +103,7 @@ interface PaginationProps {
 export default function Pagination({
   onPageChange,
   totalCount,
-  siblingCount = 1,
+  siblingCount = 0,
   currentPage,
   pageSize,
 }: PaginationProps) {
@@ -118,7 +121,7 @@ export default function Pagination({
   let lastPage = paginationRange[paginationRange.length - 1]
 
   return (
-    <div>
+    <div className="my-5">
       <PaginationButton disabled={currentPage === 1} onClick={() => onPageChange(currentPage - 1)}>
         &#8249;
       </PaginationButton>
@@ -126,7 +129,7 @@ export default function Pagination({
       {paginationRange.map((pageNumber) => {
         if (pageNumber === DOTS) {
           return (
-            <PaginationButton key={pageNumber} disabled>
+            <PaginationButton key={pageNumber} className="border-none" disabled>
               …
             </PaginationButton>
           )
