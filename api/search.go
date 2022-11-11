@@ -50,7 +50,18 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	// glob data csv
 	pwd, _ := os.Getwd()
-	fmt.Println(pwd)
+	fmt.Println("pwd", pwd)
+	err = filepath.Walk(".",
+		func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			fmt.Println(path, info.Size())
+			return nil
+		})
+	if err != nil {
+		fmt.Println("filepath walk err", err)
+	}
 	paths, _ := filepath.Glob(filepath.Join(pwd, "scraper/data/data-0-*.csv"))
 	dataCsvPath := paths[0]
 	fmt.Println(dataCsvPath)
