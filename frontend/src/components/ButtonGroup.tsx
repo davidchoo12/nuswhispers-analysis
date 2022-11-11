@@ -12,7 +12,7 @@ export default function ButtonGroup<T>({ options, onChange }: ButtonGroupProps<T
   const [value, setValue] = useState(options?.[0]?.value)
 
   return (
-    <div>
+    <div className="my-5">
       {options &&
         options.map((option) => (
           <button
@@ -22,10 +22,10 @@ export default function ButtonGroup<T>({ options, onChange }: ButtonGroupProps<T
               setValue(option?.value)
               onChange(option?.value)
             }}
-            className={`border-2 transition py-1.5 px-6 m-0.5 rounded-full font-semibold ${
+            className={`border-2 border-emerald-600 transition py-1.5 px-6 mr-5 my-1 rounded-lg font-semibold ${
               value === option?.value
-                ? 'bg-blue-600 border-blue-600 text-white'
-                : 'bg-none border-blue-200 hover:bg-blue-100'
+                ? 'bg-emerald-600 text-primary-bright'
+                : 'bg-none hover:bg-emerald-200 hover:dark:bg-emerald-800'
             }`}
           >
             {option?.name}

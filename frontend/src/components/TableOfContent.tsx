@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import './TableOfContent.css'
+import { useState, useEffect, useContext } from 'react'
+import { ThemeContext } from '../ThemeContext'
 
 // adapted from https://www.emgoto.com/react-table-of-contents/
 
@@ -74,9 +74,11 @@ function useHighlightMarker(nestedHeadings: NestedHeadings[]) {
           pathStart = Math.min(item.pathStart, pathStart)
           pathEnd = Math.max(item.pathEnd, pathEnd)
           visibleItems += 1
-          item.listItem.classList.add('active')
+          item.listItem.classList.add('font-bold')
+          item.listItem.classList.remove('font-normal')
         } else {
-          item.listItem.classList.remove('active')
+          item.listItem.classList.remove('font-bold')
+          item.listItem.classList.add('font-normal')
         }
       }
 
@@ -85,7 +87,8 @@ function useHighlightMarker(nestedHeadings: NestedHeadings[]) {
         pathStart = lastItemAbove.pathStart
         pathEnd = lastItemAbove.pathEnd
         visibleItems = 1
-        lastItemAbove.listItem.classList.add('active')
+        lastItemAbove.listItem.classList.add('font-bold')
+        lastItemAbove.listItem.classList.remove('font-normal')
       }
 
       // Draw the path
@@ -164,45 +167,69 @@ function useHighlightMarker(nestedHeadings: NestedHeadings[]) {
 export default function TableOfContent() {
   const nestedHeadings = useHeadingsData()
   useHighlightMarker(nestedHeadings)
+  const theme = useContext(ThemeContext)
+
+  const [hidden, setHidden] = useState(true)
 
   return (
-    <nav className="toc">
-      <ul className="relative mt-20">
-        {nestedHeadings.map((heading) => (
-          <li key={heading.id} className={'text-xl pl-3 my-0.5'}>
-            <a href={`#${heading.id}`} className={'no-underline text-gray-400'}>
-              {heading.title}
-            </a>
-            <ul className={`ml-6`}>
-              {heading.items &&
-                heading.items.map((child) => (
-                  <li key={child.id} className={'text-lg pl-3'}>
-                    <a href={`#${child.id}`} className={'no-underline text-gray-400'}>
-                      {child.title}
-                    </a>
-                  </li>
-                ))}
-            </ul>
-          </li>
-        ))}
+    <>
+      <button
+        className="lg:hidden fixed z-30 top-20 right-16 p-3 rounded-full bg-secondary-bright transition"
+        onClick={() => setHidden(!hidden)}
+      >
         <svg
-          className="toc-marker absolute top-0 left-0 w-full h-full -z-10"
-          width="200"
-          height="200"
           xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          className="w-6 h-6"
         >
-          <path
-            className="transition-all duration-300"
-            stroke="#444"
-            strokeWidth="3"
-            fill="transparent"
-            strokeDasharray="0, 0, 0, 1000"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            transform="translate(-0.5, -0.5)"
-          />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
         </svg>
-      </ul>
-    </nav>
+      </button>
+      <nav
+        className={`toc fixed z-20 right-0 top-0 lg:top-24 h-full w-full p-16 lg:p-0 bg-primary-bright dark:bg-primary-dark overflow-y-scroll lg:w-[400px] ${
+          hidden ? 'hidden' : ''
+        } lg:block`}
+      >
+        <ul className="relative pl-4">
+          {nestedHeadings.map((heading) => (
+            <li key={heading.id} className={'text-md pl-3 my-3'}>
+              <a href={`#${heading.id}`} className={'no-underline text-primary-dark dark:text-primary-bright'}>
+                {heading.title}
+              </a>
+              <ul className={`ml-6`}>
+                {heading.items &&
+                  heading.items.map((child) => (
+                    <li key={child.id} className={'text-sm pl-3 my-1.5'}>
+                      <a href={`#${child.id}`} className={'no-underline text-primary-dark dark:text-primary-bright'}>
+                        {child.title}
+                      </a>
+                    </li>
+                  ))}
+              </ul>
+            </li>
+          ))}
+          <svg
+            className="toc-marker absolute top-0 left-0 w-full h-full -z-10"
+            width="200"
+            height="200"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              className="transition-all duration-300"
+              stroke={theme.palette.fgColor}
+              strokeWidth="3"
+              fill="transparent"
+              strokeDasharray="0, 0, 0, 1000"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              transform="translate(-0.5, 0.5)"
+            />
+          </svg>
+        </ul>
+      </nav>
+    </>
   )
 }

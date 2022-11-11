@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from 'react'
+import { useContext, useEffect, useRef } from 'react'
 import uPlot from 'uplot'
 import 'uplot/dist/uPlot.min.css'
 import { tooltipsPlugin } from './UplotPlugins'
 import './TimelineChart.css'
+import { ThemeContext } from '../ThemeContext'
 
 interface TimelineChartProps {
   data: [(number | string)[], number[]]
@@ -12,7 +13,10 @@ interface TimelineChartProps {
 
 export default function TimelineChart({ data, isXAxisDateType = true, isCategorical = false }: TimelineChartProps) {
   const chartRef = useRef<HTMLDivElement>(null)
+  const theme = useContext(ThemeContext)
+  console.log('timelinechart render', theme.palette)
 
+  const lineColor = '#10b981'
   useEffect(() => {
     if (!data || chartRef.current === null) {
       return
@@ -27,9 +31,10 @@ export default function TimelineChart({ data, isXAxisDateType = true, isCategori
     }
     uplotData[1] = [...data[1]]
 
+    const parentWidth = chartRef.current.parentElement!.clientWidth
     const opts: uPlot.Options = {
-      width: 1200,
-      height: 600,
+      width: parentWidth,
+      height: Math.max(parentWidth / 3, 300),
       scales: {
         x: {
           time: isXAxisDateType,
@@ -39,7 +44,7 @@ export default function TimelineChart({ data, isXAxisDateType = true, isCategori
       cursor: {
         points: {
           size: 8,
-          stroke: 'blue',
+          stroke: lineColor,
           width: 2,
           fill: 'white',
         },
@@ -49,9 +54,9 @@ export default function TimelineChart({ data, isXAxisDateType = true, isCategori
       series: [
         {},
         {
-          stroke: '#0057b7',
+          stroke: lineColor,
           width: 1,
-          fill: 'rgba(0, 87, 183,0.15)',
+          fill: theme.palette.graphFill,
         },
       ],
       legend: {
@@ -60,12 +65,13 @@ export default function TimelineChart({ data, isXAxisDateType = true, isCategori
       axes: [
         {
           font: '12px "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+          stroke: theme.palette.fgColor,
           ticks: {
-            stroke: 'rgba(0,0,0,0.1)',
+            stroke: theme.palette.graphGrid,
             width: 1,
           },
           grid: {
-            stroke: 'rgba(0,0,0,0.1)',
+            stroke: theme.palette.graphGrid,
             width: 1,
           },
           values: isCategorical ? xLabels : undefined,
@@ -73,12 +79,13 @@ export default function TimelineChart({ data, isXAxisDateType = true, isCategori
         {
           size: 60,
           font: '12px "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+          stroke: theme.palette.fgColor,
           ticks: {
-            stroke: 'rgba(0,0,0,0.1)',
+            stroke: theme.palette.graphGrid,
             width: 1,
           },
           grid: {
-            stroke: 'rgba(0,0,0,0.1)',
+            stroke: theme.palette.graphGrid,
             width: 1,
           },
         },
@@ -94,7 +101,7 @@ export default function TimelineChart({ data, isXAxisDateType = true, isCategori
         elem.innerHTML = ''
       }
     }
-  }, [data, isXAxisDateType, isCategorical])
+  }, [data, isXAxisDateType, isCategorical, theme])
 
   return <div ref={chartRef}></div>
 }

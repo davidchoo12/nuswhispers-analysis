@@ -2,9 +2,7 @@
   display: inline-block;
   width: calc(100% - 0.5em);
   font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  margin: 0.25em;
   padding: 0.5em 0;
-  background: rgba(255, 255, 255, 0.8);
   border-radius: 4px;
 }
 #overlay {
@@ -28,4 +26,7 @@
 }
 .tooltip .x-value {
   font-size: 0.9em;
+}
+.u-cursor-x, .u-cursor-y, .u-cursor-pt {
+  z-index: 1;
 }

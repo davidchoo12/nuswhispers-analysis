@@ -1,0 +1,32 @@
+:root {
+  --g1: rgb(15,23,42); /* primary-dark = slate-900 */
+  --g2: rgb(6,78,59); /* secondary-dark = emerald-900 */
+}
+
+@keyframes background-pan {
+  0% {
+    background-position: 0px 1000px;
+  }
+  
+  100% {
+    background-position: 1000px 0px;
+  }
+}
+
+#navbar {
+  /* animation: background-pan 30s linear infinite; */
+  background: repeating-linear-gradient(45deg, var(--g1) 0%, var(--g2), var(--g1) 50%);
+  background-size: 1000px 1000px;
+  overflow: hidden;
+  margin: 0px;
+}
+
+#navbar > .bgtiles {
+  position: absolute;
+  z-index: 0;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 10 10" enable-background="new 0 0 10 10" xml:space="preserve" height="10px" width="10px"><rect x="0" y="0" width="9" height="9" style="fill:rgb(15,23,42);stroke:transparent;stroke-width:1;" /></svg>');
+  content: "";
+  height: 100%;
+  width: 100%;
+  display: inline-block;
+}

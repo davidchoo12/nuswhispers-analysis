@@ -1,6 +1,7 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useContext } from 'react'
 // import WordCloud from 'wordcloud/src/wordcloud2'
-import { Network, DataSet, Options } from 'vis-network/standalone/esm/vis-network'
+import { Network, DataSet, Options } from 'vis-network/standalone/esm'
+import { ThemeContext } from '../ThemeContext'
 
 interface PostsNetworkProps {
   nodes: (string | number)[]
@@ -16,13 +17,16 @@ export default function PostsNetwork({
   highlightEdges = [],
 }: PostsNetworkProps) {
   const divRef = useRef<HTMLDivElement>(null)
+  const theme = useContext(ThemeContext)
 
   useEffect(() => {
     const options: Options = {
       nodes: {
         font: {
           size: 30,
+          color: theme.palette.fgColor,
         },
+        color: theme.palette.bgSecondary,
       },
       edges: {
         arrows: {
@@ -32,6 +36,7 @@ export default function PostsNetwork({
           },
         },
         width: 2,
+        color: theme.palette.fgSecondary,
       },
       layout: {
         randomSeed: 0,
@@ -44,7 +49,19 @@ export default function PostsNetwork({
         // }
       },
       interaction: {
+        dragNodes: false,
+        dragView: false,
+        selectable: false,
         zoomView: false,
+      },
+      physics: {
+        barnesHut: {
+          avoidOverlap: 0.1,
+          springLength: 50,
+        },
+        // stabilization: {
+        //   iterations: 2000,
+        // },
       },
     }
 
@@ -53,7 +70,7 @@ export default function PostsNetwork({
         nodes.map((node) => ({
           id: node,
           label: node.toString(),
-          color: highlightNodes.includes(node) ? { background: 'rgba(251, 191, 36)' } : undefined,
+          color: highlightNodes.includes(node) ? { background: theme.palette.bgHighlight } : undefined,
         }))
       ),
       edges: new DataSet(
@@ -61,7 +78,7 @@ export default function PostsNetwork({
           from: edge[0],
           to: edge[1],
           color: highlightEdges.find((e) => e[0] === edge[0] && e[1] === edge[1])
-            ? { color: 'rgba(251, 191, 36)' }
+            ? { color: theme.palette.bgHighlight }
             : undefined,
         }))
       ),
@@ -77,7 +94,7 @@ export default function PostsNetwork({
         elem.innerHTML = ''
       }
     }
-  }, [nodes, edges, highlightNodes, highlightEdges])
+  }, [nodes, edges, highlightNodes, highlightEdges, theme])
 
   if (nodes.length === 0) {
     return null
@@ -85,9 +102,9 @@ export default function PostsNetwork({
 
   return (
     <div className="relative">
-      <div ref={divRef} className="h-96"></div>
-      <div className="absolute top-0 left-0 bg-white">
-        <div>X -&gt; Y means post #X is tagged by post #Y.</div>
+      <div ref={divRef} className="h-[600px]"></div>
+      <div className="absolute top-0 left-0 bg-primary-bright dark:bg-primary-dark">
+        {/* <div>X -&gt; Y means post #X is tagged by post #Y.</div> */}
         <div>Nodes: {nodes.length}</div>
         <div>Edges: {edges.length}</div>
       </div>

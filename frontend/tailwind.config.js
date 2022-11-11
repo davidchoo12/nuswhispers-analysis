@@ -1,11 +1,22 @@
 /** @type {import('tailwindcss').Config} */
+const colors = require('tailwindcss/colors')
+
 module.exports = {
-  content: [
-    "./src/**/*.{js,jsx,ts,tsx}",
-    "./public/index.html"
-  ],
+  content: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: {
+          bright: colors.slate[200],
+          dark: colors.slate[900],
+        },
+        secondary: {
+          bright: colors.emerald[500],
+          dark: colors.emerald[900],
+        },
+      },
+    },
   },
+  darkMode: 'class',
   plugins: [require('@tailwindcss/line-clamp')],
 }
