@@ -1,7 +1,0 @@
-{
-  "functions": {
-    "api/search.go": {
-      "includeFiles": "scraper/data/data-0-*.csv"
-    }
-  }
-}
