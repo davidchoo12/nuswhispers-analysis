@@ -16,7 +16,7 @@ const themes: Record<string, Palette> = {
     fgColor: colors.slate[900],
     bgColor: colors.slate[200],
     graphFill: 'rgb(5, 150, 105, 0.15)',
-    graphGrid: colors.slate[400],
+    graphGrid: colors.slate[300],
     fgSecondary: colors.emerald[900],
     bgSecondary: colors.emerald[200],
     bgHighlight: colors.yellow[300],

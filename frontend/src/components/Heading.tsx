@@ -14,16 +14,16 @@ enum HeadingTag {
 export default function Heading({ title, level }: HeadingProps) {
   const id = encodeURIComponent(title.toLowerCase().replaceAll(' ', '-'))
   const Hx = `h${level}` as HeadingTag
-  const levelClass: Record<number, string> = {
-    2: 'text-3xl',
+  const levelSize: Record<number, string> = {
+    2: 'text-4xl',
     3: 'text-2xl',
   }
 
   return (
-    <header className="my-3">
+    <header className="my-4">
       <Hx
         id={id}
-        className={`inline ${levelClass[level] || 'text-2xl'} text-center`}
+        className={`inline ${levelSize[level] || 'text-2xl'} text-center font-semibold`}
         style={{ scrollMarginTop: '2em' }}
       >
         {title}
@@ -34,7 +34,7 @@ export default function Heading({ title, level }: HeadingProps) {
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
-          strokeWidth="1.5"
+          strokeWidth={1.5}
           stroke="currentColor"
           className="w-6 h-6 inline"
         >

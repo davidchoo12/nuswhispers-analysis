@@ -26,6 +26,12 @@ export interface Frequency {
   count: number
 }
 
+export interface MostMentionedNetwork {
+  source: number
+  neighbours: string
+  neighbours_count: number
+}
+
 export interface Network {
   root: number
   nodes: string
@@ -36,4 +42,4 @@ export interface Network {
   longest_path_length: number
 }
 
-export type Terms = Record<string, Record<string, number>>
+export type Terms = Record<string, number>

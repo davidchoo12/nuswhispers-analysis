@@ -9,12 +9,19 @@ interface TimelineChartProps {
   data: [(number | string)[], number[]]
   isXAxisDateType?: boolean
   isCategorical?: boolean
+  xAxisLabel: string
+  yAxisLabel: string
 }
 
-export default function TimelineChart({ data, isXAxisDateType = true, isCategorical = false }: TimelineChartProps) {
+export default function TimelineChart({
+  data,
+  isXAxisDateType = true,
+  isCategorical = false,
+  xAxisLabel,
+  yAxisLabel,
+}: TimelineChartProps) {
   const chartRef = useRef<HTMLDivElement>(null)
   const theme = useContext(ThemeContext)
-  console.log('timelinechart render', theme.palette)
 
   const lineColor = '#10b981'
   useEffect(() => {
@@ -43,7 +50,7 @@ export default function TimelineChart({ data, isXAxisDateType = true, isCategori
       },
       cursor: {
         points: {
-          size: 8,
+          size: 10,
           stroke: lineColor,
           width: 2,
           fill: 'white',
@@ -64,6 +71,7 @@ export default function TimelineChart({ data, isXAxisDateType = true, isCategori
       },
       axes: [
         {
+          label: xAxisLabel,
           font: '12px "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
           stroke: theme.palette.fgColor,
           ticks: {
@@ -77,9 +85,27 @@ export default function TimelineChart({ data, isXAxisDateType = true, isCategori
           values: isCategorical ? xLabels : undefined,
         },
         {
-          size: 60,
+          label: yAxisLabel,
+          // copied from https://leeoniya.github.io/uPlot/demos/axis-autosize.html
+          size: (self, values, axisIdx, cycleNum) => {
+            let axis = self.axes[axisIdx]
+            // bail out, force convergence
+            if (cycleNum > 1) {
+              // @ts-ignore
+              return axis._size
+            }
+            let axisSize = (axis.ticks?.size || 10) + (axis.gap || 5)
+            // find longest value
+            let longestVal = (values ?? []).reduce((acc, val) => (val.length > acc.length ? val : acc), '')
+            if (longestVal !== '') {
+              self.ctx.font = axis.font?.[0] ?? '12px sans-serif'
+              axisSize += self.ctx.measureText(longestVal).width / devicePixelRatio
+            }
+            return Math.ceil(axisSize)
+          },
           font: '12px "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
           stroke: theme.palette.fgColor,
+          labelGap: 10,
           ticks: {
             stroke: theme.palette.graphGrid,
             width: 1,
@@ -101,7 +127,7 @@ export default function TimelineChart({ data, isXAxisDateType = true, isCategori
         elem.innerHTML = ''
       }
     }
-  }, [data, isXAxisDateType, isCategorical, theme])
+  }, [data, isXAxisDateType, isCategorical, xAxisLabel, yAxisLabel, theme])
 
   return <div ref={chartRef}></div>
 }

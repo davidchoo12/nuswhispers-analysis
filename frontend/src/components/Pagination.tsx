@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useMemo } from 'react'
 
 // adapted from https://www.freecodecamp.org/news/build-a-custom-pagination-component-in-react/
@@ -30,7 +30,7 @@ const usePagination = ({
       If the number of pages is less than the page numbers we want to show in our
       paginationComponent, we return the range [1..totalPageCount]
     */
-    if (totalPageNumbers >= totalPageCount) {
+    if (totalPageCount <= totalPageNumbers) {
       return range(1, totalPageCount)
     }
     const leftSiblingIndex = Math.max(currentPage - siblingCount, 1)
@@ -79,7 +79,7 @@ interface PaginationButtonProps {
 function PaginationButton({ className, children, selected = false, disabled = false, onClick }: PaginationButtonProps) {
   return (
     <button
-      className={`border-2 border-emerald-600 transition py-1.5 px-6 mr-3 my-1 rounded-lg font-semibold disabled:opacity-50 ${
+      className={`border-2 border-r-0 border-emerald-600 transition py-1.5 w-11 my-1 font-semibold disabled:opacity-50 ${
         selected ? 'bg-emerald-600 text-white' : 'bg-none'
       } ${!selected && !disabled ? 'hover:bg-emerald-200 hover:dark:bg-emerald-800' : ''} ${
         disabled ? 'pointer-events-none' : ''
@@ -103,10 +103,32 @@ interface PaginationProps {
 export default function Pagination({
   onPageChange,
   totalCount,
-  siblingCount = 0,
+  // siblingCount = 10,
   currentPage,
   pageSize,
 }: PaginationProps) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [siblingCount, setSiblingCount] = useState<number>(1)
+  useEffect(() => {
+    const buttonWidth = 44 // class w-11 = 44px
+    // total buttons = 2 * siblingCount + 7 (left, first, dot, siblings, curr, siblings, dot, last, right)
+    // total width = total buttons * button width
+    // siblingCount = (total width / button width - 7) / 2
+    function fitPaginationButtons() {
+      console.log('fitting pagination buttons')
+      if (!containerRef.current?.clientWidth) {
+        return
+      }
+      let targetSiblingCount = Math.floor((Math.floor(containerRef.current?.clientWidth / buttonWidth) - 7) / 2)
+      setSiblingCount(targetSiblingCount)
+    }
+    const observer = new ResizeObserver(fitPaginationButtons)
+    observer.observe(document.body)
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [])
   const paginationRange = usePagination({
     currentPage,
     totalCount,
@@ -118,25 +140,30 @@ export default function Pagination({
     return null
   }
 
-  let lastPage = paginationRange[paginationRange.length - 1]
+  const lastPage = paginationRange[paginationRange.length - 1]
 
   return (
-    <div className="my-5">
-      <PaginationButton disabled={currentPage === 1} onClick={() => onPageChange(currentPage - 1)}>
+    <div ref={containerRef} className="my-5 text-center">
+      <PaginationButton
+        className="border-l-2 rounded-l-lg"
+        disabled={currentPage === 1}
+        onClick={() => onPageChange(currentPage - 1)}
+      >
         &#8249;
       </PaginationButton>
 
-      {paginationRange.map((pageNumber) => {
+      {paginationRange.map((pageNumber, i) => {
         if (pageNumber === DOTS) {
           return (
-            <PaginationButton key={pageNumber} className="border-none" disabled>
+            <PaginationButton key={i} className="border-none" disabled>
               …
             </PaginationButton>
           )
         }
         return (
           <PaginationButton
-            key={pageNumber}
+            key={i}
+            className={paginationRange?.[i + 1] === DOTS ? 'border-r-2' : ''}
             selected={pageNumber === currentPage}
             onClick={() => onPageChange(pageNumber)}
           >
@@ -145,7 +172,48 @@ export default function Pagination({
         )
       })}
 
-      <PaginationButton disabled={currentPage === lastPage} onClick={() => onPageChange(currentPage + 1)}>
+      <PaginationButton
+        className="border-r-2 rounded-r-lg"
+        disabled={currentPage === lastPage}
+        onClick={() => onPageChange(currentPage + 1)}
+      >
+        &#8250;
+      </PaginationButton>
+    </div>
+  )
+}
+
+interface PaginationDropdownProps {
+  onPageChange: (value: number) => any
+  currentPage: number
+  pageNames: string[]
+}
+
+export function PaginationDropdown({ onPageChange, currentPage, pageNames }: PaginationDropdownProps) {
+  const lastPage = pageNames.length
+  return (
+    <div className="my-5 flex justify-center">
+      <PaginationButton
+        className="border-l-2 rounded-l-lg"
+        disabled={currentPage === 0}
+        onClick={() => onPageChange(currentPage - 1)}
+      >
+        &#8249;
+      </PaginationButton>
+
+      <select className="border-2 border-r-0 border-emerald-600 px-1.5 my-1 font-semibold bg-transparent">
+        {pageNames.map((pageName, i) => (
+          <option key={i} selected={i === currentPage} onClick={() => onPageChange(i)}>
+            {pageName}
+          </option>
+        ))}
+      </select>
+
+      <PaginationButton
+        className="border-r-2 rounded-r-lg"
+        disabled={currentPage === lastPage - 1}
+        onClick={() => onPageChange(currentPage + 1)}
+      >
         &#8250;
       </PaginationButton>
     </div>

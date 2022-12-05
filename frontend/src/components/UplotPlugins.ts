@@ -44,16 +44,23 @@ function tooltipsPlugin(opts?: { xLabels: (string | number)[] }): uPlot.Plugin {
 
     ttc.innerHTML = `<span class="x-value">${
       u.scales.x.time && typeof x === 'number' ? new Date(x * 1000).toISOString().split('T')[0] : x
-    }</span>&nbsp;&nbsp;${y.toLocaleString()}`
-
-    const cursorX = u.over.getBoundingClientRect().x + left
-    const cursorY = u.over.getBoundingClientRect().y + top
-    if (cursorX + ttc.offsetWidth > document.documentElement.clientWidth - 16) {
+    }</span><span class="y-value">${y.toLocaleString()}</span>`
+    // console.log(left, u.over.clientWidth, top, u.over.clientHeight)
+    if (left + ttc.offsetWidth > u.over.clientWidth - 16) {
       left -= ttc.offsetWidth
     }
-    if (cursorY + ttc.offsetHeight > document.documentElement.clientHeight - 16) {
+    if (top + ttc.offsetHeight > u.over.clientHeight - 16) {
       top -= ttc.offsetHeight
     }
+
+    // const cursorX = u.over.getBoundingClientRect().x + left
+    // const cursorY = u.over.getBoundingClientRect().y + top
+    // if (cursorX + ttc.offsetWidth > document.documentElement.clientWidth - 16) {
+    //   left -= ttc.offsetWidth
+    // }
+    // if (cursorY + ttc.offsetHeight > document.documentElement.clientHeight - 16) {
+    //   top -= ttc.offsetHeight
+    // }
     ttc.style.left = left + 'px'
     ttc.style.top = top + 'px'
   }

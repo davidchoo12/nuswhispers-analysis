@@ -7,8 +7,12 @@ interface SectionProps {
 }
 
 export default function Section({ children, title, level }: SectionProps) {
+  const levelMargin: Record<number, string> = {
+    2: 'my-24',
+    3: 'my-12',
+  }
   return (
-    <section className="py-3">
+    <section className={levelMargin[level]}>
       <Heading title={title} level={level} />
       {children}
     </section>

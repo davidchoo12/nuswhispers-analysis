@@ -7,27 +7,25 @@ import FetchCsv from '../CsvFetcher'
 import { Post } from '../models'
 
 interface TopPostsByMetricProps {
-  title: string
   metricDataset: Record<string, Post[]>
   timedeltas: Record<string, string>
 }
 
-function TopPostsByMetric({ title, metricDataset, timedeltas }: TopPostsByMetricProps) {
+function TopPostsByMetric({ metricDataset, timedeltas }: TopPostsByMetricProps) {
   const [selectedTimedelta, setSelectedTimedelta] = useState(Object.keys(timedeltas)[0])
   return (
-    <Section title={title} level={3}>
+    <>
       <ButtonGroup
         options={Object.entries(timedeltas).map(([value, name]) => ({ name, value }))}
         onChange={(value: string) => setSelectedTimedelta(value)}
       />
       <PostsTable csvData={metricDataset[selectedTimedelta].slice(0, 10)} />
-    </Section>
+    </>
   )
 }
 
 const metrics = ['likes', 'comments', 'shares']
-const timedeltas = { all: 'All Time', year: 'This Year', month: 'This Month', week: 'This Week' }
-const titles = ['Top 10 most liked posts', 'Top 10 most commented posts', 'Top 10 most shared posts']
+const timedeltas = { all: 'All Time', year: 'Last Year', month: 'Last Month', week: 'Last Week' }
 
 type TimedeltaPostDataset = Record<string, Post[]>
 type MetricTimedeltaPostDataset = Record<string, TimedeltaPostDataset>
@@ -68,9 +66,28 @@ export default function TopPosts() {
 
   return (
     <Section title="Top Posts" level={2}>
-      {metrics.map((metric, i) => (
+      <p>
+        Here are the top 10 NUSWhispers posts sorted by number of likes, comments and shares. The counts here only
+        include likes, comments and shares from public accounts. In other words, these numbers are what you will see if
+        you open each facebook post in incognito mode.
+      </p>
+      {/* {metrics.map((metric, i) => (
         <TopPostsByMetric key={metric} title={titles[i]} metricDataset={datasets[metric]} timedeltas={timedeltas} />
-      ))}
+      ))} */}
+      <Section title="Top 10 Most Liked Posts" level={3}>
+        <p>
+          Likes refer specifically to only the "Like 👍" reaction. Other reactions (Love ❤️, Care 🥰, Haha 🤣, Wow 😮,
+          Sad 😢, Angry 😡) are not included. This is due to the other reaction counts were not available for data
+          mining.
+        </p>
+        <TopPostsByMetric metricDataset={datasets['likes']} timedeltas={timedeltas} />
+      </Section>
+      <Section title="Top 10 Most Commented Posts" level={3}>
+        <TopPostsByMetric metricDataset={datasets['comments']} timedeltas={timedeltas} />
+      </Section>
+      <Section title="Top 10 Most Shared Posts" level={3}>
+        <TopPostsByMetric metricDataset={datasets['shares']} timedeltas={timedeltas} />
+      </Section>
     </Section>
   )
 }

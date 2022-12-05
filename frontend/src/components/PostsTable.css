@@ -1,9 +1,20 @@
 table th,
 table td {
-  border: 1px solid gray;
+  border: 0.5px solid #6b7280; /* bottom and right borders, border-gray-500 */
   padding: 0.5em;
 }
 
+table th:first-child,
+table td:first-child {
+  /* Apply a left border on the first <td> or <th> in a row */
+  border-left-width: 1px;
+}
+
+table th {
+  border-top-width: 1px;
+  border-bottom-width: 1px;
+}
+
 tr:nth-child(even) {
-  background: rgba(128,128,128,0.15)
+  background: rgba(52, 211, 153, 0.07) /* bg-emerald-400 */
 }
