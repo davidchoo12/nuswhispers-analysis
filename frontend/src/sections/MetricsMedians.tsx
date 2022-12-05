@@ -7,37 +7,48 @@ import FetchCsv from '../CsvFetcher'
 import { Median } from '../models'
 
 const metrics = ['likes', 'comments', 'shares']
-const timedeltas = {
-  year: 'Per Year',
-  month: 'Per Month',
-  week: 'Per Week',
-  day: 'Per Day',
-  hourofday: 'Per Hour of Day',
+const timedeltas: Record<string, string> = {
+  year: 'Year',
+  month: 'Month',
+  week: 'Week',
+  day: 'Day',
+  hourofday: 'Hour of Day',
 }
-const titles = ['Median Likes', 'Median Comments', 'Median Shares']
+const titles: Record<string, string> = {
+  likes: 'Median Likes',
+  comments: 'Median Comments',
+  shares: 'Median Shares',
+}
 
 interface MetricMediansProps {
-  title: string
+  metric: string
   timedeltaMedians: Record<string, Median[]>
 }
 
-function MetricMedians({ title, timedeltaMedians }: MetricMediansProps) {
+function MetricMedians({ metric, timedeltaMedians }: MetricMediansProps) {
   const [selectedTimedelta, setSelectedTimedelta] = useState<string>(Object.keys(timedeltas)[0])
+  const isDateType = !['year', 'hourofday', 'minuteofday'].includes(selectedTimedelta)
   // console.log('MetricMedians metricDataset[selectedTimedelta]', metricDataset[selectedTimedelta])
   // transpose [{X: 1, Y: 10}, {X: 2, Y: 20}] => [[1,2], [10,20]]
   const medians = timedeltaMedians[selectedTimedelta]
   const xySeries: [number[], number[]] = [
-    medians.map((m) => Date.parse(m.post_time) / 1000 || parseInt(m.post_time)),
+    medians.map((m) => (isDateType ? Date.parse(m.post_time) / 1000 : parseInt(m.post_time))),
     medians.map((m) => m.median),
   ]
 
   return (
-    <Section title={title} level={3}>
+    <Section title={titles[metric]} level={3}>
       <ButtonGroup
-        options={Object.entries(timedeltas).map(([value, name]) => ({ name, value }))}
+        options={Object.entries(timedeltas).map(([value, name]) => ({ name: `Per ${name}`, value }))}
         onChange={(value: string) => setSelectedTimedelta(value)}
       />
-      <TimelineChart data={xySeries} isXAxisDateType={!['hourofday', 'minuteofday'].includes(selectedTimedelta)} />
+      <TimelineChart
+        data={xySeries}
+        isXAxisDateType={isDateType}
+        isCategorical={!isDateType}
+        xAxisLabel={timedeltas[selectedTimedelta]}
+        yAxisLabel={`Median no. of ${metric}`}
+      />
     </Section>
   )
 }
@@ -83,10 +94,15 @@ export default function MetricsMedians() {
 
   return (
     <Section title="Metrics Medians" level={2}>
-      {metrics.map((metric, i) => (
+      <p>
+        Here are the median counts of each metric. We can see the medians grow in time as NUSWhispers became popular. I
+        decided to use medians instead of averages as medians are not affected by the outliers, hence giving more
+        accurate expected likes/comments/shares a post would receive at the time.
+      </p>
+      {metrics.map((metric) => (
         <MetricMedians
           key={metric}
-          title={titles[i]}
+          metric={metric}
           timedeltaMedians={datasets[metric]}
           // timedeltas={timedeltas}
         />

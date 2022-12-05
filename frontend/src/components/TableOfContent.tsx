@@ -171,39 +171,63 @@ export default function TableOfContent() {
 
   const [hidden, setHidden] = useState(true)
 
+  useEffect(() => {
+    function positionButtonAndToc() {
+      const button = document.querySelector('.menuButton') as HTMLButtonElement
+      const toc = document.querySelector('.toc') as HTMLElement
+      const navbar = document.querySelector('#navbar') as HTMLElement
+      const navbarBottom = navbar.getBoundingClientRect().top + navbar.clientHeight
+      const buttonNewTop = Math.max(navbarBottom + 26, 24)
+      const tocNewTop = Math.max(navbarBottom + 2, 0)
+      button.style.top = buttonNewTop + 'px'
+      toc.style.top = tocNewTop + 'px'
+    }
+    window.addEventListener('scroll', positionButtonAndToc, false)
+    return () => {
+      window.removeEventListener('scroll', positionButtonAndToc, false)
+    }
+  }, [])
   return (
     <>
       <button
-        className="lg:hidden fixed z-30 top-20 right-16 p-3 rounded-full bg-secondary-bright transition"
+        className="menuButton lg:hidden fixed z-30 top-[90px] right-4 p-3 rounded-full bg-secondary-bright transition"
         onClick={() => setHidden(!hidden)}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
-          stroke-width="1.5"
+          strokeWidth={1.5}
           stroke="currentColor"
           className="w-6 h-6"
         >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
         </svg>
       </button>
       <nav
-        className={`toc fixed z-20 right-0 top-0 lg:top-24 h-full w-full p-16 lg:p-0 bg-primary-bright dark:bg-primary-dark overflow-y-scroll lg:w-[400px] ${
-          hidden ? 'hidden' : ''
-        } lg:block`}
+        className={`toc align-top fixed lg:sticky lg:flex-shrink-0 lg:self-start z-20 right-0 top-0 lg:top-24 w-full h-full lg:w-fit whitespace-nowrap lg:p-0 bg-primary-bright dark:bg-primary-dark overflow-y-auto ${
+          hidden ? 'hidden lg:block' : ''
+        } lg:inline-block`}
       >
-        <ul className="relative pl-4">
+        <ul className="relative px-4 mx-auto lg:mt-16">
           {nestedHeadings.map((heading) => (
-            <li key={heading.id} className={'text-md pl-3 my-3'}>
-              <a href={`#${heading.id}`} className={'no-underline text-primary-dark dark:text-primary-bright'}>
+            <li key={heading.id} className={'text-lg lg:text-base pl-3 my-6 lg:my-3'}>
+              <a
+                href={`#${heading.id}`}
+                className={'no-underline text-primary-dark dark:text-primary-bright'}
+                onClick={() => setHidden(true)}
+              >
                 {heading.title}
               </a>
               <ul className={`ml-6`}>
                 {heading.items &&
                   heading.items.map((child) => (
-                    <li key={child.id} className={'text-sm pl-3 my-1.5'}>
-                      <a href={`#${child.id}`} className={'no-underline text-primary-dark dark:text-primary-bright'}>
+                    <li key={child.id} className={'text-base lg:text-sm pl-3 my-3 lg:my-1.5'}>
+                      <a
+                        href={`#${child.id}`}
+                        className={'no-underline text-primary-dark dark:text-primary-bright'}
+                        onClick={() => setHidden(true)}
+                      >
                         {child.title}
                       </a>
                     </li>
@@ -220,7 +244,7 @@ export default function TableOfContent() {
             <path
               className="transition-all duration-300"
               stroke={theme.palette.fgColor}
-              strokeWidth="3"
+              strokeWidth={3}
               fill="transparent"
               strokeDasharray="0, 0, 0, 1000"
               strokeLinecap="round"

@@ -41,7 +41,7 @@ base_url = 'https://m.facebook.com'
 # src https://github.com/kevinzg/facebook-scraper/blob/master/facebook_scraper/facebook_scraper.py#L50
 default_headers = {
     'Accept-Language': 'en-US,en;q=0.5',
-    'Sec-Fetch-User': '?1',
+    'Accept-Encoding': 'gzip,deflate',
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8',
 }
 ses.headers.update(default_headers)
@@ -53,8 +53,8 @@ ses.headers.update(default_headers)
 page_content_re = re.compile(r'/page_content[^"]+') # for first response
 page_content_re2 = re.compile(r'\\\\\\(/page_content.+?)\\"') # for subsequent responses
 # story_ids_re = re.compile(r'/story\.php\?story_fbid=(\d+)&(?:amp;)?id=695707917166339') # old regex
-story_ids_re = re.compile(r'story_fbid&quot;:\[(\d+)\]') # for first response
-story_ids_re2 = re.compile(r'story_fbid\\\\&quot;:\[(\d+)\]') # for subsequent responses
+# story_ids_re = re.compile(r'story_fbid&quot;:\[(\d+)\]') # for first response
+story_ids_re = re.compile(r'story_fbid&quot;:\[&quot;(\d+)&quot;\]') # for subsequent responses
 
 old_post_ids = [int(l.rstrip()) for l in open('post-ids.csv').readlines()]
 
@@ -79,7 +79,7 @@ i = 0
 logger.debug('len post_ids %d', len(post_ids))
 if len(post_ids) == 0:
     res_dest = '/tmp/post-id-scraper-first-page.html'
-    logger.error('empty first page post ids, try rerun cos it may fail for no reason sometimes, saving response to file://' + res_dest)
+    logger.error('empty first page post ids, try rerun cos it may fail for no reason sometimes, saving response to ' + res_dest)
     with open(res_dest, 'w') as fd:
         fd.write(res.text)
     exit(1)
@@ -103,7 +103,11 @@ while int(curr_post_ids[-1]) > old_post_ids[-1]:
                 logger.error('exception ', exc_info=1)
     if not res.ok:
         break
-    curr_post_ids = list(dict.fromkeys(story_ids_re2.findall(res.text)))
+    res_dest = '/tmp/post-id-scraper-last-success-page.html'
+    logger.error('saving response to ' + res_dest)
+    with open(res_dest, 'w') as fd:
+        fd.write(res.text)
+    curr_post_ids = list(dict.fromkeys(story_ids_re.findall(res.text)))
     post_ids.extend(curr_post_ids)
     next_url_match = page_content_re2.search(res.text)
     if next_url_match:

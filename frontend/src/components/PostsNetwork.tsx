@@ -30,7 +30,7 @@ export default function PostsNetwork({
       },
       edges: {
         arrows: {
-          to: {
+          from: {
             enabled: true,
             scaleFactor: 1,
           },
@@ -102,12 +102,43 @@ export default function PostsNetwork({
 
   return (
     <div className="relative">
-      <div ref={divRef} className="h-[600px]"></div>
-      <div className="absolute top-0 left-0 bg-primary-bright dark:bg-primary-dark">
-        {/* <div>X -&gt; Y means post #X is tagged by post #Y.</div> */}
-        <div>Nodes: {nodes.length}</div>
-        <div>Edges: {edges.length}</div>
+      <div ref={divRef} className="h-[50vh] my-5"></div>
+      <div className="flex flex-col sm:flex-row items-center justify-center sm:gap-6 text-sm text-center mb-4">
+        <div>
+          <span className="inline-flex h-5 w-5 bg-highlight-bright dark:bg-highlight-dark rounded-full border border-secondary-dark items-center justify-center">
+            X
+          </span>{' '}
+          is root post
+        </div>
+        <div>
+          <span className="inline-flex h-5 w-5 bg-emerald-200 dark:bg-secondary-dark rounded-full border border-secondary-dark items-center justify-center">
+            X
+          </span>{' '}
+          →{' '}
+          <span className="inline-flex h-5 w-5 bg-emerald-200 dark:bg-secondary-dark rounded-full border border-secondary-dark items-center justify-center">
+            Y
+          </span>{' '}
+          means #X mentions #Y
+        </div>
+        <div>
+          No. of{' '}
+          <span className="inline-flex h-8 w-16 bg-emerald-200 dark:bg-secondary-dark rounded-[50%] border border-secondary-dark items-center justify-center">
+            Posts
+          </span>{' '}
+          = {nodes.length}
+        </div>
+        <div>No. of Mentions (→) = {edges.length}</div>
       </div>
+      {/* <div className="absolute top-0 right-0 bg-primary-bright dark:bg-primary-dark text-sm">
+        <span className="inline-flex h-5 w-5 bg-emerald-200 dark:bg-secondary-dark rounded-full border border-secondary-dark items-center justify-center">
+          X
+        </span>{' '}
+        →{' '}
+        <span className="inline-flex h-5 w-5 bg-emerald-200 dark:bg-secondary-dark rounded-full border border-secondary-dark items-center justify-center">
+          Y
+        </span>{' '}
+        means #X mentions #Y
+      </div> */}
     </div>
   )
 }

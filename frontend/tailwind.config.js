@@ -14,6 +14,10 @@ module.exports = {
           bright: colors.emerald[500],
           dark: colors.emerald[900],
         },
+        highlight: {
+          bright: colors.yellow[300],
+          dark: colors.yellow[600],
+        },
       },
     },
   },

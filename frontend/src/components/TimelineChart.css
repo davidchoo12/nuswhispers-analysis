@@ -23,10 +23,21 @@
   z-index: 1;
   display: flex;
   align-items: baseline;
+  font-size: 0.8em;
 }
 .tooltip .x-value {
-  font-size: 0.9em;
+  margin-left: 0.5em;
+  margin-right: 1em;
+}
+.tooltip .y-value {
+  font-weight: bold;
+  color: black;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 0.2em 0.5em;
 }
 .u-cursor-x, .u-cursor-y, .u-cursor-pt {
   z-index: 1;
+}
+.u-cursor-y {
+  display: none;
 }

@@ -24,19 +24,31 @@ for file in files:
     except ValueError: # fail to parse int, skip file
         continue
 
+# sort indexes by lowest start index, highest end index
 indexes.sort(key=lambda e: (e[0], -e[1]))
 logger.info('indexes %s', indexes)
 
-last_saved_index = 0
 buf = io.StringIO()
+
+def append_data_file(start, end):
+    path_to_append = 'data/data-%d-%d.csv' % (start, end)
+    buf.write(open(path_to_append).read())
+    logger.info('appended %d-%d', start, end)
+    # soft remove file (move file to trash bin)
+    shutil.move(path_to_append, '/Users/david.choo/.Trash/')
+
+last_saved_index = 0
 prev_end = indexes[0][0]-1
 for start, end in indexes:
     # nothing more to merge
     if start == indexes[0][0] and end == indexes[-1][1]:
         logger.info('nothing more to merge, exiting')
         exit(1)
-    # ensure the next start is >= prev_end and >= end
-    if start < prev_end or end < start:
+    if start > end:
+        logger.info('unexpected file with start index %d > end index %d, skipping', start, end)
+        continue
+    # ensure the curr start index > prev end index
+    if start <= prev_end:
         continue
     # if there is a gap
     if prev_end + 1 != start:
@@ -49,14 +61,13 @@ for start, end in indexes:
             last_saved_index = prev_end
             break
         else:
-            buf.write(open('data/data-%d-%d.csv' % (prev_end+1, last_saved_index)).read())
-            logger.info('appended %d-%d (scraped)', prev_end+1, last_saved_index)
-    buf.write(open('data/data-%d-%d.csv' % (start, end)).read())
-    logger.info('appended %d-%d', start, end)
+            logger.info('scraped %d-%d', prev_end+1, last_saved_index)
+            append_data_file(prev_end+1, last_saved_index)
+    append_data_file(start, end)
     last_saved_index = end
     prev_end = end
 
-with open('data-%d-%d.csv' % (indexes[0][0], last_saved_index), 'w') as fd:
+with open('data/data-%d-%d.csv' % (indexes[0][0], last_saved_index), 'w') as fd:
     buf.seek(0)
     shutil.copyfileobj(buf, fd)
 

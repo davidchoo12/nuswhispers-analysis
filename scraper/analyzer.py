@@ -57,7 +57,8 @@ for col in ['post_time', 'scraped_at']:
 for col in metric_cols:
     df[col] = df[col].astype('Int64')
 df.drop(df[df['text'] == 'not found'].index, inplace=True)
-df.drop(index=43106, inplace=True) # the post that redirects to straits times post
+# df.drop(index=43106, inplace=True) # the post that redirects to straits times post
+dropped_rows = df.dropna(subset=['likes','comments','shares','post_time'], inplace=True)
 # add confession id column, reorder to second column
 df['cid'] = df['text'].str.extract(r'\n-\n#\d+: https?://(?:www\.)?nuswhispers\.com/confession/(\d+)$')
 header_cid = df[df['cid'].isnull().to_numpy()]['text'].str.extract(r'^#(\d+): ')
@@ -66,7 +67,7 @@ df.insert(1, 'cid', df.pop('cid'))
 
 # start processing
 now = datetime.now(timezone.utc)
-# now = datetime.fromisoformat('2021-04-25T00:00:00+00:00') # for testing
+# now = datetime.fromisoformat('2021-04-25T00:00:00+08:00') # for testing
 logger.info('now %s', now.isoformat())
 
 # src https://stackoverflow.com/a/65151218/4858751
@@ -83,15 +84,34 @@ def save_file(content, filename):
         f.write(content)
     logger.info('saved ' + dest)
 
-def gen_top_posts():
-    opt_td = {
-        'all': timedelta(days=100000),
-        'year': timedelta(days=365),
-        'month': timedelta(days=30),
-        'week': timedelta(weeks=1)
+def gen_overview():
+    overview = {
+        'last_scraped_at': df.iloc[-1]['scraped_at'].isoformat(timespec='seconds'),
+        'latest_confession': int(df.iloc[-1]['cid']),
+        'posts_count': len(df),
+        'total_likes': df['likes'].sum(),
+        'total_comments': df['comments'].sum(),
+        'total_shares': df['shares'].sum(),
     }
-    for metric, opt in product(metric_cols, opt_td):
-        sorted_df = df[df['post_time'] > now - opt_td[opt]].sort_values(metric, ascending=False)
+    overview_json = json.dumps(overview, default=np_encoder, separators=(',',':'))
+    save_file(overview_json, f'overview.json')
+
+def gen_top_posts():
+    last_post_time = df.iloc[-1]['post_time'].to_pydatetime().replace(hour=0, minute=0, second=0)
+    last_week_start = last_post_time + timedelta(days=-last_post_time.weekday(), weeks=-1)
+    last_week_end = last_post_time + timedelta(days=-last_post_time.weekday())
+    last_month_end = last_post_time.replace(day=1)
+    last_month_start = (last_month_end - timedelta(days=1)).replace(day=1)
+    last_year_end = last_post_time.replace(month=1, day=1)
+    last_year_start = (last_year_end - timedelta(days=1)).replace(month=1, day=1)
+    opt_range = {
+        'all': (datetime.fromisoformat('2015-01-01T00:00:00+08:00'), datetime.fromisoformat('2100-01-01T00:00:00+08:00')),
+        'year': (last_year_start, last_year_end),
+        'month': (last_month_start, last_month_end),
+        'week': (last_week_start, last_week_end)
+    }
+    for metric, opt in product(metric_cols, opt_range):
+        sorted_df = df[(opt_range[opt][0] <= df['post_time']) & (df['post_time'] < opt_range[opt][1])].sort_values(metric, ascending=False)
         csv = sorted_df[:50].to_csv(index=False)
         save_file(csv, f'top-posts/{metric}-{opt}.csv')
     # df['controversial_ratio'] = df['comments'] / (df['likes'] + df['shares'] + 0.00001)
@@ -110,7 +130,7 @@ def gen_posts_freq():
     # posts_freq = {}
     for opt, rule in opt_rule.items():
         aggregated_df = df.resample(rule, on='post_time')['post_time'].agg(count='count')
-        aggregated_df.index = pd.to_datetime(aggregated_df.index).strftime('%Y-%m-%d')
+        aggregated_df.index = pd.to_datetime(aggregated_df.index).strftime('%Y-%m-%d' if opt != 'year' else '%Y')
         csv = aggregated_df.to_csv()
         save_file(csv, f'posts-freq/{opt}.csv')
         # posts_freq[opt] = [list(aggregated_df.index), list(aggregated_df.values)]
@@ -141,7 +161,7 @@ def gen_metrics_medians():
     }
     for metric, opt in product(metric_cols, opt_rule):
         grouped_df = df.resample(opt_rule[opt], on='post_time')[metric].median()
-        grouped_df.index = pd.to_datetime(grouped_df.index).strftime('%Y-%m-%d')
+        grouped_df.index = pd.to_datetime(grouped_df.index).strftime('%Y-%m-%d' if opt != 'year' else '%Y')
         grouped_df.rename('median', inplace=True)
         csv = grouped_df.to_csv()
         save_file(csv, f'metrics-medians/{metric}-{opt}.csv')
@@ -235,11 +255,11 @@ def corpus_to_top_terms(vectorizer, corpus, topk, mindf=0.0, maxdf=1.0):
     # https://jonathansoma.com/lede/image-and-sound/text-analysis/text-analysis-word-counting-lemmatizing-and-tf-idf/ helps to understand tfidf
     # corpus = df['text'].tolist()
     # vectorizer = TfidfVectorizer(analyzer='word', preprocessor=preprocess, tokenizer=tokenize, max_features=topk, ngram_range=(1,2), min_df=mindf, max_df=maxdf)
-    start = datetime.now()
+    # start = datetime.now()
     vecs = vectorizer.transform(corpus)
-    end = datetime.now()
-    logger.info('transform took %s', end-start)
-    start = datetime.now()
+    # end = datetime.now()
+    # logger.info('transform took %s', end-start)
+    # start = datetime.now()
     terms = vectorizer.get_feature_names_out()
     # term_scores = {term: [] for term in terms}
     term_score = {}
@@ -258,9 +278,9 @@ def corpus_to_top_terms(vectorizer, corpus, topk, mindf=0.0, maxdf=1.0):
     #     score = round(sum(term_scores[term]), 3)
     #     if score > 0:
     #         term_score[term] = score
-    end = datetime.now()
-    logger.info('score took %s', end-start)
-    start = datetime.now()
+    # end = datetime.now()
+    # logger.info('score took %s', end-start)
+    # start = datetime.now()
     # get only the topk terms
     term_score_sorted = dict(kv for i, kv in enumerate(sorted(term_score.items(), key=lambda kv: kv[1], reverse=True)) if i < topk)
     # possible optimization but no noticeable impact, get top k elements, O(n + k log k), src https://stackoverflow.com/a/23734295/4858751
@@ -272,8 +292,8 @@ def corpus_to_top_terms(vectorizer, corpus, topk, mindf=0.0, maxdf=1.0):
     # for i in top_indices[np.argsort(vs[top_indices])][::-1]:
     #     term_score_sorted[kvs[i][0]] = kvs[i][1]
 
-    end = datetime.now()
-    logger.info('sort took %s', end-start)
+    # end = datetime.now()
+    # logger.info('sort took %s', end-start)
     return term_score_sorted
 
 
@@ -346,7 +366,10 @@ def gen_top_terms():
     #     for interval, future_term_score in interval_futures.items():
     #         interval_term_score[str(interval.date())] = future_term_score.result()
     # save_file(json.dumps(interval_term_score, indent=2), f'top-terms/terms-{topk}-{mindf}-{maxdf}.json')
-    save_file(json.dumps(interval_term_score, indent=2), f'top-terms/terms.json')
+    save_file(json.dumps(interval_term_score, separators=(',',':')), f'top-terms/week.json')
+
+    alltime_term_score = corpus_to_top_terms(vectorizer, corpus_all, 100, mindf, maxdf=0.5)
+    save_file(json.dumps(alltime_term_score, separators=(',',':')), f'top-terms/all.json')
 
 def gen_networks():
     '''Generate posts mentions network, save the biggest subgraphs and longest chains'''
@@ -374,6 +397,18 @@ def gen_networks():
     cid_adj = cid_adj[cid_adj['adj'].isin(cid['cid'])]
     print('len cid_adj', len(cid_adj))
 
+    topk = 10
+    adj_neighbours_df = cid_adj.groupby('adj').agg(neighbours=('cid', lambda x: x.astype('str').str.cat(sep=',')), neighbours_count=('cid','count'))
+    most_mentioned_df = adj_neighbours_df.reset_index().rename(columns={'adj': 'source'}).nlargest(10, columns=['neighbours_count', 'source'])
+    csv = most_mentioned_df.to_csv(index=False)
+    save_file(csv, f'top-networks/most-mentioned.csv')
+    # reverse lookup to find the posts' content
+    most_mentioned_nodes = [int(node) for node in most_mentioned_df['source']] + [int(node) for nodes in most_mentioned_df['neighbours'] for node in nodes.split(',')]
+    most_mentioned_cids = cid[cid['cid'].isin(most_mentioned_nodes)]
+    most_mentioned_posts_df = df.loc[most_mentioned_cids.index]
+    csv = most_mentioned_posts_df.to_csv(index=False)
+    save_file(csv, f'top-networks/most-mentioned-posts.csv')
+
     # mentioned cids that doesn't mention any cid are root nodes
     roots = cid_adj[~cid_adj['adj'].isin(cid_adj['cid'])]['adj'].unique()
     print('len roots', len(roots))
@@ -384,7 +419,7 @@ def gen_networks():
     for root in roots:
         nodes = set()
         edges = set()
-        dfs_stack.append((root, 0, []))
+        dfs_stack.append((root, 0, [root]))
         longest_path = []
         while len(dfs_stack) > 0:
             curr_adj, curr_depth, path = dfs_stack.pop() # pop removes last, so this behaves like a stack
@@ -398,11 +433,9 @@ def gen_networks():
     rdags_df = pd.DataFrame(rdags, columns=['root','nodes','nodes_count','edges','edges_count','longest_path','longest_path_length'])
     print('len rdags', len(rdags_df))
 
-    topk = 10
     biggest_rdags_df = rdags_df.nlargest(topk, columns=['nodes_count','root'])
     csv = biggest_rdags_df.to_csv(index=False)
     save_file(csv, f'top-networks/biggest.csv')
-    # reverse lookup to find the posts' content
     biggest_rdags_nodes = [int(node) for nodes in biggest_rdags_df['nodes'] for node in nodes.split(',')]
     biggest_rdags_cids = cid[cid['cid'].isin(biggest_rdags_nodes)]
     biggest_rdags_posts_df = df.loc[biggest_rdags_cids.index]
@@ -419,6 +452,7 @@ def gen_networks():
     save_file(csv, f'top-networks/longest-posts.csv')
 
 def gen_all():
+    gen_overview()
     gen_top_posts()
     gen_posts_freq()
     gen_metrics_distribution()
@@ -436,7 +470,7 @@ def gen_all():
 #         if subdir not in data:
 #             data[subdir] = {}
 #         data[subdir][filename] = content
-#     save_file(json.dumps(data), f'bundled.json')
+#     save_file(json.dumps(data, separators=(',',':')), f'bundled.json')
 
 if __name__ == '__main__':
     gen_all()

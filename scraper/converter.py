@@ -6,7 +6,7 @@ from queue import Queue, Empty
 from requests_html import HTMLSession, Element, PyQuery, HTML
 from requests.adapters import HTTPAdapter
 import threading
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import shutil
 import itertools
 import re
@@ -62,7 +62,7 @@ ses.headers.update(default_headers)
 #     last_no = int(last_row[0])
 # logger.info('last no %d', last_no)
 
-def scrape_post_id_range(start_index, end_index, threads=100):
+def scrape_post_id_range(start_index, end_index, threads=100, min_post_age=90):
     post_ids = open('post-ids.csv').readlines()
     q = Queue()
     for i, pid in enumerate(post_ids[start_index:end_index], start=start_index):
@@ -128,10 +128,15 @@ def scrape_post_id_range(start_index, end_index, threads=100):
                 comments = int(re.search(r'ft_ent_identifier:"?%s"?.*?,comment_count:(\d+)'%ft_ent_identifier, res.html.html).group(1))
                 shares = int(re.search(r'ft_ent_identifier:"?%s"?.*?,share_count:(\d+)'%ft_ent_identifier, res.html.html).group(1))
                 post_time_int = int(post_time_re.search(res.html.html).group(1))
-                post_time = datetime.fromtimestamp(post_time_int).astimezone().astimezone(timezone.utc).isoformat(timespec='seconds')
+                post_time = datetime.fromtimestamp(post_time_int).astimezone().astimezone(timezone.utc)
+                post_time_str = post_time.isoformat(timespec='seconds')
                 # logger.info('post_time %s', post_time)
-                scraped_at = datetime.utcnow().astimezone(timezone.utc).isoformat(timespec='seconds')
-                row = [i, text, image, pid, likes, comments, shares, post_time, scraped_at]
+                scraped_at = datetime.utcnow().astimezone(timezone.utc)
+                scraped_at_str = scraped_at.isoformat(timespec='seconds')
+                if scraped_at - post_time < timedelta(days=min_post_age):
+                    logger.info('post is less than %d days old, skipping', min_post_age)
+                    continue
+                row = [i, text, image, pid, likes, comments, shares, post_time_str, scraped_at_str]
                 rowsq.put(row)
                 logger.info('rowsq size %d', rowsq.qsize())
         except Empty as e:
@@ -177,6 +182,8 @@ if __name__ == '__main__':
                         help='pagination limit')
     parser.add_argument('-t', '--threads', type=int, default=100,
                         help='no of threads to run with')
+    parser.add_argument('-a', '--min-post-age', type=int, default=90,
+                        help='min no of days between post time and scraped time, ie stop scraping posts newer than this no of days old')
     args = parser.parse_args()
     logger.info('args %s', args)
 
@@ -207,5 +214,5 @@ if __name__ == '__main__':
 
     logger.info('start_index %d, end_index %d', start_index, end_index)
     assert(start_index < end_index)
-    scrape_post_id_range(start_index, end_index, args.threads)
+    scrape_post_id_range(start_index, end_index, args.threads, args.min_post_age)
     logger.info('time elapsed %s', str(datetime.now() - start_time))

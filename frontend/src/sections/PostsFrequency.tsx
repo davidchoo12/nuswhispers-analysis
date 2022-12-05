@@ -6,33 +6,13 @@ import TimelineChart from '../components/TimelineChart'
 import FetchCsv from '../CsvFetcher'
 import { Frequency } from '../models'
 
-const datasetConfigs = [
-  {
-    id: 'year',
-    name: 'Per Year',
-    url: './data/posts-freq/year.csv',
-  },
-  {
-    id: 'month',
-    name: 'Per Month',
-    url: './data/posts-freq/month.csv',
-  },
-  {
-    id: 'week',
-    name: 'Per Week',
-    url: './data/posts-freq/week.csv',
-  },
-  {
-    id: 'day',
-    name: 'Per Day',
-    url: './data/posts-freq/day.csv',
-  },
-  {
-    id: 'hourofday',
-    name: 'Per Hour of Day',
-    url: './data/posts-freq/hourofday.csv',
-  },
-]
+const timedeltas: Record<string, string> = {
+  year: 'Year',
+  month: 'Month',
+  week: 'Week',
+  day: 'Day',
+  hourofday: 'Hour of Day',
+}
 
 type TimedeltaFrequencyDataset = Record<string, Frequency[]>
 
@@ -40,12 +20,17 @@ export default function PostsFrequency() {
   const [datasets, setDatasets] = useState<TimedeltaFrequencyDataset>({})
   const [selectedTimedelta, setSelectedTimedelta] = useState<string>('year')
   useEffect(() => {
-    const promises: Promise<ParseResult<Frequency>>[] = datasetConfigs.map((conf) => FetchCsv<Frequency>(conf.url))
+    const promises: Promise<ParseResult<Frequency>>[] = []
+    const timedeltaIds: string[] = Object.keys(timedeltas)
+    for (const timedelta of Object.keys(timedeltas)) {
+      const csvUrl = `./data/posts-freq/${timedelta}.csv`
+      promises.push(FetchCsv<Frequency>(csvUrl))
+    }
 
     Promise.all(promises).then((results) => {
       const queriedDatasets: TimedeltaFrequencyDataset = {}
       for (const [i, result] of results.entries()) {
-        const timedelta = datasetConfigs[i].id
+        const timedelta = timedeltaIds[i]
         queriedDatasets[timedelta] = result.data
       }
       setDatasets(queriedDatasets)
@@ -53,18 +38,26 @@ export default function PostsFrequency() {
   }, [])
 
   const frequencies = datasets[selectedTimedelta] || []
+  const isDateType = !['year', 'hourofday', 'minuteofday'].includes(selectedTimedelta)
   const xySeries: [number[], number[]] = [
-    frequencies.map((f) => Date.parse(f.post_time) / 1000 || parseInt(f.post_time)),
+    frequencies.map((f) => (isDateType ? Date.parse(f.post_time) / 1000 : parseInt(f.post_time))),
     frequencies.map((f) => f.count),
   ]
 
   return (
     <Section title="Posts Frequency" level={2}>
+      <p>This graph shows the number of posts published on NUSWhispers facebook page over time.</p>
       <ButtonGroup
-        options={datasetConfigs.map((config) => ({ name: config.name, value: config.id }))}
+        options={Object.entries(timedeltas).map(([id, name]) => ({ name: `Per ${name}`, value: id }))}
         onChange={(value: string) => setSelectedTimedelta(value)}
       />
-      <TimelineChart data={xySeries} isXAxisDateType={!['hourofday', 'minuteofday'].includes(selectedTimedelta)} />
+      <TimelineChart
+        data={xySeries}
+        isXAxisDateType={isDateType}
+        isCategorical={!isDateType}
+        xAxisLabel={timedeltas[selectedTimedelta]}
+        yAxisLabel="No. of posts"
+      />
     </Section>
   )
 }
