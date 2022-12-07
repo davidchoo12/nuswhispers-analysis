@@ -3,15 +3,13 @@ import csv
 import logging
 from concurrent.futures import ThreadPoolExecutor
 from queue import Queue, Empty
-from requests_html import HTMLSession, Element, PyQuery, HTML
+from requests_html import HTMLSession, HTML
 from requests.adapters import HTTPAdapter
 import threading
 from datetime import datetime, timezone, timedelta
 import shutil
-import itertools
+from itertools import groupby, count
 import re
-import time
-import sys
 from pathlib import Path
 import glob
 import argparse
@@ -62,7 +60,11 @@ ses.headers.update(default_headers)
 #     last_no = int(last_row[0])
 # logger.info('last no %d', last_no)
 
-def scrape_post_id_range(start_index, end_index, threads=100, min_post_age=90):
+data_dir = 'data'
+index_last_changed_filename = 'index-last-changed.csv'
+
+# scrape post ids in range [start_index, end_index)
+def scrape_post_id_range(start_index, end_index, threads=100, min_post_age=0):
     post_ids = open('post-ids.csv').readlines()
     q = Queue()
     for i, pid in enumerate(post_ids[start_index:end_index], start=start_index):
@@ -79,7 +81,7 @@ def scrape_post_id_range(start_index, end_index, threads=100, min_post_age=90):
     # comments_re = re.compile(r',comment_count:(\d+)')
     # shares_re = re.compile(r',share_count:(\d+)')
     post_time_re = re.compile(r'time[^\d]+?(\d{10})[^\d]')
-    logger.info('my ip %s', ses.get('https://httpbin.org/ip').json()['origin'])
+    # logger.info('my ip %s', ses.get('https://httpbin.org/ip').json()['origin'])
     def scrape(q, ses):
         try:
             while task := q.get(timeout=2):
@@ -139,64 +141,147 @@ def scrape_post_id_range(start_index, end_index, threads=100, min_post_age=90):
                 row = [i, text, image, pid, likes, comments, shares, post_time_str, scraped_at_str]
                 rowsq.put(row)
                 logger.info('rowsq size %d', rowsq.qsize())
-        except Empty as e:
-            logger.info('%d queue empty timed out', threadno)
+        except Empty:
+            pass # ignore empty queue
         except:
             logger.error('exception ', exc_info=1)
 
 
-    with ThreadPoolExecutor(max_workers=threads, thread_name_prefix='T') as executor:
+    with ThreadPoolExecutor(max_workers=min(end_index - start_index, threads), thread_name_prefix='T') as executor:
         for i in range(executor._max_workers):
             executor.submit(scrape, q, ses)
 
     rows = list(rowsq.queue)
     rows.sort(key=lambda e: e[0])
     last_saved_index = 0
+    contiguous_rows = []
     for i, row in enumerate(rows):
         if row[0] == start_index+i:
-            csv_writer.writerow(row)
+            contiguous_rows.append(row)
             last_saved_index = row[0]
         else:
             break
 
-    if len(rows) == 0 or last_saved_index == 0:
-        logger.info('not saving data file, rows count %d, last_saved_index %d', len(rows), last_saved_index)
-        return -1
+    if len(rows) == 0 or len(contiguous_rows) == 0:
+        logger.info('not saving data file, rows scraped count %d', len(rows))
+        return []
+
+    csv_writer.writerows(contiguous_rows)
     # write buffer over csv file
     Path('data').mkdir(exist_ok=True) # ensure data dir exists
-    with open('data/data-%d-%d.csv' % (start_index, last_saved_index), 'w', newline='', encoding='utf-8') as fd:
+    with open('%s/data-%d-%d.csv' % (data_dir, start_index, last_saved_index), 'w', newline='', encoding='utf-8') as fd:
         buf.seek(0)
         shutil.copyfileobj(buf, fd)
-    return last_saved_index
+    return contiguous_rows
 
+def read_all_rows():
+    data_0_files = glob.glob(data_dir + '/data-0-[0-9]*.csv')
+    if len(data_0_files) == 0:
+        return []
+    # choose highest ending index
+    all_rows_file = sorted(data_0_files, key=lambda f: -int(f.split('-')[2].rstrip('.csv')))[0]
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-s', '--start_index', type=int, nargs='?',
-                        help='index to start scraping from, refer to post-ids.csv (line 1 = index 0)')
-    parser.add_argument('-e', '--end_index', type=int,
-                        help='index to stop scraping at')
-    parser.add_argument('-p', '--page', type=int, default=0,
-                        help='offset page from start_index to start from')
-    parser.add_argument('-l', '--limit', type=int, default=30,
-                        help='pagination limit')
-    parser.add_argument('-t', '--threads', type=int, default=100,
-                        help='no of threads to run with')
-    parser.add_argument('-a', '--min-post-age', type=int, default=90,
-                        help='min no of days between post time and scraped time, ie stop scraping posts newer than this no of days old')
-    args = parser.parse_args()
-    logger.info('args %s', args)
+    all_rows = []
+    with open(all_rows_file) as f:
+        all_rows_reader = csv.reader(f)
+        for row in all_rows_reader:
+            all_rows.append(row)
+    return all_rows
 
+# read index-last-changed.csv
+def read_index_last_changed():
+    index_last_changed = {}
+    with open(index_last_changed_filename) as f:
+        reader = csv.reader(f)
+        for row in reader:
+            index, last_changed = row
+            index_last_changed[int(index)] = last_changed
+    return index_last_changed
+
+# update index-last-changed.csv
+def update_index_last_changed(all_rows, rows_scraped):
+    index_last_changed = read_index_last_changed()
+    last_changed_has_change = False
+    for row in rows_scraped:
+        index = row[0]
+        if len(row) != 9:
+            # if new row or row has changed
+            if index >= len(all_rows) or row != all_rows[index]:
+                index_last_changed[row[0]] = ''
+                last_changed_has_change = True
+            continue
+        scraped_at_str = row[8]
+        # if new row or row has changed
+        if index >= len(all_rows) or [str(col) if col != None else '' for col in row[:-1]] != all_rows[index][:-1]:
+            index_last_changed[index] = scraped_at_str
+            last_changed_has_change = True
+
+    if last_changed_has_change:
+        logger.info('updating %s', index_last_changed_filename)
+        index_last_changed_csv = sorted(index_last_changed.items())
+        with open(index_last_changed_filename, 'w') as f:
+            writer = csv.writer(f)
+            writer.writerows(index_last_changed_csv)
+    else:
+        logger.info('no change on all scraped rows, no update on index-last-changed.csv')
+
+# rescrape existing posts
+def rescrape_posts(all_rows, min_last_changed_days):
+    if min_last_changed_days <= 0:
+        logger.info('skipping rescrape, min_last_changed_days %d <= 0', min_last_changed_days)
+        return
+    min_last_changed = timedelta(days=min_last_changed_days)
+    index_last_changed = read_index_last_changed()
+
+    indexes_to_rescrape = []
+    now = datetime.utcnow().astimezone(timezone.utc)
+    for row in all_rows:
+        if len(row) != 9:
+            # logger.info('rescrape skipping no %s, len(row) %d != 9, text = %s', row[0], len(row), row[1])
+            continue
+        [index, *_, post_time_str, scraped_at_str] = row
+        index = int(index)
+        if index not in index_last_changed:
+            logger.info('rescrape skipping no %d, not in index-last-changed.csv', index)
+            continue
+        last_changed_str = index_last_changed[index]
+        if last_changed_str == '':
+            continue
+        post_time, scraped_at, last_changed = map(datetime.fromisoformat, [post_time_str, scraped_at_str, last_changed_str])
+        # filter indexes to rescrape
+        if now - last_changed < min_last_changed or scraped_at - post_time < min_last_changed:
+            indexes_to_rescrape.append(index)
+
+    indexes_to_rescrape.sort()
+    # logger.debug('indexes_to_rescrape %s', indexes_to_rescrape)
+    if len(indexes_to_rescrape) == 0:
+        return
+
+    ranges_to_rescrape = []
+    # group contiguous indexes, src https://stackoverflow.com/a/15019976/4858751
+    for _, group in groupby(indexes_to_rescrape, key=lambda i,j=count(): i-next(j)):
+        indexes_group = list(group)
+        ranges_to_rescrape.append([indexes_group[0], indexes_group[-1]])
+    logger.debug('ranges to rescrape %s', ranges_to_rescrape)
+
+    rows_rescraped = []
+    for range_to_rescrape in ranges_to_rescrape:
+        start_index = range_to_rescrape[0]
+        end_index = range_to_rescrape[-1] + 1
+        rows = scrape_post_id_range(start_index, end_index)
+        rows_rescraped.extend(rows)
+    logger.info('rescraped %d rows', len(rows_rescraped))
+
+    update_index_last_changed(all_rows, rows_rescraped)
+
+def run(args):
+    all_rows = read_all_rows()
+    rescrape_posts(all_rows, args.min_last_changed_days)
     paginate_limit = args.limit
     start_index = args.start_index
     if start_index is None:
-        # config = ses.get('https://drive.google.com/uc?id=1Dw0hD-lmGtUDRjYniHlWBcYl-jHVNu7b&export=download').text
-        # try:
-        #     logger.info('config text %s', config)
-        #     start_index = int(config)
-        # except ValueError:
         # continue from the last data file index
-        files = sorted(glob.glob('data/data-[0-9]*-[0-9]*.csv'))
+        files = sorted(glob.glob(data_dir + '/data-[0-9]*-[0-9]*.csv'))
         logger.info('data files %s', ','.join(files))
         start_index = 0
         if len(files) > 0:
@@ -212,7 +297,33 @@ if __name__ == '__main__':
     if end_index is None:
         end_index = start_index+paginate_limit
 
+    if start_index >= end_index:
+        logger.info('start_index %d >= end_index %d, exiting', start_index, end_index)
+        return
     logger.info('start_index %d, end_index %d', start_index, end_index)
-    assert(start_index < end_index)
-    scrape_post_id_range(start_index, end_index, args.threads, args.min_post_age)
+    new_rows_scraped = scrape_post_id_range(start_index, end_index, args.threads, args.min_post_age)
+
+    update_index_last_changed(all_rows, new_rows_scraped)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-s', '--start_index', type=int, nargs='?',
+                        help='index to start scraping from, refer to post-ids.csv (line 1 = index 0)')
+    parser.add_argument('-e', '--end_index', type=int,
+                        help='index to stop scraping at')
+    parser.add_argument('-p', '--page', type=int, default=0,
+                        help='offset page from start_index to start from')
+    parser.add_argument('-l', '--limit', type=int, default=30,
+                        help='pagination limit, set 0 for only rescrape')
+    parser.add_argument('-t', '--threads', type=int, default=100,
+                        help='no of threads to run with')
+    parser.add_argument('-a', '--min-post-age', type=int, default=0,
+                        help='min no of days between post time and scraped time, ie stop scraping posts newer than this no of days old')
+    parser.add_argument('-c', '--min-last-changed-days', type=int, default=3,
+                        help='min no of days between last changed time and now, ie don\'t rescrape posts that has last changed >= this no of days old, set 0 for no rescrape')
+    args = parser.parse_args()
+    logger.info('args %s', args)
+
+    run(args)
     logger.info('time elapsed %s', str(datetime.now() - start_time))
