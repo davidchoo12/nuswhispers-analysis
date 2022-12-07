@@ -1,8 +1,0 @@
-{
-  "functions": {
-    "api/main.py": {
-      "includeFiles": "scraper/data/data-0-*.csv",
-      "excludeFiles": ".git"
-    }
-  }
-}
