@@ -53,11 +53,10 @@ function WeeklyTopics() {
     for (const [dateStr, terms] of weekTermsEntries) {
       const date = new Date(dateStr)
       const sixDaysMs = 6 * 24 * 60 * 60 * 1000
-      const startOfWeek = new Date(date.getTime() - sixDaysMs)
-      // weekWeightEntries[i][0] = `${formatDate(startOfWeek)} - ${formatDate(date)}`
+      const endOfWeek = new Date(date.getTime() + sixDaysMs)
       dateRangeTerms.push({
-        dateStart: startOfWeek,
-        dateEnd: date,
+        dateStart: date,
+        dateEnd: endOfWeek,
         terms: terms,
       })
     }
