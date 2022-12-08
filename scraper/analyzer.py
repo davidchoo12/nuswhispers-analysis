@@ -52,7 +52,7 @@ columns = ['no', 'text', 'image', 'pid', 'likes', 'comments', 'shares', 'post_ti
 metric_cols = ['likes', 'comments', 'shares']
 df = pd.read_csv(f'data/data-0-{last_index}.csv', names=columns)
 for col in ['post_time', 'scraped_at']:
-    df[col] = pd.to_datetime(df[col])
+    df[col] = pd.to_datetime(df[col]).dt.tz_convert('Asia/Singapore')
 # df['fb_post_id'] = df['fb_post_id'].astype('Int64')
 for col in metric_cols:
     df[col] = df[col].astype('Int64')
