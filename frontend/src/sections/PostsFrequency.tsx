@@ -46,7 +46,16 @@ export default function PostsFrequency() {
 
   return (
     <Section title="Posts Frequency" level={2}>
-      <p>This graph shows the number of posts published on NUSWhispers facebook page over time.</p>
+      <p>
+        This graph shows the number of posts published on NUSWhispers facebook page over time. Interestingly there has
+        been lesser posts over the past 2 years which might be why posts over the past 2 years receive higher medians
+        since traffic is divided among less posts.
+      </p>
+      <p>
+        The highest posts per day is from the early days of the platform, seemingly from content seeding, which is
+        normal for any social media platform. The most number of organic posts per month is around the start of the
+        first circuit breaker in response to covid.
+      </p>
       <ButtonGroup
         options={Object.entries(timedeltas).map(([id, name]) => ({ name: `Per ${name}`, value: id }))}
         onChange={(value: string) => setSelectedTimedelta(value)}

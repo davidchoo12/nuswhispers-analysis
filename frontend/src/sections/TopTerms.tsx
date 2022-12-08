@@ -14,7 +14,7 @@ function AllTimeTopics() {
 
   return (
     <Section title="All Time Topics" level={3}>
-      <p></p>
+      <p>These are the top 100 words that appear out of all NUSWhispers posts based on the TF-IDF result.</p>
       <div className="w-full">
         <Wordcloud wordWeights={Object.entries(allTimeTermsWeights)} />
       </div>
@@ -29,13 +29,6 @@ function formatDate(date: Date) {
     year: 'numeric',
   })
 }
-
-// function formatWeek(endOfWeekDate: string) {
-//   const date = new Date(endOfWeekDate)
-//   const sixDaysMs = 6 * 24 * 60 * 60 * 1000
-//   const startOfWeek = new Date(date.getTime() - sixDaysMs)
-//   return `${formatDate(startOfWeek)} - ${formatDate(date)}`
-// }
 
 interface DateRangeTerms {
   dateStart: Date
@@ -70,7 +63,6 @@ function WeeklyTopics() {
     const pageDateStart = allDateRangeTerms[pageLastIndex].dateStart
     return `${formatDate(pageDateStart)} - ${formatDate(pageDateEnd)}`
   })
-  console.log(pageNames)
 
   const sliceStart = pageSize * currPage
   const sliceEnd = pageSize * (currPage + 1)
@@ -84,23 +76,9 @@ function WeeklyTopics() {
       .then((data) => setWeeklyTermsWeights(data))
   }, [])
 
-  // useEffect(() => {
-  //   const entries = Object.entries(weeklyTermsWeights)
-  //   const lastPage = Math.ceil(entries.length / pageSize)
-  //   setCurrPage(lastPage) // default to last page
-  // }, [weeklyTermsWeights])
-
   return (
     <Section title="Weekly Topics" level={3}>
-      <p>Here we break down the commonly used words in posts by week to visualize the weekly trends.</p>
-      {/* <Pagination
-        currentPage={currPage}
-        onPageChange={(newPage) => {
-          setCurrPage(newPage)
-        }}
-        pageSize={pageSize}
-        totalCount={allDateRangeTerms.length}
-      /> */}
+      <p>Here we break down the commonly used words by week to visualize the weekly trends.</p>
       <PaginationDropdown
         currentPage={currPage}
         onPageChange={(newPage) => {
@@ -136,8 +114,8 @@ export default function TopTerms() {
         <a href="https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html">
           TF-IDF
         </a>{' '}
-        model. I decided to use TF-IDF because I wanted an unsupervised model and it needs to be interpretable by the
-        layman. I think the results are not bad.
+        model. Basically TF-IDF scores the significance of each word over all the posts. I decided to use TF-IDF because
+        I wanted an unsupervised model and the result to be easily interpretable. I think the results are not bad.
       </p>
       <AllTimeTopics />
       <WeeklyTopics />

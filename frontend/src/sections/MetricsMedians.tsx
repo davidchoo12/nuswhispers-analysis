@@ -1,5 +1,5 @@
 import { ParseResult } from 'papaparse'
-import { useEffect, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import ButtonGroup from '../components/ButtonGroup'
 import Section from '../components/Section'
 import TimelineChart from '../components/TimelineChart'
@@ -23,12 +23,12 @@ const titles: Record<string, string> = {
 interface MetricMediansProps {
   metric: string
   timedeltaMedians: Record<string, Median[]>
+  children: ReactNode
 }
 
-function MetricMedians({ metric, timedeltaMedians }: MetricMediansProps) {
+function MetricMedians({ metric, timedeltaMedians, children }: MetricMediansProps) {
   const [selectedTimedelta, setSelectedTimedelta] = useState<string>(Object.keys(timedeltas)[0])
   const isDateType = !['year', 'hourofday', 'minuteofday'].includes(selectedTimedelta)
-  // console.log('MetricMedians metricDataset[selectedTimedelta]', metricDataset[selectedTimedelta])
   // transpose [{X: 1, Y: 10}, {X: 2, Y: 20}] => [[1,2], [10,20]]
   const medians = timedeltaMedians[selectedTimedelta]
   const xySeries: [number[], number[]] = [
@@ -38,6 +38,7 @@ function MetricMedians({ metric, timedeltaMedians }: MetricMediansProps) {
 
   return (
     <Section title={titles[metric]} level={3}>
+      {children}
       <ButtonGroup
         options={Object.entries(timedeltas).map(([value, name]) => ({ name: `Per ${name}`, value }))}
         onChange={(value: string) => setSelectedTimedelta(value)}
@@ -99,14 +100,27 @@ export default function MetricsMedians() {
         decided to use medians instead of averages as medians are not affected by the outliers, hence giving more
         accurate expected likes/comments/shares a post would receive at the time.
       </p>
-      {metrics.map((metric) => (
-        <MetricMedians
-          key={metric}
-          metric={metric}
-          timedeltaMedians={datasets[metric]}
-          // timedeltas={timedeltas}
-        />
-      ))}
+      <p>
+        All metrics show growth since 2019 which means NUSWhispers posts have been receiving more user activity/traffic
+        over time.
+      </p>
+      <MetricMedians metric={'likes'} timedeltaMedians={datasets['likes']}>
+        <p>
+          Likes are the easiest interaction for a post. I would expect likes to have the highest median out of the 3
+          metrics.
+        </p>
+      </MetricMedians>
+      <MetricMedians metric={'comments'} timedeltaMedians={datasets['comments']}>
+        <p>
+          Surprisingly, comments get around the same median with likes. This means users are equally as likely to
+          comment on a post as compared to like a post, which also means posts tend to be quite controversial, prompting
+          everyone's opinions.
+        </p>
+      </MetricMedians>
+      <MetricMedians metric={'shares'} timedeltaMedians={datasets['shares']}>
+        As expected, shares get the least medians. Since the median per hour of day is mostly 0, it means at least half
+        of all posts have 0 shares. This will change though as the median has been increasing over time.
+      </MetricMedians>
     </Section>
   )
 }

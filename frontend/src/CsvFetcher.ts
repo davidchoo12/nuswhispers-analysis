@@ -10,7 +10,6 @@ export default async function FetchCsv<T>(csvUrl: string) {
       complete: (result: ParseResult<T>) => {
         if (result.errors.length > 0) {
           console.error('parse data failed', csvUrl, result.errors)
-          // resolve({metric, data: []})
           reject(result.errors)
         }
         resolve(result)

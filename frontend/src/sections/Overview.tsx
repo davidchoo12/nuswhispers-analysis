@@ -59,13 +59,13 @@ export default function Overview() {
         })}, NUSWhispers has accumulated:`}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 2xl:grid-cols-5 gap-x-4 gap-y-8 mt-4">
-        <Box caption="Total Submissions" content={`#${overviewData.latestConfession}`} />
         <Box caption="Total Posts Count" content={overviewData.postsCount} />
+        <Box caption="Latest Submission" content={`#${overviewData.latestConfession}`} />
         <Box caption="Total Likes" content={overviewData.totalLikes} />
         <Box caption="Total Comments" content={overviewData.totalComments} />
         <Box caption="Total Shares" content={overviewData.totalShares} />
       </div>
-      <p>Data updates weekly!</p>
+      <p>Data updates daily!</p>
     </Section>
   )
 }

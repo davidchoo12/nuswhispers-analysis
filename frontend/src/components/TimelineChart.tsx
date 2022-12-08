@@ -45,7 +45,6 @@ export default function TimelineChart({
       scales: {
         x: {
           time: isXAxisDateType,
-          distr: isCategorical ? 2 : 1, // align x axis ticks with labels, src https://jsfiddle.net/571rx4y0/2/
         },
       },
       cursor: {
@@ -78,6 +77,8 @@ export default function TimelineChart({
             stroke: theme.palette.graphGrid,
             width: 1,
           },
+          space: isCategorical ? 1 : 40,
+          incrs: isCategorical ? [1] : undefined,
           grid: {
             stroke: theme.palette.graphGrid,
             width: 1,
@@ -129,5 +130,11 @@ export default function TimelineChart({
     }
   }, [data, isXAxisDateType, isCategorical, xAxisLabel, yAxisLabel, theme])
 
-  return <div ref={chartRef}></div>
+  return (
+    <div className="overflow-x-auto">
+      <div className="min-w-[500px]">
+        <div ref={chartRef}></div>
+      </div>
+    </div>
+  )
 }

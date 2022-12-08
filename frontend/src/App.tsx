@@ -26,6 +26,9 @@ function App() {
             <TopTerms />
             <TopNetworks />
             <About />
+            <div className="my-16 text-center font-bold">
+              Made with ❤️ by <a href="https://github.com/davidchoo12">David Choo</a> • © 2022
+            </div>
           </main>
           <TableOfContent />
         </div>

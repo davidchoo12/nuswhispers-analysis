@@ -5,7 +5,7 @@ export default function Navbar() {
   return (
     <nav
       id="navbar"
-      className="relative h-16 w-full flex justify-between items-center shadow-sm shadow-black dark:shadow-white"
+      className="fixed z-30 h-16 w-full flex justify-between items-center border-b border-secondary-dark dark:border-secondary-bright"
     >
       <div className="bgtiles"></div>
       <div className="max-w-screen-2xl w-full mx-auto px-4 flex items-center">
@@ -16,6 +16,7 @@ export default function Navbar() {
           <a
             href="https://github.com/davidchoo12/nuswhispers-analysis/"
             className="inline-block p-3 rounded-full hover:bg-opacity-20 hover:bg-primary-bright transition z-10"
+            aria-label="Source code"
           >
             {/* github icon svg src https://iconmonstr.com/github-1-svg/ */}
             <svg viewBox="0 0 24 24" width="24" height="24">

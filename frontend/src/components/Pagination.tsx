@@ -30,7 +30,8 @@ const usePagination = ({
       If the number of pages is less than the page numbers we want to show in our
       paginationComponent, we return the range [1..totalPageCount]
     */
-    if (totalPageCount <= totalPageNumbers) {
+    // ensure siblingCount is small enough for the middle range to fit first index, 2 DOTS and last index
+    if (totalPageCount <= totalPageNumbers || 1 + 2 * siblingCount >= totalPageCount - 4) {
       return range(1, totalPageCount)
     }
     const leftSiblingIndex = Math.max(currentPage - siblingCount, 1)
@@ -100,13 +101,7 @@ interface PaginationProps {
   pageSize: number
 }
 
-export default function Pagination({
-  onPageChange,
-  totalCount,
-  // siblingCount = 10,
-  currentPage,
-  pageSize,
-}: PaginationProps) {
+export default function Pagination({ onPageChange, totalCount, currentPage, pageSize }: PaginationProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [siblingCount, setSiblingCount] = useState<number>(1)
   useEffect(() => {
@@ -115,11 +110,13 @@ export default function Pagination({
     // total width = total buttons * button width
     // siblingCount = (total width / button width - 7) / 2
     function fitPaginationButtons() {
-      console.log('fitting pagination buttons')
       if (!containerRef.current?.clientWidth) {
         return
       }
-      let targetSiblingCount = Math.floor((Math.floor(containerRef.current?.clientWidth / buttonWidth) - 7) / 2)
+      let targetSiblingCount = Math.max(
+        0,
+        Math.floor((Math.floor(containerRef.current?.clientWidth / buttonWidth) - 7) / 2)
+      )
       setSiblingCount(targetSiblingCount)
     }
     const observer = new ResizeObserver(fitPaginationButtons)
@@ -201,9 +198,12 @@ export function PaginationDropdown({ onPageChange, currentPage, pageNames }: Pag
         &#8249;
       </PaginationButton>
 
-      <select className="border-2 border-r-0 border-emerald-600 px-1.5 my-1 font-semibold bg-transparent">
+      <select
+        className="border-2 border-r-0 border-emerald-600 px-1.5 my-1 font-semibold bg-transparent"
+        defaultValue={currentPage}
+      >
         {pageNames.map((pageName, i) => (
-          <option key={i} selected={i === currentPage} onClick={() => onPageChange(i)}>
+          <option key={i} value={i} onClick={() => onPageChange(i)}>
             {pageName}
           </option>
         ))}

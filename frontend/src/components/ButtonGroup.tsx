@@ -22,10 +22,10 @@ export default function ButtonGroup<T>({ options, onChange }: ButtonGroupProps<T
               setValue(option?.value)
               onChange(option?.value)
             }}
-            className={`border-2 border-emerald-600 transition py-1.5 px-4 mr-3 my-1 rounded-lg font-semibold ${
+            className={`border-2 border-emerald-700 transition py-1.5 px-4 mr-3 my-1 rounded-lg font-semibold ${
               value === option?.value
-                ? 'bg-emerald-600 text-primary-bright'
-                : 'bg-none hover:bg-emerald-200 hover:dark:bg-emerald-800'
+                ? 'bg-emerald-700 text-white'
+                : 'bg-none hover:bg-emerald-200 hover:dark:bg-emerald-900'
             }`}
           >
             {option?.name}
