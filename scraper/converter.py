@@ -191,8 +191,8 @@ def read_all_rows():
 # read index-last-changed.csv
 def read_index_last_changed():
     index_last_changed = {}
-    with open(index_last_changed_filename) as f:
-        reader = csv.reader(f)
+    with open(index_last_changed_filename) as fd:
+        reader = csv.reader(fd)
         for row in reader:
             index, last_changed = row
             index_last_changed[int(index)] = last_changed
@@ -219,9 +219,12 @@ def update_index_last_changed(all_rows, rows_scraped):
     if last_changed_has_change:
         logger.info('updating %s', index_last_changed_filename)
         index_last_changed_csv = sorted(index_last_changed.items())
-        with open(index_last_changed_filename, 'w') as f:
-            writer = csv.writer(f)
-            writer.writerows(index_last_changed_csv)
+        buf = io.StringIO(newline=None)
+        writer = csv.writer(buf, delimiter=',')
+        writer.writerows(index_last_changed_csv)
+        with open(index_last_changed_filename, 'w', newline='', encoding='utf-8') as fd:
+            buf.seek(0)
+            shutil.copyfileobj(buf, fd)
     else:
         logger.info('no change on all scraped rows, no update on index-last-changed.csv')
 
