@@ -1,18 +1,7 @@
 table th,
 table td {
-  border: 0.5px solid #6b7280; /* bottom and right borders, border-gray-500 */
+  border: 1px solid #10b981; /* bottom and right borders, border-emerald-500 */
   padding: 0.5em;
-}
-
-table th:first-child,
-table td:first-child {
-  /* Apply a left border on the first <td> or <th> in a row */
-  border-left-width: 1px;
-}
-
-table th {
-  border-top-width: 1px;
-  border-bottom-width: 1px;
 }
 
 tr:nth-child(even) {

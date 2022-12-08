@@ -28,7 +28,11 @@ export default function Heading({ title, level }: HeadingProps) {
       >
         {title}
       </Hx>
-      <a href={'#' + id} className="text-2xl no-underline ml-3 opacity-30 transition hover:opacity-100">
+      <a
+        href={'#' + id}
+        className="text-2xl no-underline ml-3 opacity-30 transition hover:opacity-100"
+        aria-label={title}
+      >
         {/* src https://heroicons.com/ */}
         <svg
           xmlns="http://www.w3.org/2000/svg"

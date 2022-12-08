@@ -1,5 +1,4 @@
 import { useRef, useEffect, useContext } from 'react'
-// import WordCloud from 'wordcloud/src/wordcloud2'
 import { Network, DataSet, Options } from 'vis-network/standalone/esm'
 import { ThemeContext } from '../ThemeContext'
 
@@ -40,13 +39,6 @@ export default function PostsNetwork({
       },
       layout: {
         randomSeed: 0,
-        // hierarchical: {
-        //   levelSeparation: 200,
-        //   nodeSpacing: 50,
-        //   direction: 'LR',
-        //   sortMethod: 'directed',
-        //   shakeTowards: 'leaves',
-        // }
       },
       interaction: {
         dragNodes: false,
@@ -59,9 +51,6 @@ export default function PostsNetwork({
           avoidOverlap: 0.1,
           springLength: 50,
         },
-        // stabilization: {
-        //   iterations: 2000,
-        // },
       },
     }
 

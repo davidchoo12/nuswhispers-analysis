@@ -43,23 +43,6 @@ export const ThemeContext = createContext<ThemeContextInterface>(undefined!)
 interface ThemeProviderProps {
   children: ReactNode
 }
-// function setDarkMode(on: boolean) {
-//   console.log('setting dark mode', on)
-//   localStorage.theme = on ? 'dark' : 'light'
-//   if (on) {
-//     document.documentElement.classList.add('dark')
-//   } else {
-//     document.documentElement.classList.remove('dark')
-//   }
-// }
-
-// function isDarkMode() {
-//   // return window.matchMedia('(prefers-color-scheme: dark)').matches
-//   return (
-//     localStorage.theme === 'dark' ||
-//     (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
-//   )
-// }
 
 export default function ThemeProvider({ children }: ThemeProviderProps) {
   const defaultIsDarkMode =
@@ -77,6 +60,6 @@ export default function ThemeProvider({ children }: ThemeProviderProps) {
     document.documentElement.classList.remove('dark')
     palette = themes.light
   }
-  // const palette = isDarkMode ? themes.dark : themes.light
+
   return <ThemeContext.Provider value={{ isDarkMode, toggleDarkMode, palette }}>{children}</ThemeContext.Provider>
 }

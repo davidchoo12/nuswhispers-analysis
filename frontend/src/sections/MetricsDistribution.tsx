@@ -38,8 +38,9 @@ export default function MetricsDistribution() {
   return (
     <Section title="Metrics Distribution" level={2}>
       <p>
-        This graph shows how skewed the metrics are. Note the X axis is using logarithmic ranges. The normal axis scale
-        would show very left skewed graphs due to the big outliers stretching all the way to the right edge.
+        This graph shows how skewed each of the metrics are. Note the X axis is using logarithmic ranges. A linear axis
+        scale would have shown extremely right skewed graphs due to the big outliers stretching all the way to the right
+        edge.
       </p>
       <ButtonGroup
         options={Object.entries(metrics).map(([k, v]) => ({ name: v, value: k }))}

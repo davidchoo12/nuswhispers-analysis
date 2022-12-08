@@ -9,10 +9,10 @@ export default function DarkModeToggler({ className }: DarkModeTogglerProps) {
   return (
     <button
       onClick={() => {
-        console.log('on click')
         theme.toggleDarkMode()
       }}
       className={className}
+      title="Toggle Dark Mode"
     >
       <svg
         viewBox="0 0 24 24"
