@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Post } from '../models'
 import './PostsTable.css'
 
@@ -9,8 +9,7 @@ interface PostsTableProps {
 }
 
 export default function PostsTable({ csvData = [], hideNumberCol = false, highlightCid }: PostsTableProps) {
-  const [fulltextRows, setFulltextRows] = useState<boolean[]>([])
-  useEffect(() => setFulltextRows(csvData.map(() => false)), [csvData])
+  const [fulltextRows, setFulltextRows] = useState<boolean[]>(csvData.map(() => false))
 
   return (
     <div className="overflow-x-auto">
@@ -54,19 +53,19 @@ export default function PostsTable({ csvData = [], hideNumberCol = false, highli
                 {fulltextRows[i] ? (
                   <span>
                     &nbsp;|&nbsp;
-                    <a href={'https://www.facebook.com/nuswhispers/posts/' + d.pid}>
+                    <a href={'https://www.facebook.com/nuswhispers/posts/' + d.pid} target="_blank" rel="noreferrer">
                       fb post
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
-                        stroke-width="1.5"
+                        strokeWidth="1.5"
                         stroke="currentColor"
                         className="inline w-3 h-3"
                       >
                         <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                           d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
                         />
                       </svg>
@@ -76,10 +75,10 @@ export default function PostsTable({ csvData = [], hideNumberCol = false, highli
                   ''
                 )}
               </td>
-              <td className="text-center whitespace-nowrap">{d.likes} 👍</td>
-              <td className="text-center whitespace-nowrap">{d.comments} 💬</td>
+              <td className="text-center whitespace-nowrap">{d.likes.toLocaleString()} 👍</td>
+              <td className="text-center whitespace-nowrap">{d.comments.toLocaleString()} 💬</td>
               <td className="text-center whitespace-nowrap">
-                {d.shares}{' '}
+                {d.shares.toLocaleString()}{' '}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"

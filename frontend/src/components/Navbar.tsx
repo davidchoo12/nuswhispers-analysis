@@ -8,7 +8,7 @@ export default function Navbar() {
       className="fixed z-30 h-16 w-full flex justify-between items-center border-b border-secondary-dark dark:border-secondary-bright"
     >
       <div className="bgtiles"></div>
-      <div className="max-w-screen-2xl w-full mx-auto px-4 flex items-center">
+      <div className="xl:max-w-screen-xl 2xl:max-w-screen-2xl w-full mx-auto px-4 flex items-center">
         <span className="flex-1 inline-block text-xl text-primary-bright z-10">
           <span className="font-semibold">NUSWhispers</span> Analysis
         </span>

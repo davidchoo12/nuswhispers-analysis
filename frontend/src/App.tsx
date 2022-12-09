@@ -16,7 +16,7 @@ function App() {
     <ThemeProvider>
       <div className="bg-primary-bright dark:bg-primary-dark text-primary-dark dark:text-primary-bright">
         <Navbar />
-        <div className="max-w-screen-2xl mx-auto px-4 flex gap-4">
+        <div className="xl:max-w-screen-xl 2xl:max-w-screen-2xl mx-auto px-4 flex gap-4">
           <main className="inline-block w-full overflow-hidden lg:flex-auto">
             <Overview />
             <TopPosts />

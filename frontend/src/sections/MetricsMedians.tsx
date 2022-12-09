@@ -37,7 +37,7 @@ function MetricMedians({ metric, timedeltaMedians, children }: MetricMediansProp
   ]
 
   return (
-    <Section title={titles[metric]} level={3}>
+    <Section title={titles[metric]} level={2}>
       {children}
       <ButtonGroup
         options={Object.entries(timedeltas).map(([value, name]) => ({ name: `Per ${name}`, value }))}
@@ -94,11 +94,11 @@ export default function MetricsMedians() {
   }, [])
 
   return (
-    <Section title="Metrics Medians" level={2}>
+    <Section title="Metrics Medians" level={1}>
       <p>
         Here are the median counts of each metric. We can see the medians grow in time as NUSWhispers became popular. I
         decided to use medians instead of averages as medians are not affected by the outliers, hence giving more
-        accurate expected likes/comments/shares a post would receive at the time.
+        accurate likes/comments/shares a post would receive at the time.
       </p>
       <p>
         All metrics show growth since 2019 which means NUSWhispers posts have been receiving more user activity/traffic
@@ -113,13 +113,13 @@ export default function MetricsMedians() {
       <MetricMedians metric={'comments'} timedeltaMedians={datasets['comments']}>
         <p>
           Surprisingly, comments get around the same median with likes. This means users are equally as likely to
-          comment on a post as compared to like a post, which also means posts tend to be quite controversial, prompting
+          comment on a post as to like a post, which also means posts tend to be quite controversial, prompting
           everyone's opinions.
         </p>
       </MetricMedians>
       <MetricMedians metric={'shares'} timedeltaMedians={datasets['shares']}>
-        As expected, shares get the least medians. Since the median per hour of day is mostly 0, it means at least half
-        of all posts have 0 shares. This will change though as the median has been increasing over time.
+        Shares get the least medians. Since the median per hour of day is mostly 0, it means at least half of all posts
+        have 0 shares. This will change though as the median has been increasing over time.
       </MetricMedians>
     </Section>
   )
