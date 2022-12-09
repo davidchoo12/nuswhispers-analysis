@@ -317,7 +317,7 @@ if __name__ == '__main__':
                         help='index to stop scraping at')
     parser.add_argument('-p', '--page', type=int, default=0,
                         help='offset page from start_index to start from')
-    parser.add_argument('-l', '--limit', type=int, default=30,
+    parser.add_argument('-l', '--limit', type=int, default=300,
                         help='pagination limit, set 0 for only rescrape')
     parser.add_argument('-t', '--threads', type=int, default=100,
                         help='no of threads to run with')
