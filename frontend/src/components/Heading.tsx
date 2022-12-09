@@ -1,3 +1,5 @@
+import './Heading.css'
+
 interface HeadingProps {
   title: string
   level: number
@@ -12,27 +14,15 @@ enum HeadingTag {
 }
 
 export default function Heading({ title, level }: HeadingProps) {
-  const id = encodeURIComponent(title.toLowerCase().replaceAll(' ', '-'))
+  const id = encodeURIComponent(title.toLowerCase().replace(/ /g, '-'))
   const Hx = `h${level}` as HeadingTag
-  const levelSize: Record<number, string> = {
-    2: 'text-4xl',
-    3: 'text-2xl',
-  }
 
   return (
     <header className="my-4">
-      <Hx
-        id={id}
-        className={`inline ${levelSize[level] || 'text-2xl'} text-center font-semibold`}
-        style={{ scrollMarginTop: '2em' }}
-      >
+      <Hx id={id} className={`inline text-center font-semibold`} style={{ scrollMarginTop: '2em' }}>
         {title}
       </Hx>
-      <a
-        href={'#' + id}
-        className="text-2xl no-underline ml-3 opacity-30 transition hover:opacity-100"
-        aria-label={title}
-      >
+      <a href={'#' + id} className="text-2xl no-underline ml-3 opacity-30 transition" aria-label={title}>
         {/* src https://heroicons.com/ */}
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -40,7 +30,7 @@ export default function Heading({ title, level }: HeadingProps) {
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
-          className="w-6 h-6 inline"
+          className="w-6 h-6 inline -translate-y-1"
         >
           <path
             strokeLinecap="round"

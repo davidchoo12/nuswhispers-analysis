@@ -13,9 +13,9 @@ const getNestedHeadings = (headingElems: HTMLHeadingElement[]) => {
   const nestedHeadings: NestedHeadings[] = []
   for (const heading of headingElems) {
     const { innerText: title, id, nodeName } = heading
-    if (nodeName === 'H2') {
+    if (nodeName === 'H1') {
       nestedHeadings.push({ id, title, items: [] })
-    } else if (nodeName === 'H3' && nestedHeadings.length > 0) {
+    } else if (nodeName === 'H2' && nestedHeadings.length > 0) {
       nestedHeadings[nestedHeadings.length - 1].items?.push({ id, title })
     }
   }
@@ -26,7 +26,7 @@ const useHeadingsData = () => {
   const [nestedHeadings, setNestedHeadings] = useState<NestedHeadings[]>([])
 
   useEffect(() => {
-    const headingElements: HTMLHeadingElement[] = Array.from(document.querySelectorAll('h2, h3'))
+    const headingElements: HTMLHeadingElement[] = Array.from(document.querySelectorAll('h1, h2'))
     const newNestedHeadings = getNestedHeadings(headingElements)
     setNestedHeadings(newNestedHeadings)
   }, [])
@@ -189,11 +189,11 @@ export default function TableOfContent() {
         </svg>
       </button>
       <nav
-        className={`toc align-top fixed lg:sticky lg:flex-shrink-0 lg:self-start z-20 right-0 top-16 lg:top-24 w-full h-full lg:w-fit whitespace-nowrap lg:p-0 bg-primary-bright dark:bg-primary-dark overflow-y-auto ${
+        className={`toc align-top fixed lg:sticky lg:flex-shrink-0 lg:self-start z-20 right-0 top-16 lg:top-24 w-full h-full lg:w-[300px] whitespace-nowrap lg:p-0 bg-primary-bright dark:bg-primary-dark overflow-y-auto ${
           hidden ? 'hidden lg:block' : ''
         } lg:inline-block`}
       >
-        <ul className="relative w-fit px-4 mx-auto lg:mt-16">
+        <ul className="relative w-fit px-4 mx-auto lg:ml-0 lg:mt-8">
           {nestedHeadings.map((heading) => (
             <li key={heading.id} className={'text-lg lg:text-base pl-3 my-6 lg:my-3'}>
               <a

@@ -45,7 +45,7 @@ export default function PostsFrequency() {
   ]
 
   return (
-    <Section title="Posts Frequency" level={2}>
+    <Section title="Posts Frequency" level={1}>
       <p>
         This graph shows the number of posts published on NUSWhispers facebook page over time. Interestingly there has
         been lesser posts over the past 2 years which might be why posts over the past 2 years receive higher medians

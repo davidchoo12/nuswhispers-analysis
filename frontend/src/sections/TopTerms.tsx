@@ -13,7 +13,7 @@ function AllTimeTopics() {
   }, [])
 
   return (
-    <Section title="All Time Topics" level={3}>
+    <Section title="All Time Topics" level={2}>
       <p>These are the top 100 words that appear out of all NUSWhispers posts based on the TF-IDF result.</p>
       <div className="w-full">
         <Wordcloud wordWeights={Object.entries(allTimeTermsWeights)} />
@@ -77,7 +77,7 @@ function WeeklyTopics() {
   }, [])
 
   return (
-    <Section title="Weekly Topics" level={3}>
+    <Section title="Weekly Topics" level={2}>
       <p>Here we break down the commonly used words by week to visualize the weekly trends.</p>
       <PaginationDropdown
         currentPage={currPage}
@@ -104,7 +104,7 @@ function WeeklyTopics() {
 
 export default function TopTerms() {
   return (
-    <Section title="Topics" level={2}>
+    <Section title="Topics" level={1}>
       <p>
         Posts on NUSWhispers are most often about relationships, school, jobs. These are some of the most commonly
         occuring words from posts to show the kind of topics a NUSWhispers post may be about.

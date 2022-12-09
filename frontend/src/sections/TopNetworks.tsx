@@ -88,7 +88,7 @@ export default function TopNetworks() {
   }, [])
 
   return (
-    <Section title="Most Controversial Posts" level={2}>
+    <Section title="Most Controversial Posts" level={1}>
       <p>
         NUSWhispers is known for some of its controversial posts. Here we explore the top posts that caused the most
         controversy in the history of NUSWhispers.
@@ -98,7 +98,7 @@ export default function TopNetworks() {
         for every post, which forms the edges (arrows) in a network. In technical terms, the edge list forms a bunch of
         disjointed directed acyclic graphs. These are some of such networks.
       </p>
-      <Section title="Top 10 Most Mentioned Posts" level={3}>
+      <Section title="Top 10 Most Mentioned Posts" level={2}>
         <p>These are the top posts that has the most direct mentions by any other posts.</p>
         <Pagination
           currentPage={selectedNthMostMentioned + 1}
@@ -122,7 +122,7 @@ export default function TopNetworks() {
         />
       </Section>
 
-      <Section title="Top 10 Biggest Networks" level={3}>
+      <Section title="Top 10 Biggest Networks" level={2}>
         <p>
           Just like replies in facebook/twitter comments, a post in NUSWhisper can "reply" to another post that
           "comments" on the source post. I consider these posts as indirect mentions to the source post. These are the
@@ -151,7 +151,7 @@ export default function TopNetworks() {
         />
       </Section>
 
-      <Section title="Top 10 Longest Networks" level={3}>
+      <Section title="Top 10 Longest Networks" level={2}>
         <p>
           These are the top posts that caused the longest chain of mentions. They tend to include replies from the
           original poster of the source post forming a conversation under the veil of anonymity. The{' '}

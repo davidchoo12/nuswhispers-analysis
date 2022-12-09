@@ -42,28 +42,25 @@ export default function Overview() {
         })
       })
   }, [])
-  if (!overviewData) {
-    return (
-      <Section title="Overview" level={2}>
-        <></>
-      </Section>
-    )
-  }
   return (
-    <Section title="Overview" level={2}>
+    <Section title="Overview" level={1}>
       <div className="mt-8 text-xl">
-        {`As of ${new Date(overviewData.lastScrapedAt).toLocaleDateString('en-GB', {
-          day: 'numeric',
-          month: 'short',
-          year: 'numeric',
-        })}, NUSWhispers has accumulated:`}
+        {`As of ${
+          overviewData
+            ? new Date(overviewData.lastScrapedAt).toLocaleDateString('en-GB', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+              })
+            : '...'
+        }, NUSWhispers has accumulated:`}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 2xl:grid-cols-5 gap-x-4 gap-y-8 mt-4">
-        <Box caption="Total Posts Count" content={overviewData.postsCount} />
-        <Box caption="Latest Submission" content={`#${overviewData.latestConfession}`} />
-        <Box caption="Total Likes" content={overviewData.totalLikes} />
-        <Box caption="Total Comments" content={overviewData.totalComments} />
-        <Box caption="Total Shares" content={overviewData.totalShares} />
+        <Box caption="Total Posts Count" content={overviewData?.postsCount?.toLocaleString() || '...'} />
+        <Box caption="Latest Confession" content={`#${overviewData?.latestConfession || '...'}`} />
+        <Box caption="Total Likes" content={overviewData?.totalLikes?.toLocaleString() || '...'} />
+        <Box caption="Total Comments" content={overviewData?.totalComments.toLocaleString() || '...'} />
+        <Box caption="Total Shares" content={overviewData?.totalShares.toLocaleString() || '...'} />
       </div>
       <p>Data updates daily!</p>
     </Section>

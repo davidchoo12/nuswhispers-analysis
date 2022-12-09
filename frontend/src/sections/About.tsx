@@ -2,7 +2,7 @@ import Section from '../components/Section'
 
 export default function About() {
   return (
-    <Section title="About" level={2}>
+    <Section title="About" level={1}>
       <p>
         <a href="https://www.nuswhispers.com/">NUSWhispers</a> is a website where anonymous users can submit posts that
         will appear on its <a href="https://www.facebook.com/nuswhispers/">facebook page</a> when approved by

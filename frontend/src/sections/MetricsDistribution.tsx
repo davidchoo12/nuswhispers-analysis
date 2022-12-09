@@ -36,7 +36,7 @@ export default function MetricsDistribution() {
     distributions.map((d) => d.count),
   ]
   return (
-    <Section title="Metrics Distribution" level={2}>
+    <Section title="Metrics Distribution" level={1}>
       <p>
         This graph shows how skewed each of the metrics are. Note the X axis is using logarithmic ranges. A linear axis
         scale would have shown extremely right skewed graphs due to the big outliers stretching all the way to the right
