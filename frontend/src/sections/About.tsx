@@ -4,16 +4,17 @@ export default function About() {
   return (
     <Section title="About" level={1}>
       <p>
-        <a href="https://www.nuswhispers.com/">NUSWhispers</a> is a website where anonymous users can submit posts that
-        will appear on its <a href="https://www.facebook.com/nuswhispers/">facebook page</a> when approved by
-        moderators. This website visualizes the analysis on all the posts on that page while keeping up to date with the
+        <a href="https://www.nuswhispers.com/">NUSWhispers</a> is a website where anonymous users can submit confessions
+        that will appear on its <a href="https://www.facebook.com/nuswhispers/">facebook page</a> when approved by
+        moderators. This website visualizes the analysis on all the posts on that page while staying up to date with the
         latest posts. Here is the <a href="https://github.com/davidchoo12/nuswhispers-analysis/">source code</a>.
       </p>
       <p>
-        Each post is scraped several times until the metrics are stabilized in order to maintain the accuracy of the
-        data. Feel free to use the{' '}
+        Each post will be scraped several times until the likes/comments/shares are stabilized in order to maintain the
+        accuracy of the data. Feel free to use the{' '}
         <a href="https://github.com/davidchoo12/nuswhispers-analysis/tree/master/scraper/data">scraped posts</a> for
-        your own analysis.
+        your own analysis. I could also scrape directly from NUSWhispers API but I think scraping from the actual posts
+        is more reliable and I would not want to add cost on their server.
       </p>
       <p>
         This project is inspired by this{' '}
