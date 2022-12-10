@@ -29,7 +29,11 @@ function Box({ content, caption }: BoxProps) {
 export default function Overview() {
   const [overviewData, setOverviewData] = useState<OverviewData>()
   useEffect(() => {
-    fetch('./data/overview.json')
+    // use preloaded data https://stackoverflow.com/a/63814972/4858751
+    fetch('./data/overview.json', {
+      credentials: 'include',
+      mode: 'no-cors',
+    })
       .then((res) => res.json())
       .then((data) => {
         setOverviewData({
