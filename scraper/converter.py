@@ -133,7 +133,7 @@ def scrape_post_id_range(start_index, end_index, threads=100, min_post_age=0):
                 post_time = datetime.fromtimestamp(post_time_int).astimezone().astimezone(timezone.utc)
                 post_time_str = post_time.isoformat(timespec='seconds')
                 # logger.info('post_time %s', post_time)
-                scraped_at = datetime.utcnow().astimezone(timezone.utc)
+                scraped_at = datetime.now().astimezone(timezone.utc)
                 scraped_at_str = scraped_at.isoformat(timespec='seconds')
                 if scraped_at - post_time < timedelta(days=min_post_age):
                     logger.info('post is less than %d days old, skipping', min_post_age)
