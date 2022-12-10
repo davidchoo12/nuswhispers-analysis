@@ -86,15 +86,13 @@ function WeeklyTopics() {
         }}
         pageNames={pageNames}
       />
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-8 mt-6">
         {dateRangeTermsToShow.map(({ dateStart, dateEnd, terms }) => (
-          <div key={formatDate(dateStart)}>
-            <div className="border-2 border-emerald-400 dark:border-emerald-900 relative p-3">
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary-bright dark:bg-primary-dark px-4 whitespace-nowrap">
-                {formatDate(dateStart)} - {formatDate(dateEnd)}
-              </span>
-              <Wordcloud wordWeights={Object.entries(terms)} />
-            </div>
+          <div key={formatDate(dateStart)} className="border-2 border-emerald-400 dark:border-emerald-900 relative p-3">
+            <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary-bright dark:bg-primary-dark px-4 whitespace-nowrap">
+              {formatDate(dateStart)} - {formatDate(dateEnd)}
+            </span>
+            <Wordcloud wordWeights={Object.entries(terms)} />
           </div>
         ))}
       </div>
@@ -110,12 +108,9 @@ export default function TopTerms() {
         occuring words from posts to show the kind of topics a NUSWhispers post may be about.
       </p>
       <p>
-        Data is generated using the{' '}
-        <a href="https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html">
-          TF-IDF
-        </a>{' '}
-        model. Basically TF-IDF scores the significance of each word over all the posts. I decided to use TF-IDF because
-        I wanted an unsupervised model and the result to be easily interpretable. I think the results are not bad.
+        Data is generated using the <a href="https://en.wikipedia.org/wiki/Tf%E2%80%93idf">TF-IDF</a> model. Basically
+        TF-IDF scores the significance of each word over all the posts. I decided to use TF-IDF because I wanted an
+        unsupervised model and the result to be easily interpretable. I think the results are not bad.
       </p>
       <AllTimeTopics />
       <WeeklyTopics />

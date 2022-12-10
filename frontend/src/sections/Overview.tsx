@@ -55,7 +55,7 @@ export default function Overview() {
             : '...'
         }, NUSWhispers has accumulated:`}
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 2xl:grid-cols-5 gap-x-4 gap-y-8 mt-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 2xl:grid-cols-5 gap-x-4 gap-y-8 mt-6">
         <Box caption="Total Posts Count" content={overviewData?.postsCount?.toLocaleString() || '...'} />
         <Box caption="Latest Confession" content={`#${overviewData?.latestConfession || '...'}`} />
         <Box caption="Total Likes" content={overviewData?.totalLikes?.toLocaleString() || '...'} />
