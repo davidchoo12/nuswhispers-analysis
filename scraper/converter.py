@@ -63,7 +63,7 @@ ses.headers.update(default_headers)
 data_dir = 'data'
 index_last_changed_filename = 'index-last-changed.csv'
 
-# scrape post ids in range [start_index, end_index)
+# scrape post ids in range [start_index, end_index), ie start_index inclusive, end_index exclusive
 def scrape_post_id_range(start_index, end_index, threads=100, min_post_age=0):
     post_ids = open('post-ids.csv').readlines()
     q = Queue()
@@ -133,7 +133,7 @@ def scrape_post_id_range(start_index, end_index, threads=100, min_post_age=0):
                 post_time = datetime.fromtimestamp(post_time_int).astimezone().astimezone(timezone.utc)
                 post_time_str = post_time.isoformat(timespec='seconds')
                 # logger.info('post_time %s', post_time)
-                scraped_at = datetime.utcnow().astimezone(timezone.utc)
+                scraped_at = datetime.now().astimezone(timezone.utc)
                 scraped_at_str = scraped_at.isoformat(timespec='seconds')
                 if scraped_at - post_time < timedelta(days=min_post_age):
                     logger.info('post is less than %d days old, skipping', min_post_age)
@@ -237,7 +237,6 @@ def rescrape_posts(all_rows, min_last_changed_days):
     index_last_changed = read_index_last_changed()
 
     indexes_to_rescrape = []
-    now = datetime.utcnow().astimezone(timezone.utc)
     for row in all_rows:
         if len(row) != 9:
             # logger.info('rescrape skipping no %s, len(row) %d != 9, text = %s', row[0], len(row), row[1])
@@ -252,7 +251,7 @@ def rescrape_posts(all_rows, min_last_changed_days):
             continue
         post_time, scraped_at, last_changed = map(datetime.fromisoformat, [post_time_str, scraped_at_str, last_changed_str])
         # filter indexes to rescrape
-        if now - last_changed < min_last_changed or scraped_at - post_time < min_last_changed:
+        if scraped_at - last_changed < min_last_changed or scraped_at - post_time < min_last_changed:
             indexes_to_rescrape.append(index)
 
     indexes_to_rescrape.sort()
