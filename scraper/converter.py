@@ -39,7 +39,7 @@ threading.current_thread().name = 'M'
 
 ses = HTMLSession()
 ses.mount('https://', HTTPAdapter(pool_maxsize=2000))
-base_url = 'https://m.facebook.com/story.php?story_fbid=%s&id=695707917166339'
+base_url = 'https://www.facebook.com/story.php?story_fbid=%s&id=695707917166339'
 user_agent = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
     "Gecko/20100101 Firefox/86.0"
@@ -76,11 +76,14 @@ def scrape_post_id_range(start_index, end_index, threads=100, min_post_age=0):
     # csv_writer.writerow(cols)
 
     rowsq = Queue()
-    broken_url = re.compile(r'http[s]://\swww\.nuswhispers\.\scom/confession/\s(\d+)')
+    post_text_div_re = re.compile(r'<div data-testid="post_message".+?</div>')
+    image_re = re.compile(r'<div data-testid="post_message".+?<img.+?src="([^"]+)')
+    post_time_re = re.compile(r'data-utime=\"(\d+)\".+?<div data-testid="post_message"')
+    # broken_url = re.compile(r'http[s]://\swww\.nuswhispers\.\scom/confession/\s(\d+)')
     # likes_re = re.compile(r',like_count:(\d+)')
     # comments_re = re.compile(r',comment_count:(\d+)')
     # shares_re = re.compile(r',share_count:(\d+)')
-    post_time_re = re.compile(r'time[^\d]+?(\d{10})[^\d]')
+    # post_time_re = re.compile(r'time[^\d]+?(\d{10})[^\d]')
     # logger.info('my ip %s', ses.get('https://httpbin.org/ip').json()['origin'])
     def scrape(q, ses):
         try:
@@ -102,37 +105,19 @@ def scrape_post_id_range(start_index, end_index, threads=100, min_post_age=0):
                         continue
                 # logger.info('requested %s', url)
                 # logger.info(res.html.html)
-                # extract text
-                elem = res.html.find('.story_body_container > div', first=True)
-                text = ''
-                if elem:
-                    text = elem.text
-                elif elem := res.html.find('.hidden_elem code'):
-                    code = elem[0].html
-                    inner_html = code[code.find('<!--')+4:code.rfind('-->')].replace('</span><wbr /><span class="word_break"></span>', '')
-                    story_div = HTML(html=inner_html)
-                    text = story_div.find('.story_body_container > div, .msg > div', first=True).text
-                else:
-                    rowsq.put([i, 'not found', None ,pid])
-                    logger.info('content not found for post id %s, skipping', pid)
-                    continue
-                # if it's a post with image, the nuswhispers anchor tag contains line breaks
-                text = broken_url.sub(lambda match: f'https://www.nuswhispers.com/confession/{match.group(1)}', text)
-                # logger.info(text)
-                # extract image
-                image = res.html.find('[data-sigil="photo-image"]', first=True)
-                if image:
-                    image = image.attrs['src']
-                # logger.info('image %s', str(image))
-                # extract likes
-                ft_ent_identifier = re.search(r'(pfbid\w+).+?m_entstream_source=permalink', res.html.html).group(1)
-                likes = int(re.search(r'ft_ent_identifier:"?%s"?.*?,like_count:(\d+)'%ft_ent_identifier, res.html.html).group(1))
-                comments = int(re.search(r'ft_ent_identifier:"?%s"?.*?,comment_count:(\d+)'%ft_ent_identifier, res.html.html).group(1))
-                shares = int(re.search(r'ft_ent_identifier:"?%s"?.*?,share_count:(\d+)'%ft_ent_identifier, res.html.html).group(1))
+                post_text_div_match = post_text_div_re.search(res.html.html)
+                if not post_text_div_match:
+                    logger.debug('post text div not found %s %s', pid, res.html.html)
+                text = HTML(html=post_text_div_match.group(0)).text
+                image_match = image_re.search(res.html.html)
+                image = image_match.group(1) if image_match else ''
                 post_time_int = int(post_time_re.search(res.html.html).group(1))
                 post_time = datetime.fromtimestamp(post_time_int).astimezone().astimezone(timezone.utc)
                 post_time_str = post_time.isoformat(timespec='seconds')
-                # logger.info('post_time %s', post_time)
+                likes_match = re.search(r'Like.+?i18n_reaction_count:"(\d+)".*?share_fbid:"%s"' % pid, res.html.html)
+                likes = likes_match.group(1) if likes_match else 0
+                comments = re.search(r'i18n_comment_count:"(\d+).*?share_fbid:"%s"' % pid, res.html.html).group(1)
+                shares = re.search(r'i18n_share_count:"(\d+).*?share_fbid:"%s"' % pid, res.html.html).group(1)
                 scraped_at = datetime.now().astimezone(timezone.utc)
                 scraped_at_str = scraped_at.isoformat(timespec='seconds')
                 if scraped_at - post_time < timedelta(days=min_post_age):
@@ -283,7 +268,7 @@ def run(args):
     start_index = args.start_index
     if start_index is None:
         # continue from the last data file index
-        files = sorted(glob.glob(data_dir + '/data-[0-9]*-[0-9]*.csv'))
+        files = sorted(glob.glob(data_dir + '/data-0-[0-9]*.csv'))
         logger.info('data files %s', ','.join(files))
         start_index = 0
         if len(files) > 0:
