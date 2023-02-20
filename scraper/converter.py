@@ -96,7 +96,7 @@ def scrape_post_id_range(start_index, end_index, threads=100, min_post_age=0):
                 res = ses.get(url, allow_redirects=False)
                 if res.is_redirect:
                     redirect_url = res.headers['location']
-                    if 'https://m.facebook.com/login.php' in redirect_url:
+                    if 'https://www.facebook.com/login' in redirect_url:
                         logger.info('response redirect to %s', redirect_url)
                         break
                     else:
