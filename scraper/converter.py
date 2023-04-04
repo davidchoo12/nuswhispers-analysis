@@ -94,13 +94,15 @@ def scrape_post_id_range(start_index, end_index, threads=100, min_post_age=0):
                 # logger.info('requesting %s', url)
                 # time.sleep(2) # to avoid rate limit
                 res = ses.get(url, allow_redirects=False)
+                scraped_at = datetime.now().astimezone(timezone.utc)
+                scraped_at_str = scraped_at.isoformat(timespec='seconds')
                 if res.is_redirect:
                     redirect_url = res.headers['location']
                     if 'https://www.facebook.com/login' in redirect_url:
                         logger.info('response redirect to %s', redirect_url)
                         break
                     else:
-                        rowsq.put([i, 'redirected to %s' % redirect_url, None, pid])
+                        rowsq.put([i, 'redirected to %s' % redirect_url, None, pid, None, None, None, None, scraped_at_str])
                         logger.info('response redirect to %s, skipping', redirect_url)
                         continue
                 # logger.info('requested %s', url)
@@ -108,6 +110,10 @@ def scrape_post_id_range(start_index, end_index, threads=100, min_post_age=0):
                 post_text_div_match = post_text_div_re.search(res.html.html)
                 if not post_text_div_match:
                     logger.debug('post text div not found %s %s', pid, res.html.html)
+                    if 'This content isn\'t available at the moment' in res.html.html:
+                        rowsq.put([i, 'not found', None, pid, None, None, None, None, scraped_at_str])
+                        logger.info('post %s not found, skipping', pid)
+                        continue
                 text = HTML(html=post_text_div_match.group(0)).text
                 image_match = image_re.search(res.html.html)
                 image = image_match.group(1) if image_match else ''
@@ -118,8 +124,7 @@ def scrape_post_id_range(start_index, end_index, threads=100, min_post_age=0):
                 likes = likes_match.group(1) if likes_match else 0
                 comments = re.search(r'i18n_comment_count:"(\d+).*?share_fbid:"%s"' % pid, res.html.html).group(1)
                 shares = re.search(r'i18n_share_count:"(\d+).*?share_fbid:"%s"' % pid, res.html.html).group(1)
-                scraped_at = datetime.now().astimezone(timezone.utc)
-                scraped_at_str = scraped_at.isoformat(timespec='seconds')
+
                 if scraped_at - post_time < timedelta(days=min_post_age):
                     logger.info('post is less than %d days old, skipping', min_post_age)
                     continue
