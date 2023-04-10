@@ -239,6 +239,8 @@ def rescrape_posts(all_rows, min_last_changed_days):
         last_changed_str = index_last_changed[index]
         if last_changed_str == '':
             continue
+        if any(s == '' for s in [post_time_str, scraped_at_str, last_changed_str]):
+            continue
         post_time, scraped_at, last_changed = map(datetime.fromisoformat, [post_time_str, scraped_at_str, last_changed_str])
         # filter indexes to rescrape
         if scraped_at - last_changed < min_last_changed or scraped_at - post_time < min_last_changed:
@@ -317,5 +319,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
     logger.info('args %s', args)
 
-    run(args)
+    try:
+        run(args)
+    except:
+        logger.exception('something went wrong')
     logger.info('time elapsed %s', str(datetime.now() - start_time))
