@@ -61,6 +61,12 @@ for retry in range(1, RETRY_LIMIT + 1):
     res = ses.get(base_url + '/nuswhispers', stream=True)
     server_ip = res.raw._connection.sock.getpeername()[0]
     logger.debug(f'attempt no {retry}, server ip {server_ip}, code {res.status_code}')
+    if not res.ok:
+        break
+    res_dest = '/tmp/post-id-scraper-last-success-page.html'
+    logger.error('saving response to ' + res_dest)
+    with open(res_dest, 'w') as fd:
+        fd.write(res.text)
     post_ids_matches = post_ids_re.findall(res.text)
     if len(post_ids_matches) > 0:
         break
@@ -77,6 +83,8 @@ while old_post_ids[-1] not in curr_post_ids:
         'variables': json.dumps({
             'count': 3,
             'cursor': cursor,
+            'privacySelectorRenderLocation': 'COMET_STREAM',
+            'scale': 2,
             'id': '100064334663849'
         }, separators=(',', ':')),
         'doc_id': '6039881786065786',
