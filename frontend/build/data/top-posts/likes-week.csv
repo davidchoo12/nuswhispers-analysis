@@ -1,101 +1,75 @@
 no,cid,text,image,pid,likes,comments,shares,post_time,scraped_at
-60840,107643,"Hi, I'm looking for some advice. I'm going on my first staycation with my new boyfriend this weekend. We've been together for about 2 months and this is the first time we will be intimate. All throughout my life, I've worn highly padded bras. I'm in between an A and B, but I've been doing this so long that I know how to make my boobs look like a large C or even D. I know my boyfriend likes it because he's complimented me a couple of times. This weekend, however, I'm afraid that my boyfriend will be disappointed when our clothes finally come off. I really like this guy and don't want to upset or lose him. What should I do?
+60856,107669,"Can someone explain to me in very simple and pragmatic terms why I should spend a single sec trying to learn my dialect (Teochew) than to learn an actual useful language like French or German in addition to English and Mandarin?
+A lot of people get all hostile about “remembering your roots” but I can’t remember a single instance in my life where I was paid for being able to do what my ancestors did. My grandfather used to have oil lamps, do I have to learn that? He drove a manual shift car? Should I learn that? Once he got sick and he picked some random wild plants from the side of the road and made tea out of it instead of eating his antibiotics. He died without having eaten a single pill that was prescribed to him by a Mount Elizabeth doctor. Should I learn that?
+There needs to be a system by which people pick and choose which aspects of our ancestors’ lives we ought to learn from. What is that system? Based on usefulness? What is the metric?
+It’s funny people advocate for things that isn’t fundamentally helpful to the actual struggles of life, most of which are material. Please let us advocate first making a living and then you can learn whatever obscure language or tradition if you have spare time.
 -
-#107643: https://www.nuswhispers.com/confession/107643",,659736506180832,59,179,36,2023-07-19 12:33:05+08:00,2023-07-28 12:00:09+08:00
-60835,107637,"My best friend recently got a boyfriend and she keeps prioritising her boyfriend over me. I haven’t seen her in like 3 months and she rarely texts back now. Her work is busy so I can already hardly see her, but yet she always has time for her dates.
-There are some activities I want to try with her but I am afraid to even ask her as I know she will take the idea and do it with her boyfriend instead (I did that and true enough, she keeps asking me for the place now so that she can go with her boyfriend).
-Am I overreacting? What can I do? I feel like a second option now and it sucks.
+#107669: https://www.nuswhispers.com/confession/107669",,663447879143028,74,138,22,2023-07-26 07:34:52+08:00,2023-07-31 12:00:48+08:00
+60855,107665,"My girlfriend recently came back from her overseas exchange, and I feel like she is a changed person.
+She used to be so helpful and easy-going. Nowadays she only likes to argue and badmouth me, and she keeps talking about BTO.
+She used to be very cute and innocent. Nowadays she likes to watch raunchy TV shows like Game of Thrones and she moves her head up and down when drinking BBT.
+Sometimes I feel like breaking up with her, but I love her too much...
 -
-#107637: https://www.nuswhispers.com/confession/107637",,659736196180863,48,66,14,2023-07-19 12:32:17+08:00,2023-07-28 12:00:06+08:00
-60837,107639,"So I’ve been with my boyfriend(22m) for about half a year now and I want to introduce him to my family. The issue is my parents are very close minded and traditional. My boyfriend is not our race and has visible tattoos. On many occasions, they have made it clear on their opinions of tattoos, and even going as far as to say I will be disowned for having tattoos. I have tattoos of my own, but they’re not visible. However I actually do see a future with him and I’m certain that he’s the one I want to marry. Any advice for this ?
+#107665: https://www.nuswhispers.com/confession/107665",,663447635809719,64,74,23,2023-07-26 07:33:56+08:00,2023-07-31 12:00:48+08:00
+60848,107652,"Response to #107607
+About myself : Public Officer from non-STEM background (managed non-IT projects), pivoted to the IT Department with focus on Data Analytics.
+Did General Assembly's part-time bootcamp in Data Science in 2017, then the NUS Grad Cert (GC) in Computing Foundations three years later, joined the IT department in another agency a few months after supporting video analytics projects as a minor portfolio (was in a different department doing my major portfolio.)
+1 year and 9 months later, the IT dept became my major portfolio as I now help to manage data analytics projects, organize data analytics capacity-building initiatives (courses for staff!); and even supporting change management for the rollout of a major operations system. I joined the GC programme with the intention of doing the MComp in the near future but still managed to pivot to an IT role without pursuing MComp.
+As Profs Ben and Alan already covered the difference between the GC and MComp, I will not repeat these points and I fully agree with their points. I will address the issue of bootcamp vs NUS.
+NUS professors like Prof Alan would make these bootcamp instructors look like scammers and fakers when it comes to teaching Python programming (and other stuff). Let me illustrate this with a simple use case of sorting a list of numbers.
+In any bootcamp, you just code list.sort() and that's it. However in IT5001, you aren't allowed to use the sort() method, you are forced to think more critically about the different kinds of sorts and how the sort() method may not necessarily be the most efficient algorithm to run. This would be a valuable lesson that bootcamps don't necessarily teach you but can make a difference when managing apps and systems.
+Also, in the GC/MComp you have to take multiple modules beyond the traditional ambit of a SWE / Data Scientist / Business Analyst etc. You are exposed to the importance of understanding the larger picture of IT systems and how different IT professionals need to work together to provide the infrastructure and systems support for everyone to do their tasks well (eg. IT5002, IT5003). This is something all bootcamps can't do because they are only limited to the singular focus of the course, at most they can only guide participants to be astute to business needs and that's all. Having some basic knowledge of other IT disciplines beyond one's main specialty would give you a big advantage over those who can't; because business challenges can't be addressed because we have to spend more time trying to address the system / software / security issues before you can even analyze the data and solve the business problem (speaking in my data scientist lens).
+Assumming after covering subsidies for SC/PR, Bootcamps cost between on average $3 -6K and you only learn one toolkit; while on the other hand you spend around $4.5K for the GC and you learn more than one toolkit in one go, so go figure out the math. If you compare the full-time bootcamps vs doing the GC full-time, the duration is similar.
+P/S - If you are a public officer and if you're interested in data science, please don't throw your money at these bootcamps. These bootcamps (GA, Vertical Institute, JCube Institute, Le Wagon etc etc.) don't deserve your money at all no matter how reputable they are. Go join GovTech Data Champions Bootcamp which is totally free-of-charge and you get to learn Python + Power BI / Qlik Sense / Tableau; and you get to cover at least 70% of the Data Science / Machine Learning toolkits in the bootcamp. Although it's not meant for you to pivot to a data science role but at least you save alot of money. You've a larger community of peers to get help from; and also less pressure to pass (unlike NUS and the bootcamps, for obvious reasons).
 -
-#107639: https://www.nuswhispers.com/confession/107639",,659736242847525,33,56,9,2023-07-19 12:32:29+08:00,2023-07-28 12:00:09+08:00
-60834,107636,"Hi, I'm a female recent grad that's going to join one of the investment banks in a few months' time. Given the crazy schedule, how do female investment bankers date and keep relationship alive and hopefully maintain a functional marriage?
+#107652: https://www.nuswhispers.com/confession/107652",,663447109143105,58,8,11,2023-07-26 07:32:19+08:00,2023-07-31 12:00:47+08:00
+60852,107659,"True story: Recently, I have come across several career paths that may interest you:
+(1) Bachelor's in X Engineering from NUS, followed by a Ph.D. in X Engineering from NUS, and then becoming a Research Fellow at NUS for three years with a salary below 5.5k.
+(2) Bachelor's in X Engineering from an average university in Malaysia, leading to a position as a Micron engineer with a starting pay of 5k.
+(3) Bachelor's in X Engineering from any university, followed by attending Data Scientist Bootcamps for six months, and eventually becoming a Data Scientist with a starting pay of 6k.
 -
-#107636: https://www.nuswhispers.com/confession/107636",,659736156180867,22,42,5,2023-07-19 12:32:07+08:00,2023-07-28 12:00:06+08:00
-60839,107641,"I met this guy through dating app last year, we dated for a while and he told me he wasn’t ready for a relationship. We still kept in contact and texted daily, up till today. Yes, it has been more than a year. We still hang out and went out for drinks. So, after a few drinks we made out and day after we both acted like it didn’t happened. Fool me once shame on you, fool me twice shame on me :”) I can’t seems to get over him knowing that he doesn’t feel the same way as I do. He is a really nice friend as well which I don’t mind being friends with. So I’m stuck.
+#107659: https://www.nuswhispers.com/confession/107659",,663447352476414,25,13,7,2023-07-26 07:33:03+08:00,2023-07-31 12:00:48+08:00
+60850,107656,"Question for my fellow NUS alumni: is there any point in staying long term at a company?
+Worked for three years, annual increments were 7-15% at the same workplace. I started looking elsewhere and there were offers coming in with increases of 20-30% at different companies.
+I left my previous workplace and have now worked at a different company for a year - but it seems like the annual raise is once again nothing compared to my 'personal' raise if I just hopped to a different company?
+So what is the point of staying long term in any company? Experience? Can be gained regardless of which company it is.
+Messy CV? No one really cares as long as you do proper work and have decent references.
 -
-#107641: https://www.nuswhispers.com/confession/107641",,659736416180841,21,36,3,2023-07-19 12:32:55+08:00,2023-07-28 12:00:09+08:00
-60838,107640,"Can anyone tell me how AITA in this situation?
-Basically, in a whatsapp group, one of my friend sent a photo of his backyard, and it's at night. All he said was ""guys, I can't believe that thing is there"", implying that there's a supernatural being in the photo.
-Then everyone in the group was like ""Omg that's so scary"", or ""That's insane knowing the ghost is right there"". Thing is.... There's absolutely nothing :/ I asked where, and everyone gave me a different answer, then all proceeded to go like ""Oh there's actually more than one that's scary"".
-So what I did was, I took the photo, put it in Lightroom and just a touch of Photoshop to brighten up the photo enough. And there's still.... Nothing :/ I sent to them and they say I need to look carefully. I even changed different filter to make it clearer, and still nothing. I asked them where are the ghosts at all?
-And they kicked me out of the group :/
-I showed the photo to my family and other friends, all of them say they can see it and when I showed the brighten up photo edit, all of them hates me for pointing out there's nothing.
-I learned that people just want to have the attention of ""Oooh look at meeeee I can see supernatural stuff ooooooh I'm cool you're not ooooh"" :/
-So how AITA for calling it out? :/
-Look, I believe supernatural being exist. Just, stop pretending to see it when there's obviously nothing. This is real life. Not some anime weeb shit where you have special powers to save the universe.
-Please, grow up already sheeeeeeesssshhhh.
+#107656: https://www.nuswhispers.com/confession/107656",,663447282476421,14,10,1,2023-07-26 07:32:39+08:00,2023-07-31 12:00:48+08:00
+60854,107664,"I feel like this is something I can’t really talk to people about, and I really need to let it out in the world. Even my closest friends, although they have some idea, they don’t really know the extent of it. I’ve been in love with a guy for almost 6 years now. I don’t know if it’s love. I wouldn’t even know what to call it. We haven’t even spent that much time together, but it was truly love at first sight (or love at first meeting at least). The little time we’ve spent together in last few years has been eclectic. I’ve never felt the way that I feel with him with anyone else.
+Now here’s where the thing gets complicated. I’ve been in a very very serious relationship for 5 years. Don’t get me wrong, I truly do love my boyfriend very very much, and I do see a future with him. We will probably get married one day. He’s perfect for me in all the right ways.
+However, I can’t get the thought of the other guy out of my mind. I think of him every day, even when I don’t see him for months at a stretch. My body shakes every time I see him. I know he’s not good for me, and he’s quite manipulative but despite knowing all the bad things about him, I still can’t let him go. It’s been years, and I can’t let him go. I think it’s reciprocated from his side, and he’s expressed it subtly a few times, but he will never own up to it or have a genuine conversation and it because that’s just how he is. I am 100 percent sure he’s not right for me, but I still can’t move on from him. No matter what he does or what I hear about him. I can swear there’s something inexplainable between us. He even makes my body and mind respond in strange ways.
+I love my boyfriend and know he’s the correct choice- he’s amazing too and he makes my life better by just being in it. I don’t know how to move on from the other guy- tried hating him, giving it time, tried everything but it’s been years and he still has the same effect on me.
+What should I do?
 -
-#107640: https://www.nuswhispers.com/confession/107640",https://static.xx.fbcdn.net/images/emoji.php/v9/tf2/1/16/1f615.png,659736339514182,19,30,4,2023-07-19 12:32:45+08:00,2023-07-28 12:00:09+08:00
-60845,107648,"I'm an attached guy similar age range to OP in #107611.
-Unlike OP, I managed to land a successful match on a dating app and have since gone steady.
-However, I was single like him once and I respect his bravery to keep at his own game. I was there in that former pain. I can relate and empathise.
-Some of the comments are plain unrealistic and socially unreasonable in their expectations to OP.
-The OP brought up a few good points regarding white-knighted and self-virtuous behaviour. It reeks so toxically online. Speaks volumes on how socially inhumane people are.
-OP has already stated his stagnating experiences in social events, school activities and the like. People are shaped by their experiences. Who are you to question?
-Most of you can't seem to relate that he felt pushed over the edge with no other option or space to interact with the opposite gender. Many of you are so easy to dismiss him for being dangerous and creepy by seeking to try approaching / talking up girls in public places. I guess society has dismissed you badly in your real-lives and make you miserable?
-Hypocritically, if the OP wrote a salty rant on how no ladies have ever liked him, why he's single, and some misogyny, all of you would instead be slamming him for not putting himself out there and being a whiny spoilsport.
-OP has never expressed he is sore on his fate. Yet you all still slam him for trying. And even calling him out for being sore. Don't get personal if you can't get your facts right.
-For those who mentioned Pickup Artist wannabe, the lame comparison reflects on yourself. Out of touch from Dating Apps? Dating Apps and writing Intros is also some form of ""Pick-Up"" behaviour. Albeit online, not in real life.
-The Internet also doesn't owe you a duty of care for tailor-worthy content. Some (not all) of you launched very personal attack towards the OP on this. If you have an annoying issue regarding OP's long confession, no TL;DR or that punctuation is misused. That's your own darn problem. Stop projecting your own illiteracy that onto the OP. You chose to read the confession, at your own will.
-To those who mocked him for spending too much time over-formulating and asking OP to get his ass off to go outside. Don't forget that OP already spent his past 2 years outside, away from keyboard, working on himself. Only spend I presume 1-2 hours to write his confession? Whilst for you yourself, I also see your name pop up so frequently on the comments section in NUSWhispers? Who should be the one getting his ass off the keyboard and stop being the justice warrior?
-As a former single myself, I can totally relate to why many other guys continue to remain Single. Other than the usual issues people mention, what people DO NOT MENTION is peer pressure by society to be socially perfect in decorum. Upon having a track record that you creep girls out, you get socially condemned.
-You got to learn that the problem isn't necessarily on you and creep isn't a total reflective indicator of your failures.
-I wouldn't be surprised if this is why so many guys give up and accept their fate to be single. And for the mental health rating to be so badly affected. A fear of judgment if they tried their own way to practice and work on it.
-Single guys, if you have male friends who are stumping your social growth, overly supervising your image towards girls and being unreasonably critical on how you express yourself towards women, I beg you to reconsider your toxic ""friendship"" aka ""brotherhood"".
-It may be better to stand strong alone in your own struggle. A healthy balance of dating apps whilst finding confidence in your own way might work just fine.
+#107664: https://www.nuswhispers.com/confession/107664",,663447559143060,13,35,5,2023-07-26 07:33:40+08:00,2023-07-31 12:00:48+08:00
+60857,107670,"Dear Prof Ben,
+I suffer from really bad depression because of underachievement due to laziness and I have attempted suicide two times.
+I was the top student of my primary school and a Raffles Academy student. I never had any tuition, never really did homework, but life has been very accommodating of me. I went into JC with a near perfect grades in sec 4. I then decided to join a sports CCA and because I never did sports, it affected me physically and I put in zero work through J1. I did not promote and my parents decided to take me out of school and they sent me to the US to do community college. My parents are both specialists so my family is well-to-do.
+I did two semesters, started working hard for the first time in my life and transferred to MIT course 18. When I was there, old habits returned and I started binging shows on Netflix and didn’t a crap about coursework. I was put on academic warning. My parents made me take an LOA and now I’ve been trapped at home. I did therapy and stuff. They made me do volunteer work, I worked as a Starbucks barista, I started running etc. During all of this I cut myself twice and both times I got saved by my brother.
+I hate that when I sit down to study, I would understand quickly, very quickly, drift off during classes and then not practice because I believed that I already understand the material and then I would fail. I hate myself because a part of me keeps letting myself down even though I do want to work. I want to work hard. But I can’t control this voice in my head that keeps sending me wrong signals that “okay you got it.” I don’t want to cut myself again.
 -
-#107648: https://www.nuswhispers.com/confession/107648",,659736722847477,18,10,2,2023-07-19 12:33:36+08:00,2023-07-27 12:00:06+08:00
-60841,107644,"I am a guy but I cry very easily. I'm joining MBB this year and I heard that people there cry on the job before which I really don't want to. Any peeps with tip to share how to not cry when tear welled up? Thanks guys.
+#107670: https://www.nuswhispers.com/confession/107670",,663447902476359,12,24,3,2023-07-26 07:34:57+08:00,2023-07-31 12:00:48+08:00
+60847,107650,"If a boy like the one in #107611 ever approached my daughter in that way, I might actually give him more consideration.
+Am a long-term working Mum with a daughter in NUS.
+She has faced her fair share of dating and it has been quite a disaster. Either the boy had differences or that she faced bouts of being cheated on.
+Most of her boyfriends were found either in school or on a dating app. Just because those boys went via the so-called ""acceptable"" means to find a date, doesn't guarantee my approval nor did they treat my daughter properly.
+As much as I don't know enough on this specific boy, I have never seen anyone in ages writing sincere. wholesome notes to others. It is such a nostalgic throwback to my time of dating. Everything being much simpler, face-to-face and genuine.
+I may still feel sceptical on behalf of my daughter given he is still a total stranger. However, I would still support my daughter to consider him a try.
+At least my daughter would have already seen and vibed the boy in real life. Not like on those silly dating apps where whatever you see on a ""profile"" is not necessarily what you get in real life.
+A mother's instinct is unlikely to go wrong. I can at least sit right that he's more likely to treat my daughter better than what she has already faced.
+PS: Unless you have a daughter, stop using the ""imagine xxx hit on your daughter"" to put others down. You are not a parent yourself. Don't speak on behalf of actual parents.
 -
-#107644: https://www.nuswhispers.com/confession/107644",,659736522847497,14,31,3,2023-07-19 12:33:10+08:00,2023-07-28 12:00:09+08:00
-60842,107645,"Dear NUS, why you keep featuring my FYP groupmate who did nothing except going to community club? He just go there to take photos with his favourite MP. Now you guys even tag him and not us ????
+#107650: https://www.nuswhispers.com/confession/107650",,663287405825742,11,17,4,2023-07-25 23:55:53+08:00,2023-07-31 12:00:46+08:00
+60851,107657,"I might be caught for cheating in a final in my fourth year. I think it is going to be quite serious but I don't think I'll get expelled. I really regret it, and I did it out of panic. I don't have a job yet but otherwise I am on track for a first class honours.
+Has anyone had an academic offence on their transcript or know someone with an academic offence on their transcript, and is there any advice on job hunting after receiving such a huge black mark on my transcript (e.g. how I am going to explain it to employers or declare it while applying for jobs etc)
 -
-#107645: https://www.nuswhispers.com/confession/107645",,659736549514161,14,6,4,2023-07-19 12:33:17+08:00,2023-07-28 12:00:09+08:00
-60846,107649,"Dear Prof Ben, in your reply to #107607, you said ""if I were hiring and I had to choose between a candidate with a 4-year CS degree or another with Grad Cert/M.Comp, I would likely pick the 4-year degree.""
-May I know the reasons you behind saying that? How can a Grad Cert or Master program be necessarily less rigorous than a Bachelors?
-Based on my perusal of the module outlines, those grad programs seem similar to that of a CS Bachelors without some of the useless stuff like Science and General modules.
+#107657: https://www.nuswhispers.com/confession/107657",,663447309143085,9,14,1,2023-07-26 07:32:46+08:00,2023-07-31 12:00:48+08:00
+60853,107660,"We talk so much about how it’s wrong to expect females to have stereotypically “feminine” behaviours, like being demure or doing housework. Sure, I agree. We shouldn’t be expected to do certain things because of gender attributes.
+Why, then, is it completely ok the other way round? My guy friends are routinely dragged out by their partners or female friends for the sole purpose of being shopping bag carriers, drivers, and/or ATMs. We’re the de facto leftover food finishers whether we want to be or not. And no, not all guys are ok with cockroaches, nor do all of us have some innate DIY expertise, or whatever stereotypically “guy” thing we’re expected to do. Furthermore, asking these types of questions elicits banal responses like “who hurt you?” instead of any effort to understand.
+Sure, some guys are ok with being “the guy”. But if there can be an expectation one way, then it should go the other way too. If not, then women can pay for and carry their own things, walk on any side of the road, and stomp their own darn pests.
 -
-#107649: https://www.nuswhispers.com/confession/107649",,659736786180804,14,21,4,2023-07-19 12:33:41+08:00,2023-07-28 12:00:12+08:00
-60844,107647,"Response to #107611
-I took time to read through everything. I feel so enraged.
-By the way people have put you down online.
-Applaud your courage to have tried relentlessly over the past 2 years despite lack of results.
-Who r the rest to negatively judge you for your actions? No one is perfect. At least you are actively trying instead of sitting around and sulking why you are single.
-Seeing most of the 25+ comments on this confession, most of these comments are coming from socially-entitled and self-virtuous individuals who cannot be pleased and expect perfect decorum on social behaviour even when it means trying something that others don't dare to try.
-Hypocritical that we keep advocating on a more socially inclusive and open-minded society/space. Society to also keep obliging that guys should put in effort to try work on their interaction and social skills towards girls and dating etc.
-Yet when someone actually shares his candid experiences, its only met with white-knighted criticism and scrutiny. Have more social backbone and stop latching into other guys social failures to amplify your own moral high ground.
-OP, word of advice for u. This kind of thing, better to share offline. People don't appreciate, so be it. Don't be too affected by what other ppl say. However, continue to work on your confidence so that girls feel less creep out. Learn to live life and let go.
-Those ppl are the real coward to hide behind keyboard and attack you, whilst you have spent 2 years outside actively trying and getting actual work done. Some of their names appear very frequently on this platform unlike your confession. Online double standards are real.
+#107660: https://www.nuswhispers.com/confession/107660",,663447412476408,8,14,1,2023-07-26 07:33:14+08:00,2023-07-31 12:00:48+08:00
+60849,107655,"Hello, will you guys give me suggestions on where is good to travel during CNY period?
 -
-#107647: https://www.nuswhispers.com/confession/107647",,659736666180816,8,2,0,2023-07-19 12:33:29+08:00,2023-07-28 12:00:09+08:00
-60833,107635,"I read a post here about a 10/10 girl or something and the comments were mostly not useful or just mostly trolls.
-I am in a similar situation to the OP where I want a girl who is (8-10)/10 but I am probably much lower. I also have friends (both gender) who are in similar situations.
-If you are someone that believes that someone's rating (not a good word but for discussion sake, pls let it through) should be static, then this post is not for you, move on pls.
-The premise for this post is that you can improve your rating and possibly even become a 10/10 from a 0/10.
-I think there are two main benefits of this thought -
-Firstly, it is basically self-improvement, pretty sure it makes someone feel more confident, feel good and probably has results in a better life.
-Secondly, you can get your 10/10 girl or your dream crush or whatever.
-By the way, this 10/10 is not just physically attractiveness, it could mean other aspects such as personality or whatever.
-I am a CS student so I think of things logically and step by step so there are here are questions:
-Assuming I am starting out as a 0/10 person,
-1) What are the main aspects I should work on to reach 10/10 (not limited physical attractiveness, can include others as well)?
-2) How should I approach this problem?
-3) What are resources that I can refer to, if any?
-I hope this helps other people as well and is a positive thread.
-There are quite a number of guys and girls in similar situations.
--
-#107635: https://www.nuswhispers.com/confession/107635",,659736126180870,4,11,3,2023-07-19 12:32:03+08:00,2023-07-28 12:00:07+08:00
-60843,107646,"To #107608, I'm a one such recent CS grad and take offence at your claim that we are in CS only for the money and not passion. I wonder where are your logic skills when you paint entire batches from your small sample size of a couple of junior SWEs.
-While I do not dismiss your accusation that many in my batch chose CS because of the high starting pay, I have met many who are in CS because of similar passions in computing. They have sizable side projects and have formidable programming skills even before entering NUS. I dare say many did not need a CS college education at all if not for that piece of paper that HR and some jobs require.
-On the issue of pay, what is wrong with going for courses that pay more? With times of high inflation, rising cost of living and housing prices, it's natural for us to go for degrees with higher ROI. It's economics 101 of demand and supply.
-If road sweepers were to be paid the same as CS grads, tons of people will line up to be one. However, I'm certain you won't complain about the lack of passion of road sweepers.
-Being in a MANGA company for a year and several internships in SMEs before I graduated, I have worked with many seniors. While some are good, I noticed a distinct and noticeable gulf between the average of those who graduated more than 5 to 8 years back and the newer batches. I recall Prof Ben commenting somewhere about seniors who were really quite weak so this is not an isolated observation.
-Nobody said DS, AI and ML are the only fields in CS. However those skills are the current baseline for a CS grad and the tech industry. If you don't believe me, even Nvidia CEO Jensen Huang says those without AI expertise will be left behind. When you show no interest in them, you are only betraying yourself in not even having an minimum industry skillset. I honestly worry for your future in tech with this kind of stagnant mindset.
-If your attitude is representative of your batch, you all deserve to be left behind in the dumping ground.
--
-#107646: https://www.nuswhispers.com/confession/107646",,659736586180824,3,5,1,2023-07-19 12:33:21+08:00,2023-07-28 12:00:09+08:00
-60836,107638,"Beautiful mountains covered with greenery, dense white clouds floating around, touching the tips of these mountains, small house made of wood and dry leaves, cattle grazing grass around it guarded by a dog, clear stream of water flowing with birds trying to catch fish from it. A little bit of drizzle and me listening to the sound of it hitting the ground while drinking a cup of tea made in a kettle put on a log of firewood and eating food, I have grown myself. This is my daily dream and it gives me chills. Not in a creepy way but in a way that shows me how much I want to run away from this life of mine and live a peaceful, pleasant life, far away, spending time and effort on only the things that really matter. Is this possible in Singapore? I have no idea but it is possible at my place and I am still not able to take the risk.
--
-#107638: https://www.nuswhispers.com/confession/107638",,659736216180861,2,11,0,2023-07-19 12:32:24+08:00,2023-07-27 12:00:05+08:00
+#107655: https://www.nuswhispers.com/confession/107655",,663447262476423,4,21,0,2023-07-26 07:32:34+08:00,2023-07-31 12:00:48+08:00
