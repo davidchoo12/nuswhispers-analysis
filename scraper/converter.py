@@ -13,6 +13,7 @@ import re
 from pathlib import Path
 import glob
 import argparse
+import json
 
 # converts old data.csv scraped from nuswhispers api
 
@@ -39,14 +40,12 @@ threading.current_thread().name = 'M'
 
 ses = HTMLSession()
 ses.mount('https://', HTTPAdapter(pool_maxsize=2000))
-base_url = 'https://www.facebook.com/story.php?story_fbid=%s&id=695707917166339'
-user_agent = (
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-    "Gecko/20100101 Firefox/86.0"
-)
+base_url = 'https://www.facebook.com/nuswhispers/posts/%s'
 default_headers = {
-    'User-Agent': user_agent,
-    'Accept-Language': 'en-US,en;q=0.5'
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/86.0',
+    'Accept-Language': 'en-US,en;q=0.5',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+    'Sec-Fetch-Site': 'none',
 }
 ses.headers.update(default_headers)
 
@@ -76,9 +75,12 @@ def scrape_post_id_range(start_index, end_index, threads=100, min_post_age=0):
     # csv_writer.writerow(cols)
 
     rowsq = Queue()
-    post_text_div_re = re.compile(r'<div data-testid="post_message".+?</div>')
-    image_re = re.compile(r'<div data-testid="post_message".+?<img.+?src="([^"]+)')
-    post_time_re = re.compile(r'data-utime=\"(\d+)\".+?<div data-testid="post_message"')
+    post_text_div_re = re.compile(r'"message":{"text":(".+")},"referenced_sticker"')
+    image_re = re.compile(r'href="https://www.facebook.com/nuswhispers/photos.+?<img[^>]?src="([^"]+)')
+    post_time_re = re.compile(r'"story":{"creation_time":(\d+).+?')
+    likes_re = re.compile(r'Like.+?i18n_reaction_count:"(\d+)"')
+    comments_re = re.compile(r'i18n_comment_count":"(\d+)')
+    shares_re = re.compile(r'i18n_share_count":"(\d+)')
     # broken_url = re.compile(r'http[s]://\swww\.nuswhispers\.\scom/confession/\s(\d+)')
     # likes_re = re.compile(r',like_count:(\d+)')
     # comments_re = re.compile(r',comment_count:(\d+)')
@@ -114,16 +116,16 @@ def scrape_post_id_range(start_index, end_index, threads=100, min_post_age=0):
                         rowsq.put([i, 'not found', None, pid, None, None, None, None, scraped_at_str])
                         logger.info('post %s not found, skipping', pid)
                         continue
-                text = HTML(html=post_text_div_match.group(0)).text
+                text = json.loads(post_text_div_match.group(1)).replace('\n\n', '\n')
                 image_match = image_re.search(res.html.html)
                 image = image_match.group(1) if image_match else ''
                 post_time_int = int(post_time_re.search(res.html.html).group(1))
                 post_time = datetime.fromtimestamp(post_time_int).astimezone().astimezone(timezone.utc)
                 post_time_str = post_time.isoformat(timespec='seconds')
-                likes_match = re.search(r'Like.+?i18n_reaction_count:"(\d+)".*?share_fbid:"%s"' % pid, res.html.html)
+                likes_match = likes_re.search(res.html.html)
                 likes = likes_match.group(1) if likes_match else 0
-                comments = re.search(r'i18n_comment_count:"(\d+).*?share_fbid:"%s"' % pid, res.html.html).group(1)
-                shares = re.search(r'i18n_share_count:"(\d+).*?share_fbid:"%s"' % pid, res.html.html).group(1)
+                comments = comments_re.search(res.html.html).group(1)
+                shares = shares_re.search(res.html.html).group(1)
 
                 if scraped_at - post_time < timedelta(days=min_post_age):
                     logger.info('post is less than %d days old, skipping', min_post_age)
