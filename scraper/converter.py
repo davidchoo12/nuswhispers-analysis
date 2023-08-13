@@ -78,7 +78,7 @@ def scrape_post_id_range(start_index, end_index, threads=100, min_post_age=0):
     post_text_div_re = re.compile(r'"message":{"text":(".+")},"referenced_sticker"')
     image_re = re.compile(r'href="https://www.facebook.com/nuswhispers/photos.+?<img[^>]?src="([^"]+)')
     post_time_re = re.compile(r'"story":{"creation_time":(\d+).+?')
-    likes_re = re.compile(r'Like.+?i18n_reaction_count:"(\d+)"')
+    likes_re = re.compile(r'"Like"},"i18n_reaction_count":"(\d+)"')
     comments_re = re.compile(r'i18n_comment_count":"(\d+)')
     shares_re = re.compile(r'i18n_share_count":"(\d+)')
     # broken_url = re.compile(r'http[s]://\swww\.nuswhispers\.\scom/confession/\s(\d+)')
@@ -96,6 +96,10 @@ def scrape_post_id_range(start_index, end_index, threads=100, min_post_age=0):
                 # logger.info('requesting %s', url)
                 # time.sleep(2) # to avoid rate limit
                 res = ses.get(url, allow_redirects=False)
+                res_dest = '/tmp/converter-last-response.html'
+                logger.debug('saving response to ' + res_dest)
+                with open(res_dest, 'w') as fd:
+                    fd.write(res.text)
                 scraped_at = datetime.now().astimezone(timezone.utc)
                 scraped_at_str = scraped_at.isoformat(timespec='seconds')
                 if res.is_redirect:
