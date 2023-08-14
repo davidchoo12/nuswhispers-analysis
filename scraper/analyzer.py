@@ -350,8 +350,9 @@ def gen_top_terms():
     # explanation on closed and label params https://stackoverflow.com/a/48342103/4858751
     for interval, df_slice in df.resample('W', on='post_time', closed='left', label='left'):
         # corpus = corpus_all[df_slice.iloc[0]['no']:df_slice.iloc[-1]['no']+1]
-        corpus = corpus_all.loc[df_slice.index]
-        interval_term_score[str(interval.date())] = corpus_to_top_terms(vectorizer, corpus, 10, mindf, maxdf)
+        if len(df_slice) > 0:
+            corpus = corpus_all.loc[df_slice.index]
+            interval_term_score[str(interval.date())] = corpus_to_top_terms(vectorizer, corpus, 10, mindf, maxdf)
     end = datetime.now()
     # exit(0)
     logger.info('transform all df_slice took %s', end-start)
