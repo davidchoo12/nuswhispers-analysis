@@ -23,7 +23,7 @@ export default function About() {
         </a>{' '}
         and its <a href="https://github.com/quissuiven/nuswhispers-project">repo</a> from 2019. I started this project
         because I wanted to see the analysis for the latest posts. I created my first version of this website during a{' '}
-        <a href="https://devpost.com/software/analysis-on-nuswhispers-confessions">hackathon</a> in 2020. Since then, I
+        <a href="https://devpost.com/software/analysis-on-nuswhispers-confessions">hackathon</a> in 2021. Since then, I
         have wanted to see this side project to completion and worked on it on and off for almost 2 years. Much of the
         time was spent working on the UI since I am learning it as I worked on this. The UI takes inspiration mostly
         from the <a href="https://survey.stackoverflow.co/2022/">StackOverflow survey</a>.
