@@ -98,8 +98,8 @@ def gen_overview():
 
 def gen_top_posts():
     last_post_time = df.iloc[-1]['post_time'].to_pydatetime().replace(hour=0, minute=0, second=0)
-    last_week_start = last_post_time + timedelta(days=-last_post_time.weekday(), weeks=-1)
-    last_week_end = last_post_time + timedelta(days=-last_post_time.weekday())
+    last_week_start = last_post_time + timedelta(weeks=-1)
+    last_week_end = last_post_time
     last_month_end = last_post_time.replace(day=1)
     last_month_start = (last_month_end - timedelta(days=1)).replace(day=1)
     last_year_end = last_post_time.replace(month=1, day=1)
