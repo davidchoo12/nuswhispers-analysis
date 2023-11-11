@@ -81,12 +81,41 @@ def scrape_post_id_range(start_index, end_index, threads=100, min_post_age=0):
     likes_re = re.compile(r'"Like"},"i18n_reaction_count":"(\d+)"')
     comments_re = re.compile(r'i18n_comment_count":"(\d+)')
     shares_re = re.compile(r'i18n_share_count":"(\d+)')
-    # broken_url = re.compile(r'http[s]://\swww\.nuswhispers\.\scom/confession/\s(\d+)')
-    # likes_re = re.compile(r',like_count:(\d+)')
-    # comments_re = re.compile(r',comment_count:(\d+)')
-    # shares_re = re.compile(r',share_count:(\d+)')
-    # post_time_re = re.compile(r'time[^\d]+?(\d{10})[^\d]')
-    # logger.info('my ip %s', ses.get('https://httpbin.org/ip').json()['origin'])
+
+    backup_post_text_div_re = re.compile(r'<div data-testid="post_message".+?</div>')
+    backup_image_re = re.compile(r'<div data-testid="post_message".+?<img.+?src="([^"]+)')
+    backup_post_time_re = re.compile(r'data-utime=\"(\d+)\".+?<div data-testid="post_message"')
+
+    def extract_data(html='', pid=0):
+        post_text_div_match = post_text_div_re.search(html)
+        if post_text_div_match:
+            text = json.loads(post_text_div_match.group(1)).replace('\n\n', '\n')
+            image_match = image_re.search(html)
+            image = image_match.group(1) if image_match else ''
+            post_time_int = int(post_time_re.search(html).group(1))
+            post_time = datetime.fromtimestamp(post_time_int).astimezone().astimezone(timezone.utc)
+            likes_match = likes_re.search(html)
+            likes = likes_match.group(1) if likes_match else 0
+            comments = comments_re.search(html).group(1)
+            shares = shares_re.search(html).group(1)
+        elif 'This content isn\'t available at the moment' in html:
+            return 'not found', None, None, None, None, None
+        else:
+            logger.debug('post text div not found, fallback to backup regexes %s %s', pid, html)
+            post_text_div_match = backup_post_text_div_re.search(html)
+            if not post_text_div_match:
+                return 'unexpected failed match', None, None, None, None, None
+            text = HTML(html=post_text_div_match.group(0)).text
+            image_match = backup_image_re.search(html)
+            image = image_match.group(1) if image_match else ''
+            post_time_int = int(backup_post_time_re.search(html).group(1))
+            post_time = datetime.fromtimestamp(post_time_int).astimezone().astimezone(timezone.utc)
+            likes_match = re.search(r'Like.+?i18n_reaction_count:"(\d+)".*?share_fbid:"%s"' % pid, html)
+            likes = likes_match.group(1) if likes_match else 0
+            comments = re.search(r'i18n_comment_count:"(\d+).*?share_fbid:"%s"' % pid, html).group(1)
+            shares = re.search(r'i18n_share_count:"(\d+).*?share_fbid:"%s"' % pid, html).group(1)
+        return text, image, likes, comments, shares, post_time
+
     def scrape(q, ses):
         try:
             while task := q.get(timeout=2):
@@ -113,23 +142,14 @@ def scrape_post_id_range(start_index, end_index, threads=100, min_post_age=0):
                         continue
                 # logger.info('requested %s', url)
                 # logger.info(res.html.html)
-                post_text_div_match = post_text_div_re.search(res.html.html)
-                if not post_text_div_match:
-                    logger.debug('post text div not found %s %s', pid, res.html.html)
-                    if 'This content isn\'t available at the moment' in res.html.html:
-                        rowsq.put([i, 'not found', None, pid, None, None, None, None, scraped_at_str])
-                        logger.info('post %s not found, skipping', pid)
-                        continue
-                text = json.loads(post_text_div_match.group(1)).replace('\n\n', '\n')
-                image_match = image_re.search(res.html.html)
-                image = image_match.group(1) if image_match else ''
-                post_time_int = int(post_time_re.search(res.html.html).group(1))
-                post_time = datetime.fromtimestamp(post_time_int).astimezone().astimezone(timezone.utc)
+                text, image, likes, comments, shares, post_time = extract_data(res.html.html, pid)
+                if text == 'not found':
+                    rowsq.put([i, 'not found', None, pid, None, None, None, None, scraped_at_str])
+                    logger.info('post %s not found, skipping', pid)
+                    continue
+                elif text == 'unexpected failed match':
+                    raise Exception('unexpected regex failed match even with backup regex')
                 post_time_str = post_time.isoformat(timespec='seconds')
-                likes_match = likes_re.search(res.html.html)
-                likes = likes_match.group(1) if likes_match else 0
-                comments = comments_re.search(res.html.html).group(1)
-                shares = shares_re.search(res.html.html).group(1)
 
                 if scraped_at - post_time < timedelta(days=min_post_age):
                     logger.info('post is less than %d days old, skipping', min_post_age)
