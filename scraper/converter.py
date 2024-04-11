@@ -79,7 +79,7 @@ def scrape_post_id_range(start_index, end_index, threads=100, min_post_age=0):
     image_re = re.compile(r'href="https://www.facebook.com/nuswhispers/photos.+?<img[^>]?src="([^"]+)')
     post_time_re = re.compile(r'"story":{"creation_time":(\d+).+?')
     likes_re = re.compile(r'"Like"},"i18n_reaction_count":"(\d+)"')
-    comments_re = re.compile(r'i18n_comment_count":"(\d+)')
+    comments_re = re.compile(r'total_comment_count":(\d+)')
     shares_re = re.compile(r'i18n_share_count":"(\d+)')
 
     backup_post_text_div_re = re.compile(r'<div data-testid="post_message".+?</div>')
